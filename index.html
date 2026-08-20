@@ -107,14 +107,6 @@
                         <i class="fa-regular fa-clock text-blue-400"></i>
                         <span class="text-slate-300">최신화 기준: <strong id="lastUpdatedDisplay" class="text-white">26.08.20</strong></span>
                     </div>
-                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 shadow">
-                        <i class="fa-solid fa-file-excel"></i>
-                        <span class="hidden sm:inline">엑셀 내보내기</span>
-                    </button>
-                    <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 shadow">
-                        <i class="fa-solid fa-print"></i>
-                        <span class="hidden sm:inline">인쇄</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1801,38 +1793,6 @@
             renderHistoryTable();
             renderSpecTable();
             renderInspectionTable();
-        }
-
-        function exportToExcel() {
-            let csvContent = "\uFEFF";
-            
-            if (currentTab === 'specs') {
-                csvContent += "LINE,설비명,권상,교체주기,와이어 규격,납봉유무\n";
-                records.forEach(r => {
-                    csvContent += `"${r.line}","${r.equip} (${r.capacity})","${r.hoist}","${r.cycle}","${r.spec.replace(/"/g, '""')}","${r.leadSeal || '무'}"\n`;
-                });
-            } else {
-                let quarterHeaders = [];
-                for (let y = 2026; y <= 2050; y++) {
-                    for (let q = 1; q <= 4; q++) {
-                        quarterHeaders.push(`${y}_${q}분기`);
-                    }
-                }
-                csvContent += `LINE,설비명,권상,교체주기,${quarterHeaders.join(',')},와이어 규격,납봉유무\n`;
-                records.forEach(r => {
-                    let qVals = ALL_QUARTERS.map(qKey => `"${r[qKey] || ''}"`).join(',');
-                    csvContent += `"${r.line}","${r.equip} (${r.capacity})","${r.hoist}","${r.cycle}",${qVals},"${r.spec.replace(/"/g, '""')}","${r.leadSeal || '무'}"\n`;
-                });
-            }
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `세아씨엠_군산공장_크레인_와이어로프_관리(2026-2050)_${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
         }
 
         window.onload = function() {
