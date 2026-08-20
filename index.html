@@ -1207,6 +1207,7 @@
 
                 const registeredDates = new Set([...item.completedDates, ...item.unexpectedDates]);
 
+                // 기존 자동 생성되었던 예정 분기 일자 초기화
                 ALL_QUARTERS.forEach(qKey => {
                     if (item[qKey] && !registeredDates.has(item[qKey])) {
                         item[qKey] = '';
@@ -1221,6 +1222,7 @@
                     const cycleMonths = parseCycleMonths(item.cycle);
                     let current = latestDate;
 
+                    // 최신 완료일 기준으로 2050년까지 차기 교체 일정 자동 연속 계산
                     while (current) {
                         const result = addMonthsToDateStr(current, cycleMonths);
                         if (!result) break;
@@ -1228,9 +1230,7 @@
                         const { nextDateStr, quarterKey } = result;
 
                         if (ALL_QUARTERS.includes(quarterKey)) {
-                            if (!item[quarterKey]) {
-                                item[quarterKey] = nextDateStr;
-                            }
+                            item[quarterKey] = nextDateStr;
                             current = nextDateStr;
                         } else {
                             break;
@@ -1478,16 +1478,16 @@
                     if (quarterKey && ALL_QUARTERS.includes(quarterKey)) {
                         targetRecord[quarterKey] = dateVal;
 
-                        const isFuture = isFutureDate(dateVal);
-
-                        if (statusType === 'completed' && !isFuture) {
+                        // 날짜 제한 없이 지정한 상태에 따라 완료 이력에 즉시 등록하여 차기 일정 자동 재계산 유도
+                        if (statusType === 'completed') {
                             if (!targetRecord.completedDates.includes(dateVal)) targetRecord.completedDates.push(dateVal);
                             targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== dateVal);
-                        } else if (statusType === 'unexpected' && !isFuture) {
+                        } else if (statusType === 'unexpected') {
                             if (!targetRecord.unexpectedDates.includes(dateVal)) targetRecord.unexpectedDates.push(dateVal);
                             targetRecord.completedDates = targetRecord.completedDates.filter(d => d !== dateVal);
                         } else {
-                            if (!targetRecord.completedDates.includes(dateVal)) targetRecord.completedDates.push(dateVal);
+                            targetRecord.completedDates = targetRecord.completedDates.filter(d => d !== dateVal);
+                            targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== dateVal);
                         }
                     }
                 }
