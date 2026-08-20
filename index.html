@@ -557,7 +557,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        function showToast(message) {
+        function showToast(message, isError = false) {
             let toast = document.getElementById('toastNotification');
             if (!toast) {
                 toast = document.createElement('div');
@@ -565,12 +565,13 @@
                 toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-2 border border-slate-700 transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none';
                 document.body.appendChild(toast);
             }
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i><span class="text-xs font-bold">${message}</span>`;
+            const iconClass = isError ? 'fa-triangle-exclamation text-red-400' : 'fa-circle-check text-emerald-400';
+            toast.innerHTML = `<i class="fa-solid ${iconClass} text-base"></i><span class="text-xs font-bold">${message}</span>`;
             toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
             
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
-            }, 2500);
+            }, 3000);
         }
 
         function dateToISO(dateStr) {
@@ -685,7 +686,7 @@
         records = records.filter(item => item.id !== 53 && item.equip !== 'M1');
         localStorage.setItem('sea_cm_rope_data_v10', JSON.stringify(records));
 
-        // Ensure array initializations and populate completedDates from initial quarters if missing
+        // Ensure array initializations
         records.forEach(item => {
             if (!item.completedDates) item.completedDates = [];
             if (!item.unexpectedDates) item.unexpectedDates = [];
@@ -923,12 +924,14 @@
                     for (const item of records) {
                         await setDoc(doc(publicColl, String(item.id)), item);
                     }
+                    showToast("저장 및 클라우드 동기화가 완료되었습니다.");
                 } catch (err) {
                     console.warn("Firestore save sync error:", err);
+                    showToast("로컬 저장이 완료되었습니다. (클라우드 권한 확인 필요)", true);
                 }
+            } else {
+                showToast("저장이 완료되었습니다.");
             }
-
-            showToast("저장이 완료되었습니다.");
         }
 
         async function recalculateAllSchedules() {
@@ -989,12 +992,14 @@
                     for (const item of records) {
                         await setDoc(doc(publicColl, String(item.id)), item);
                     }
+                    showToast("후속 일정 재계산 및 클라우드 반영이 완료되었습니다.");
                 } catch (err) {
-                    console.warn("Firestore save sync error:", err);
+                    console.warn("Firestore sync error:", err);
+                    showToast("후속 일정이 로컬에서 재계산되었습니다. (클라우드 권한 확인)", true);
                 }
+            } else {
+                showToast("후속 일정이 성공적으로 재계산 및 갱신되었습니다.");
             }
-
-            showToast("후속 일정이 성공적으로 재계산 및 갱신되었습니다.");
         }
 
         function closePasswordModal() {
@@ -1082,32 +1087,44 @@
                 db = getFirestore(app);
 
                 let userCredential;
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    userCredential = await signInAnonymously(auth);
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        userCredential = await signInAnonymously(auth);
+                    }
+                } catch (authErr) {
+                    console.warn("Firebase Auth Error (Anonymous Auth Disabled in Console):", authErr);
+                    statusBadge.className = "flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-950/80 text-red-300 border border-red-600/60 shadow-sm";
+                    statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span><span>Firebase 권한/익명로그인 오류 (로컬 저장)</span>`;
+                    return;
                 }
 
                 if (userCredential && userCredential.user) {
                     statusBadge.className = "flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 shadow-sm";
-                    statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Firebase 연결됨 (wire-rope-common)</span>`;
+                    statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Firebase 연결됨 (실시간 공유중)</span>`;
 
                     const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
                     
-                    const snapshot = await getDocs(publicColl);
-                    const existingMap = new Map();
-                    snapshot.forEach(docSnap => existingMap.set(Number(docSnap.id), docSnap.data()));
+                    try {
+                        const snapshot = await getDocs(publicColl);
+                        const existingMap = new Map();
+                        snapshot.forEach(docSnap => existingMap.set(Number(docSnap.id), docSnap.data()));
 
-                    for (const item of initialData) {
-                        if (!existingMap.has(item.id)) {
-                            await setDoc(doc(publicColl, String(item.id)), item);
+                        for (const item of initialData) {
+                            if (!existingMap.has(item.id)) {
+                                await setDoc(doc(publicColl, String(item.id)), item);
+                            }
                         }
+                    } catch (rulesErr) {
+                        console.warn("Firestore Rules Permission Error:", rulesErr);
+                        statusBadge.className = "flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-950/80 text-red-300 border border-red-600/60 shadow-sm";
+                        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span>Firestore 보안규칙 미허용 (로컬 저장중)</span>`;
                     }
 
                     onSnapshot(publicColl, (snap) => {
                         const recordMap = new Map();
                         initialData.forEach(item => recordMap.set(item.id, item));
-                        records.forEach(item => recordMap.set(item.id, item));
 
                         snap.forEach(docSnap => {
                             const data = docSnap.data();
@@ -1121,7 +1138,9 @@
                         autoCalculateSchedules(false);
                         renderAllTables();
                     }, (error) => {
-                        console.warn("Firestore error:", error);
+                        console.warn("Firestore Snapshot error:", error);
+                        statusBadge.className = "flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-950/80 text-red-300 border border-red-600/60 shadow-sm";
+                        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span>Firebase 권한 오류</span>`;
                     });
                 }
             } catch (err) {
@@ -1139,6 +1158,7 @@
                     await setDoc(publicDocRef, item);
                 } catch (err) {
                     console.warn("Firestore sync error:", err);
+                    showToast("클라우드 저장 권한을 확인해주세요. (Firebase Rules)", true);
                 }
             }
         }
@@ -1287,7 +1307,7 @@
 
                 const registeredDates = new Set([...item.completedDates, ...item.unexpectedDates]);
 
-                // 기존 자동 생성되었던 예정 분기 일자 초기화
+                // 기존 분기 일자 초기화
                 ALL_QUARTERS.forEach(qKey => {
                     if (item[qKey] && !registeredDates.has(item[qKey])) {
                         item[qKey] = '';
@@ -1302,7 +1322,7 @@
                     const cycleMonths = parseCycleMonths(item.cycle);
                     let current = latestDate;
 
-                    // 최신 완료일 기준으로 2050년까지 차기 교체 일정 자동 연속 계산
+                    // 최신 완료일 기준으로 2050년까지 차기 교체 일정 연속 재계산
                     while (current) {
                         const result = addMonthsToDateStr(current, cycleMonths);
                         if (!result) break;
@@ -1404,8 +1424,8 @@
                 renderInspectionTable();
                 closeInspectionModal();
 
-                syncRecordToFirestore(rec).catch(err => console.warn("Firestore sync error:", err));
-                showToast("점검 결과가 저장되었습니다.");
+                await syncRecordToFirestore(rec);
+                showToast("점검 결과가 저장 및 클라우드 반영되었습니다.");
             }
         }
 
@@ -1558,7 +1578,6 @@
                     if (quarterKey && ALL_QUARTERS.includes(quarterKey)) {
                         targetRecord[quarterKey] = dateVal;
 
-                        // 날짜 제한 없이 지정한 상태에 따라 완료 이력에 즉시 등록하여 차기 일정 자동 재계산 유도
                         if (statusType === 'completed') {
                             if (!targetRecord.completedDates.includes(dateVal)) targetRecord.completedDates.push(dateVal);
                             targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== dateVal);
@@ -1610,10 +1629,10 @@
             closeModal();
 
             if (targetRecord) {
-                syncRecordToFirestore(targetRecord).catch(err => console.warn("Firestore sync error:", err));
+                await syncRecordToFirestore(targetRecord);
             }
 
-            showToast("저장이 완료되었습니다.");
+            showToast("저장 및 후속 일정 계산이 완료되었습니다.");
         }
 
         function renderHistoryTable() {
