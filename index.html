@@ -487,7 +487,7 @@
                             </select>
                         </div>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1.5">* 교체일자를 선택하면 해당 일자부터 2050년까지의 차기 후속 교체 스케줄이 자동으로 계산되어 배치됩니다.</p>
+                    <p class="text-[11px] text-slate-500 mt-1.5">* 교체일자를 변경하면 해당 일자부터 2050년까지의 차기 후속 스케줄이 즉시 재계산되어 적용됩니다.</p>
                 </div>
 
                 <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
@@ -498,7 +498,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE AND APPLICATION LOGIC -->
+    <!-- FIREBASE MODULE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -569,6 +569,14 @@
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             return `${yy}.${mm}.${dd}`;
+        };
+
+        window.getTodayISO = function() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
         };
 
         window.updateLastUpdatedDisplay = function(dateStr) {
@@ -657,14 +665,21 @@
             }
         }
 
-        window.records = JSON.parse(JSON.stringify(initialData));
+        // Initialize state from local storage or fallback
+        let savedRecords = null;
+        try {
+            const raw = localStorage.getItem('sea_cm_rope_data_v11');
+            if (raw) savedRecords = JSON.parse(raw);
+        } catch(e) {}
+
+        window.records = (Array.isArray(savedRecords) && savedRecords.length > 0) ? savedRecords : JSON.parse(JSON.stringify(initialData));
 
         window.currentTab = 'history';
         window.displayStartYear = 2026; 
         window.displayInspectStartYear = 2026; 
         window.displayInspectStartMonth = 1;   
 
-        // Schedule Calculation Logic
+        // Schedule Calculation Engine
         window.parseCycleMonths = function(cycleStr) {
             if (!cycleStr) return 12;
             let totalMonths = 0;
@@ -1123,7 +1138,7 @@
                 const rec = window.records.find(item => Number(item.id) === Number(id));
                 if (rec) {
                     if (isDateOnlyMode) {
-                        modalTitle.innerHTML = `<i class="fa-solid fa-calendar-check text-blue-400"></i> <span>교체 일자 및 구분 등록</span>`;
+                        modalTitle.innerHTML = `<i class="fa-solid fa-calendar-check text-blue-400"></i> <span>교체 일자 및 구분 등록/수정</span>`;
                     } else {
                         modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square text-blue-400"></i> <span>크레인 와이어 규격(스펙) 수정</span>`;
                     }
@@ -1137,20 +1152,21 @@
                     document.getElementById('inputLeadSeal').value = rec.leadSeal || '무';
 
                     let targetDate = selectedDate;
-                    if (!targetDate) {
-                        targetDate = (rec.completedDates && rec.completedDates.length > 0)
-                            ? rec.completedDates[rec.completedDates.length - 1]
-                            : ((rec.unexpectedDates && rec.unexpectedDates.length > 0) ? rec.unexpectedDates[rec.unexpectedDates.length - 1] : ((rec.manualScheduledDates && rec.manualScheduledDates.length > 0) ? rec.manualScheduledDates[rec.manualScheduledDates.length - 1] : ''));
-                    }
-
                     document.getElementById('inputOriginalDate').value = targetDate || '';
-                    document.getElementById('inputDate').value = window.dateToISO(targetDate);
-
-                    if (targetDate && rec.unexpectedDates && rec.unexpectedDates.includes(targetDate)) {
-                        document.getElementById('inputStatusType').value = 'unexpected';
-                    } else if (targetDate && rec.manualScheduledDates && rec.manualScheduledDates.includes(targetDate)) {
-                        document.getElementById('inputStatusType').value = 'scheduled';
+                    
+                    if (targetDate) {
+                        document.getElementById('inputDate').value = window.dateToISO(targetDate);
+                        
+                        if (rec.unexpectedDates && rec.unexpectedDates.includes(targetDate)) {
+                            document.getElementById('inputStatusType').value = 'unexpected';
+                        } else if (rec.manualScheduledDates && rec.manualScheduledDates.includes(targetDate)) {
+                            document.getElementById('inputStatusType').value = 'scheduled';
+                        } else {
+                            document.getElementById('inputStatusType').value = 'completed';
+                        }
                     } else {
+                        // If no specific date selected (e.g. empty quarter cell clicked), pre-fill with today's date
+                        document.getElementById('inputDate').value = window.getTodayISO();
                         document.getElementById('inputStatusType').value = 'completed';
                     }
                 }
@@ -1159,6 +1175,8 @@
                 form.reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('inputOriginalDate').value = '';
+                document.getElementById('inputDate').value = window.getTodayISO();
+                document.getElementById('inputStatusType').value = 'completed';
                 document.getElementById('inputLeadSeal').value = '무';
                 document.getElementById('inputLine').disabled = false;
                 document.getElementById('inputEquip').readOnly = false;
@@ -1190,6 +1208,8 @@
             const dateVal = window.isoToShortDate(rawDateVal);
             const statusType = document.getElementById('inputStatusType').value;
 
+            const isSpecOnlyMode = document.getElementById('dateFieldsSection').classList.contains('hidden');
+
             let equipName = equipFull;
             let capStr = "30TON";
             if (equipFull.includes('(') && equipFull.includes(')')) {
@@ -1216,22 +1236,27 @@
                 if (!targetRecord.unexpectedDates) targetRecord.unexpectedDates = [];
                 if (!targetRecord.manualScheduledDates) targetRecord.manualScheduledDates = [];
 
-                if (originalDateVal) {
-                    targetRecord.completedDates = targetRecord.completedDates.filter(d => d !== originalDateVal);
-                    targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== originalDateVal);
-                    targetRecord.manualScheduledDates = targetRecord.manualScheduledDates.filter(d => d !== originalDateVal);
-                }
+                if (!isSpecOnlyMode) {
+                    // Remove previous date from all lists if originalDateVal existed
+                    if (originalDateVal) {
+                        targetRecord.completedDates = targetRecord.completedDates.filter(d => d !== originalDateVal);
+                        targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== originalDateVal);
+                        targetRecord.manualScheduledDates = targetRecord.manualScheduledDates.filter(d => d !== originalDateVal);
+                    }
 
-                if (dateVal) {
-                    if (statusType === 'unexpected') {
-                        if (!targetRecord.unexpectedDates.includes(dateVal)) targetRecord.unexpectedDates.push(dateVal);
-                    } else if (statusType === 'scheduled') {
-                        if (!targetRecord.manualScheduledDates.includes(dateVal)) targetRecord.manualScheduledDates.push(dateVal);
-                    } else {
-                        if (!targetRecord.completedDates.includes(dateVal)) targetRecord.completedDates.push(dateVal);
+                    // Add new dateVal to chosen status list
+                    if (dateVal) {
+                        if (statusType === 'unexpected') {
+                            if (!targetRecord.unexpectedDates.includes(dateVal)) targetRecord.unexpectedDates.push(dateVal);
+                        } else if (statusType === 'scheduled') {
+                            if (!targetRecord.manualScheduledDates.includes(dateVal)) targetRecord.manualScheduledDates.push(dateVal);
+                        } else {
+                            if (!targetRecord.completedDates.includes(dateVal)) targetRecord.completedDates.push(dateVal);
+                        }
                     }
                 }
 
+                // Recalculate 2050 schedule
                 window.recalculateSingleEquipmentSchedule(targetRecord);
 
             } else {
@@ -1251,7 +1276,7 @@
                     manualScheduledDates: []
                 };
 
-                if (dateVal) {
+                if (dateVal && !isSpecOnlyMode) {
                     if (statusType === 'unexpected') {
                         newRec.unexpectedDates.push(dateVal);
                     } else if (statusType === 'scheduled') {
@@ -1265,20 +1290,23 @@
                 targetRecord = newRec;
             }
 
+            // Save to local storage
             localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(window.records));
 
             const todayStr = window.getTodayFormatted();
             localStorage.setItem('sea_cm_rope_last_updated', todayStr);
             window.updateLastUpdatedDisplay(todayStr);
 
+            // Re-render immediately
             window.renderAllTables();
             window.closeModal();
 
+            // Sync to Firestore
             if (targetRecord) {
                 await saveToFirestore(targetRecord);
             }
 
-            window.showToast("저장이 완료되었습니다.");
+            window.showToast("교체 일자 및 정보가 성공적으로 수정/저장되었습니다.");
         };
 
         window.renderHistoryTable = function() {
@@ -1387,13 +1415,18 @@
 
                         html += `
                             <td class="p-1 border-r border-slate-200 align-middle">
-                                <button onclick="openModal(${r.id}, '${dateVal}', 'date')" title="${titleText}" class="w-full py-1 px-1 rounded text-[11px] transition duration-150 shadow-sm ${badgeClass} hover:opacity-80">
+                                <button onclick="openModal(${r.id}, '${dateVal}', 'date')" title="${titleText} (클릭하여 일자/구분 수정)" class="w-full py-1 px-1 rounded text-[11px] transition duration-150 shadow-sm ${badgeClass} hover:opacity-80">
                                     ${dateVal}
                                 </button>
                             </td>
                         `;
                     } else {
-                        html += `<td class="p-1 border-r border-slate-200 align-middle"></td>`;
+                        // Make empty cells clickable to add new date for this crane
+                        html += `
+                            <td class="p-1 border-r border-slate-200 align-middle">
+                                <button onclick="openModal(${r.id}, null, 'date')" title="교체 일자 등록" class="w-full h-full min-h-[24px] hover:bg-blue-50/50 rounded transition text-[10px] text-slate-300 hover:text-blue-600 font-bold">+</button>
+                            </td>
+                        `;
                     }
                 });
 
@@ -1547,7 +1580,7 @@
 
         // Firestore Helper Functions
         async function saveToFirestore(item) {
-            if (!auth.currentUser) return;
+            if (!auth || !auth.currentUser) return;
             try {
                 const cleanItem = JSON.parse(JSON.stringify(item));
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
@@ -1558,7 +1591,7 @@
         }
 
         async function seedInitialDataIfEmpty() {
-            if (!auth.currentUser) return;
+            if (!auth || !auth.currentUser) return;
             try {
                 const snap = await getDocs(publicColl);
                 if (snap.empty) {
