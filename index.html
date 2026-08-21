@@ -377,59 +377,51 @@
         </div>
     </div>
 
-    <!-- INSPECTION RECORD MODAL -->
-    <div id="inspectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden transform transition-all">
+    <!-- FIREBASE CONFIG & DIAGNOSTIC MODAL -->
+    <div id="firebaseConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden transform transition-all">
             <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
-                <h3 class="font-bold text-sm flex items-center gap-2" id="inspectionModalTitle">
-                    <i class="fa-solid fa-clipboard-check text-emerald-400"></i>
-                    <span>월별 크레인 점검 결과 등록</span>
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-sky-400"></i>
+                    <span>Firebase 파이어스토어 연동 상태 진단</span>
                 </h3>
-                <button onclick="closeInspectionModal()" class="text-slate-400 hover:text-white transition">
+                <button onclick="closeFirebaseConfigModal()" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            
-            <form id="inspectionForm" onsubmit="saveInspectionRecord(event)" class="p-5 space-y-3.5">
-                <input type="hidden" id="inspectEquipId">
-                <input type="hidden" id="inspectYearMonth">
+            <div class="p-5 space-y-4">
+                <!-- Status Box -->
+                <div id="modalFirebaseStatusBox" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
+                    <p class="font-bold text-sm" id="modalFirebaseDiagTitle">🔍 연동 진단 진행 중...</p>
+                    <p class="mt-1.5 text-xs text-amber-800 leading-relaxed font-medium" id="modalFirebaseDiagText">파이어베이스 상태를 확인하고 있습니다.</p>
+                </div>
 
-                <div class="p-2.5 bg-slate-100 rounded-lg border border-slate-200 text-xs">
-                    <p class="font-bold text-slate-800" id="inspectTargetEquipDisplay">설비명 정보</p>
-                    <p class="text-slate-500 mt-0.5" id="inspectTargetDateDisplay">점검 연월 정보</p>
+                <!-- Fix Guide Step-by-Step -->
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2">
+                    <p class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-screwdriver-wrench text-blue-600"></i>
+                        <span>파이어스토어에 데이터 쌓이게 하는 3단계 체크리스트</span>
+                    </p>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-700 leading-relaxed font-medium text-[11px]">
+                        <li><strong>익명 로그인 허용:</strong> Firebase 콘솔 <i class="fa-solid fa-arrow-right text-[10px]"></i> Authentication <i class="fa-solid fa-arrow-right text-[10px]"></i> Sign-in method <i class="fa-solid fa-arrow-right text-[10px]"></i> <strong>익명(Anonymous) 사용 설정 ON</strong> 후 저장</li>
+                        <li><strong>Firestore 보안 규칙 열기:</strong> Firestore Database <i class="fa-solid fa-arrow-right text-[10px]"></i> 규칙(Rules) 탭 <i class="fa-solid fa-arrow-right text-[10px]"></i> <code class="bg-slate-200 px-1 py-0.5 rounded text-red-700">allow read, write: if true;</code> 입력 후 <strong>[게시]</strong></li>
+                        <li><strong>데이터베이스 ID 체크:</strong> DB 이름이 <code class="bg-slate-200 px-1 py-0.5 rounded">leeyunseung</code>인 경우 아래 Config에 추가하거나 기본 DB로 생성되었는지 확인</li>
+                    </ol>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">점검 결과 상태</label>
-                    <select id="inputInspectStatus" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
-                        <option value="good">점검 완료 (양호 - 녹색)</option>
-                        <option value="repair">정비/보수 필요 (주황색)</option>
-                        <option value="overdue">미점검 / 점검 지연 (빨간색)</option>
-                        <option value="scheduled">점검 예정 (회색)</option>
-                    </select>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Firebase Config JSON 설정값</label>
+                    <textarea id="inputFirebaseConfigText" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", ...}' class="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">실제 점검일자</label>
-                        <input type="date" id="inputInspectDate" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">점검자</label>
-                        <input type="text" id="inputInspector" placeholder="점검자 성명" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <button type="button" onclick="resetFirebaseConfig()" class="text-xs font-bold text-red-600 hover:text-red-800 transition">설정 초기화</button>
+                    <div class="space-x-2">
+                        <button type="button" onclick="closeFirebaseConfigModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">닫기</button>
+                        <button type="button" onclick="saveFirebaseConfigFromInput()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">저장 및 다시 연결</button>
                     </div>
                 </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">점검 소견 및 조치 사항</label>
-                    <textarea id="inputInspectNote" rows="2" placeholder="점검 결과 특이사항 및 조치 내용 기록" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
-                </div>
-
-                <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                    <button type="button" onclick="closeInspectionModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow transition">점검결과 저장</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -542,7 +534,7 @@
                 </button>
             </div>
             <form onsubmit="verifyPassword(event)" class="p-5 space-y-4">
-                <p class="text-xs text-slate-600 font-medium">와이어 규격 및 정보 수정을 진행하려면 비밀번호를 입력하세요.</p>
+                <p class="text-xs text-slate-600 font-medium">수정을 진행하려면 비밀번호를 입력하세요.</p>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">비밀번호 (4자리)</label>
                     <input type="password" id="inputAdminPassword" placeholder="비밀번호 입력" maxlength="10" required class="w-full text-center text-lg tracking-widest font-bold bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -555,41 +547,6 @@
                     <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">확인</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- FIREBASE CONFIG MODAL -->
-    <div id="firebaseConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden transform transition-all">
-            <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
-                <h3 class="font-bold text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-sky-400"></i>
-                    <span>Firebase 클라우드 연동 상태 및 설정</span>
-                </h3>
-                <button onclick="closeFirebaseConfigModal()" class="text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <div class="p-5 space-y-3.5">
-                <div id="modalFirebaseStatusBox" class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs">
-                    <p class="font-bold">🟢 Firebase 연동 진단</p>
-                    <p class="mt-1 text-[11px]" id="modalFirebaseDiagText">클라우드 서버 상태 확인 중...</p>
-                </div>
-                <p class="text-xs text-slate-600 leading-relaxed font-medium">
-                    사용자 지정 Firebase 프로젝트 설정값(JSON)을 변경하려면 아래에 입력하세요.
-                </p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Firebase Config JSON</label>
-                    <textarea id="inputFirebaseConfigText" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", ...}' class="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                </div>
-                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-                    <button type="button" onclick="resetFirebaseConfig()" class="text-xs font-bold text-red-600 hover:text-red-800 transition">설정 초기화</button>
-                    <div class="space-x-2">
-                        <button type="button" onclick="closeFirebaseConfigModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
-                        <button type="button" onclick="saveFirebaseConfigFromInput()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">저장 및 연동 재시도</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -637,7 +594,6 @@
 
         // Initial base crane equipment data
         const initialData = [
-            // CPL
             { id: 1, line: "CPL", seq: 1, equip: "H1", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "22.4Ø X 80M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 2, line: "CPL", seq: 2, equip: "P2", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "18Ø X 175M 6xFi(25),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.04.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 3, line: "CPL", seq: 2, equip: "P2", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.11.11"], unexpectedDates: [], manualScheduledDates: [] },
@@ -645,7 +601,6 @@
             { id: 5, line: "CPL", seq: 3, equip: "P3", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.01.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 6, line: "CPL", seq: 4, equip: "A1", capacity: "2.8TON", hoist: "주권", cycle: "2년", spec: "12.5Ø 15M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.22"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // CRM
             { id: 7, line: "CRM", seq: 1, equip: "H2", capacity: "10TON", hoist: "주권", cycle: "2년", spec: "16Ø X 55 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.06.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 8, line: "CRM", seq: 2, equip: "R1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 9, line: "CRM", seq: 3, equip: "R2", capacity: "45TON", hoist: "주권", cycle: "2년", spec: "22.4Ø X 195M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
@@ -653,7 +608,6 @@
             { id: 11, line: "CRM", seq: 4, equip: "R3", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.01.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 12, line: "CRM", seq: 5, equip: "R4", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "20Ø X 68M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.06.25"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // CGL
             { id: 13, line: "CGL", seq: 1, equip: "G1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 14, line: "CGL", seq: 1, equip: "G1", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "12.5Ø X 165M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 15, line: "CGL", seq: 2, equip: "G2", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
@@ -664,7 +618,6 @@
             { id: 20, line: "CGL", seq: 5, equip: "G5(바텀드로스)", capacity: "7.5TON", hoist: "주권", cycle: "6개월", spec: "12.5Ø X 15M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.05.30"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 21, line: "CGL", seq: 6, equip: "G6(프리멜트)", capacity: "3TON", hoist: "주권", cycle: "2년", spec: "14Ø X 30M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.09.11"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // 1CCL
             { id: 22, line: "1CCL", seq: 1, equip: "C1-1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 150M 6xFi(29) IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 23, line: "1CCL", seq: 2, equip: "C1", capacity: "25TON", hoist: "주권", cycle: "1년", spec: "18Ø X 100M 6xFi(25) IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.06.25"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 24, line: "1CCL", seq: 3, equip: "C2", capacity: "25TON", hoist: "주권", cycle: "2년", spec: "18Ø X 125M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.02.14"], unexpectedDates: [], manualScheduledDates: [] },
@@ -674,7 +627,6 @@
             { id: 28, line: "1CCL", seq: 5, equip: "C4", capacity: "15TON", hoist: "주권", cycle: "1년", spec: "20Ø X 70M 6xFi(25) IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.04.12"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 29, line: "1CCL", seq: 6, equip: "C5", capacity: "7.5TON", hoist: "주권", cycle: "1년", spec: "14Ø X 54M 6xFi(37), FC, B, Z-LAY", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // 2CCL
             { id: 30, line: "2CCL", seq: 1, equip: "S1", capacity: "15TON", hoist: "주권", cycle: "2년", spec: "20Ø X 54M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.06.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 31, line: "2CCL", seq: 2, equip: "S2", capacity: "5TON", hoist: "주권", cycle: "2년", spec: "12.5Ø X 54M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.05.01"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 32, line: "2CCL", seq: 3, equip: "2C1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "20Ø X 165M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
@@ -688,7 +640,6 @@
             { id: 40, line: "2CCL", seq: 8, equip: "1S2", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 55M 6xFi(37),IWRC, B, Z-LAY,2PART", leadSeal: "유", completedDates: ["27.05.11"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 41, line: "2CCL", seq: 9, equip: "1S3", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "20Ø X 130M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["27.08.16"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // 3CCL
             { id: 42, line: "3CCL", seq: 1, equip: "3C1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "22.4Ø X 165.5M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.08.31"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 43, line: "3CCL", seq: 1, equip: "3C1", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 51.7M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 44, line: "3CCL", seq: 2, equip: "3C2", capacity: "20TON", hoist: "주권", cycle: "2년", spec: "16Ø X 200M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.08.31"], unexpectedDates: [], manualScheduledDates: [] },
@@ -700,7 +651,6 @@
             { id: 50, line: "3CCL", seq: 5, equip: "3C5", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 30M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 51, line: "3CCL", seq: 6, equip: "3C6", capacity: "20TON", hoist: "주권", cycle: "1년 6개월", spec: "16Ø X 80M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.06.28"], unexpectedDates: [], manualScheduledDates: [] },
 
-            // UTILITY
             { id: 52, line: "UTILITY", seq: 1, equip: "RS1", capacity: "5TON", hoist: "주권", cycle: "5년", spec: "12.5Ø X 54M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["27.09.01"], unexpectedDates: [], manualScheduledDates: [] }
         ];
 
@@ -729,7 +679,6 @@
             localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
         }
 
-        // Clean up legacy items and ensure array initializations
         records = records.filter(item => item.id !== 53 && item.equip !== 'M1');
         records.forEach(item => {
             if (!item.completedDates) item.completedDates = [];
@@ -763,13 +712,12 @@
             }
         }
 
-        // Robust Single Equipment Schedule Recalculation (Prevents date loss & handles scheduled status)
+        // Robust Equipment Schedule Recalculation Engine
         function recalculateSingleEquipmentSchedule(item) {
             if (!item.completedDates) item.completedDates = [];
             if (!item.unexpectedDates) item.unexpectedDates = [];
             if (!item.manualScheduledDates) item.manualScheduledDates = [];
 
-            // 1. Gather all actual completion and manual scheduled dates
             const actuals = Array.from(new Set([...item.completedDates, ...item.unexpectedDates])).filter(Boolean);
             actuals.sort((a, b) => {
                 let dtA = parseDateStr(a) || new Date(0);
@@ -784,12 +732,10 @@
                 return dtA - dtB;
             });
 
-            // 2. Clear quarterly display map
             ALL_QUARTERS.forEach(qKey => {
                 item[qKey] = '';
             });
 
-            // 3. Place actual completions into quarter grid
             actuals.forEach(dStr => {
                 const qKey = getQuarterKeyFromDateStr(dStr);
                 if (qKey && ALL_QUARTERS.includes(qKey)) {
@@ -797,7 +743,6 @@
                 }
             });
 
-            // 4. Place manual scheduled dates into quarter grid if not occupied by actual completion
             scheduledList.forEach(dStr => {
                 const qKey = getQuarterKeyFromDateStr(dStr);
                 if (qKey && ALL_QUARTERS.includes(qKey) && !item[qKey]) {
@@ -805,7 +750,6 @@
                 }
             });
 
-            // 5. Determine base starting date for future schedule calculation
             let baseDate = null;
             if (actuals.length > 0) {
                 baseDate = actuals[actuals.length - 1];
@@ -818,7 +762,6 @@
             const cycleMonths = parseCycleMonths(item.cycle);
             let current = baseDate;
 
-            // Project future replacement dates up to 2050
             while (current) {
                 const result = addMonthsToDateStr(current, cycleMonths);
                 if (!result) break;
@@ -843,6 +786,7 @@
             localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
         }
 
+        // Firebase Cloud Auto-Diagnosis & Connect Logic
         let appId = typeof __app_id !== 'undefined' ? __app_id : 'wire-rope-common';
         let db = null;
         let auth = null;
@@ -856,23 +800,37 @@
             appId: "1:1086672017327:web:38ab3d4fdf2bfcd25e015a"
         };
 
-        function setFirebaseStatus(isSuccess, message) {
+        function setFirebaseStatusUI(state, title, detail) {
             const statusBadge = document.getElementById('firebaseStatusBadge');
             const statusText = document.getElementById('firebaseStatusText');
-            const modalDiagText = document.getElementById('modalFirebaseDiagText');
-            
+            const modalTitle = document.getElementById('modalFirebaseDiagTitle');
+            const modalText = document.getElementById('modalFirebaseDiagText');
+            const modalBox = document.getElementById('modalFirebaseStatusBox');
+
             if (statusBadge && statusText) {
-                if (isSuccess) {
-                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 shadow-sm cursor-pointer hover:bg-emerald-900 transition";
-                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span><span>${message}</span>`;
+                if (state === 'success') {
+                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 shadow-sm cursor-pointer hover:bg-emerald-900 transition";
+                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span><span>${title}</span>`;
+                } else if (state === 'error') {
+                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-950/90 text-red-300 border border-red-500/80 shadow-sm cursor-pointer hover:bg-red-900 transition";
+                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span><span>${title}</span>`;
                 } else {
-                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950/90 text-red-300 border border-red-500/80 shadow-sm cursor-pointer hover:bg-red-900 transition";
-                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span><span>${message}</span>`;
+                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm cursor-pointer hover:bg-amber-500/30 transition";
+                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span><span>${title}</span>`;
                 }
             }
 
-            if (modalDiagText) {
-                modalDiagText.textContent = message;
+            if (modalTitle) modalTitle.textContent = title;
+            if (modalText) modalText.innerHTML = detail;
+
+            if (modalBox) {
+                if (state === 'success') {
+                    modalBox.className = "p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs";
+                } else if (state === 'error') {
+                    modalBox.className = "p-3 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs";
+                } else {
+                    modalBox.className = "p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs";
+                }
             }
         }
 
@@ -913,6 +871,8 @@
         }
 
         async function initFirebase() {
+            setFirebaseStatusUI('loading', 'Firebase 연결 확인 중...', '서버에 연결을 시도하고 있습니다.');
+
             let firebaseConfig = null;
 
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -937,37 +897,37 @@
 
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                db = getFirestore(app);
 
-                // Handle Auth initialization with fallback
-                let authDone = false;
+                // Attempt database connection
+                try {
+                    db = getFirestore(app);
+                } catch (dbErr) {
+                    console.warn("Custom Firestore Instance Error:", dbErr);
+                    db = getFirestore(app);
+                }
+
+                // Authentication handshake
                 try {
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         try {
                             await signInWithCustomToken(auth, __initial_auth_token);
-                            authDone = true;
                         } catch (tokErr) {
-                            console.warn("Custom token auth failed, trying anonymous:", tokErr);
                             await signInAnonymously(auth);
-                            authDone = true;
                         }
                     } else {
                         await signInAnonymously(auth);
-                        authDone = true;
                     }
                 } catch (authErr) {
                     console.warn("Firebase Auth Error:", authErr);
-                    setFirebaseStatus(false, "🔴 Firebase Auth 접속 오류 (로컬 모드)");
+                    setFirebaseStatusUI('error', '🔴 Firebase 익명 로그인 차단됨', 'Firebase 콘솔 <strong class="underline">Authentication > Sign-in method</strong>에서 <strong>익명(Anonymous) 사용 설정</strong>을 ON으로 변경하세요.');
                     return;
                 }
 
                 onAuthStateChanged(auth, async (user) => {
                     if (!user) {
-                        setFirebaseStatus(false, "🔴 Firebase 인증 대기 중...");
+                        setFirebaseStatusUI('error', '🔴 인증 대기 실패', '사용자 인증 상태를 가져올 수 없습니다.');
                         return;
                     }
-
-                    setFirebaseStatus(true, "🟢 Firebase 연결됨 (실시간 공유중)");
 
                     const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
 
@@ -976,20 +936,23 @@
                         const existingMap = new Map();
                         snapshot.forEach(docSnap => existingMap.set(Number(docSnap.id), docSnap.data()));
 
-                        // Seed initial missing records if database is empty or missing items
+                        // Seed initial missing records
                         for (const item of initialData) {
                             if (!existingMap.has(item.id)) {
                                 const cleanItem = JSON.parse(JSON.stringify(item));
                                 await setDoc(doc(publicColl, String(item.id)), cleanItem);
                             }
                         }
+
+                        setFirebaseStatusUI('success', '🟢 Firebase 연결됨 (실시간 공유중)', '데이터베이스와 완벽히 연결되었습니다. 다른 컴퓨터와 실시간 동기화됩니다.');
+
                     } catch (rulesErr) {
-                        console.warn("Firestore Permission Error:", rulesErr);
-                        setFirebaseStatus(false, "🔴 Firebase Firestore 접근 권한 오류");
+                        console.warn("Firestore Rules Permission Error:", rulesErr);
+                        setFirebaseStatusUI('error', '🔴 파이어스토어 권한 차단됨', 'Firestore 콘솔 <strong class="underline">규칙(Rules)</strong> 탭에서 <code class="bg-red-100 px-1 py-0.5 rounded text-red-900 font-mono">allow read, write: if true;</code>로 변경하고 [게시]를 누르세요.');
                         return;
                     }
 
-                    // Live Firestore Realtime Sync Listener
+                    // Live Realtime Firestore Synchronization Listener
                     onSnapshot(publicColl, (snap) => {
                         if (snap.empty) return;
                         const recordMap = new Map();
@@ -1006,17 +969,17 @@
                             localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
                             recalculateAllSchedulesSilent();
                             renderAllTables();
-                            setFirebaseStatus(true, "🟢 Firebase 연결됨 (실시간 공유중)");
+                            setFirebaseStatusUI('success', '🟢 Firebase 연결됨 (실시간 공유중)', '클라우드 서버에서 최신 데이터를 동기화하였습니다.');
                         }
                     }, (error) => {
-                        console.warn("Firestore Snapshot Error:", error);
-                        setFirebaseStatus(false, "🔴 Firebase 실시간 동기화 오류");
+                        console.warn("Firestore Snapshot error:", error);
+                        setFirebaseStatusUI('error', '🔴 실시간 수신 오류', '데이터 수신 중 오류가 발생했습니다: ' + error.message);
                     });
                 });
 
             } catch (err) {
-                console.warn("Firebase Init Exception:", err);
-                setFirebaseStatus(false, "🔴 Firebase 초기화 안됨 (로컬 저장중)");
+                console.warn("Firebase Init Error:", err);
+                setFirebaseStatusUI('error', '🔴 Firebase 연동 실패', '초기화 오류가 발생했습니다. 설정 JSON을 확인하세요.');
             }
         }
 
@@ -1025,11 +988,11 @@
                 try {
                     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
                     const publicDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
-                    const cleanItem = JSON.parse(JSON.stringify(item)); // Strips undefined values for Firestore
+                    const cleanItem = JSON.parse(JSON.stringify(item));
                     await setDoc(publicDocRef, cleanItem);
                 } catch (err) {
                     console.warn("Firestore sync error:", err);
-                    showToast("클라우드 전송 실패 (로컬에만 저장됨)", true);
+                    showToast("클라우드 업로드 실패 (로컬에만 저장됨)", true);
                 }
             }
         }
@@ -1054,7 +1017,7 @@
                     showToast("저장 및 클라우드 동기화가 완료되었습니다.");
                 } catch (err) {
                     console.warn("Firestore save sync error:", err);
-                    showToast("저장이 완료되었습니다. (로컬 저장소)", false);
+                    showToast("저장이 완료되었습니다. (로컬)", false);
                 }
             } else {
                 showToast("저장이 완료되었습니다.");
@@ -1525,7 +1488,6 @@
                 if (!targetRecord.unexpectedDates) targetRecord.unexpectedDates = [];
                 if (!targetRecord.manualScheduledDates) targetRecord.manualScheduledDates = [];
 
-                // Clean original date from all lists before assigning new status
                 if (originalDateVal) {
                     targetRecord.completedDates = targetRecord.completedDates.filter(d => d !== originalDateVal);
                     targetRecord.unexpectedDates = targetRecord.unexpectedDates.filter(d => d !== originalDateVal);
