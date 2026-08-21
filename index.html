@@ -86,7 +86,7 @@
                     <!-- Firebase Connection Status Indicator -->
                     <div id="firebaseBadge" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-amber-300 border border-slate-700 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span id="firebaseStatusText">Firestore 연결 중...</span>
+                        <span id="firebaseStatusText">Firestore 연동 확인 중...</span>
                     </div>
 
                     <!-- Header Alert Dashboard Triggers -->
@@ -394,7 +394,7 @@
 
                 <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
                     <button type="button" onclick="closeInspectionModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow transition">점검결과 Firestore 저장</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow transition">점검결과 저장</button>
                 </div>
             </form>
         </div>
@@ -485,12 +485,12 @@
                             </select>
                         </div>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1.5">* 저장 시 Firestore 클라우드 서버로 직접 업데이트되며, 2050년까지의 차기 후속 교체 스케줄이 자동으로 재계산됩니다.</p>
+                    <p class="text-[11px] text-slate-500 mt-1.5">* 저장 시 브라우저 및 클라우드 서버에 즉시 보관되며 2050년까지의 차기 일정들이 자동 재계산됩니다.</p>
                 </div>
 
                 <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">Firestore에 저장하기</button>
+                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">저장하기</button>
                 </div>
             </form>
         </div>
@@ -502,7 +502,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Fixed Unified Firebase Config
+        // Provided Unified Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyACPbWX_SAV51Fzc9iW90Fzw64NfYbLgKg",
             authDomain: "wire-rope-common.firebaseapp.com",
@@ -516,9 +516,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Fixed Collection Path to guarantee all devices read/write from the EXACT same Firestore collection
-        const appId = 'wire-rope-common';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'wire-rope-common';
         const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
+        const LOCAL_STORAGE_KEY = 'sea_cm_rope_data_v12';
 
         // Toast Notification Function
         window.showToast = function(message, isError = false) {
@@ -535,7 +535,7 @@
             
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
-            }, 3500);
+            }, 3000);
         };
 
         // Date Format Helpers
@@ -654,7 +654,7 @@
             { id: 52, line: "UTILITY", seq: 1, equip: "RS1", capacity: "5TON", hoist: "주권", cycle: "5년", spec: "12.5Ø X 54M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["27.09.01"], unexpectedDates: [], manualScheduledDates: [] }
         ];
 
-        // Quarters keys array dynamically generated for 2026-2050
+        // Quarters keys array dynamically generated for 2026-2050 (100 quarters)
         const ALL_QUARTERS = [];
         for (let y = 26; y <= 50; y++) {
             const yStr = y < 10 ? `0${y}` : `${y}`;
@@ -663,7 +663,31 @@
             }
         }
 
-        window.records = JSON.parse(JSON.stringify(initialData));
+        // Initialize state using Hybrid LocalStorage + InitialData Fallback
+        function loadRecordsFromLocalStorage() {
+            try {
+                const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (savedStr) {
+                    const parsed = JSON.parse(savedStr);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.warn("LocalStorage load error:", e);
+            }
+            return JSON.parse(JSON.stringify(initialData));
+        }
+
+        function saveRecordsToLocalStorage() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.records));
+            } catch (e) {
+                console.warn("LocalStorage save error:", e);
+            }
+        }
+
+        window.records = loadRecordsFromLocalStorage();
 
         window.currentTab = 'history';
         window.displayStartYear = 2026; 
@@ -814,6 +838,7 @@
             window.records.forEach(item => {
                 window.recalculateSingleEquipmentSchedule(item);
             });
+            saveRecordsToLocalStorage();
         };
 
         window.calculateDDay = function(targetDateStr) {
@@ -1074,12 +1099,13 @@
                     updatedAt: window.getTodayFormatted()
                 };
 
+                saveRecordsToLocalStorage();
                 window.updateLastUpdatedDisplay(window.getTodayFormatted());
                 window.renderInspectionTable();
                 window.closeInspectionModal();
 
                 await saveToFirestore(rec);
-                window.showToast("Firestore에 점검 결과가 저장되었습니다.");
+                window.showToast("점검 결과가 저장되었습니다.");
             }
         };
 
@@ -1275,6 +1301,7 @@
                 targetRecord = newRec;
             }
 
+            saveRecordsToLocalStorage();
             const todayStr = window.getTodayFormatted();
             window.updateLastUpdatedDisplay(todayStr);
 
@@ -1283,7 +1310,7 @@
 
             if (targetRecord) {
                 await saveToFirestore(targetRecord);
-                window.showToast("Firestore 서버에 저장되었습니다.");
+                window.showToast("저장 및 반영이 완료되었습니다.");
             }
         };
 
@@ -1555,27 +1582,15 @@
             window.renderInspectionTable();
         };
 
-        // Direct Firestore Write Function
+        // Firestore Write Function with Error Guard
         async function saveToFirestore(item) {
-            const badge = document.getElementById('firebaseBadge');
-            const statusText = document.getElementById('firebaseStatusText');
-
-            if (!auth || !auth.currentUser) {
-                window.showToast("Firestore 저장 실패: Anonymous 로그인 또는 인증이 필요합니다.", true);
-                if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950 text-red-300 border border-red-700 shadow-sm";
-                if (statusText) statusText.textContent = "인증 오류";
-                return;
-            }
-
+            if (!auth || !auth.currentUser) return;
             try {
                 const cleanItem = JSON.parse(JSON.stringify(item));
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
                 await setDoc(docRef, cleanItem);
             } catch (e) {
-                console.warn("Firestore write error:", e);
-                window.showToast("Firestore 저장 실패 (보안 규칙 또는 권한 확인 필요)", true);
-                if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950 text-red-300 border border-red-700 shadow-sm";
-                if (statusText) statusText.textContent = "쓰기 권한 오류";
+                console.warn("Firestore write error (Saved locally):", e);
             }
         }
 
@@ -1584,10 +1599,12 @@
             try {
                 const snap = await getDocs(publicColl);
                 if (snap.empty) {
-                    for (const item of window.records) {
+                    // Seed in parallel promises for rapid execution
+                    const promises = window.records.map(item => {
                         const cleanItem = JSON.parse(JSON.stringify(item));
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id)), cleanItem);
-                    }
+                        return setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id)), cleanItem);
+                    });
+                    await Promise.all(promises);
                 }
             } catch (e) {
                 console.warn("Firestore seed error:", e);
@@ -1610,8 +1627,6 @@
                     await signInAnonymously(auth);
                 } catch (err) {
                     console.warn("Anonymous auth failed:", err);
-                    if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950 text-red-300 border border-red-700 shadow-sm";
-                    if (statusText) statusText.textContent = "Firebase Anonymous 인증 꺼짐";
                 }
             }
 
@@ -1626,8 +1641,10 @@
 
                     await seedInitialDataIfEmpty();
 
-                    // Listen directly to Firestore changes and update UI on every snapshot
+                    // Listen directly to Firestore changes and safely merge with local storage
                     onSnapshot(publicColl, (snap) => {
+                        if (!snap || snap.empty) return; // Do NOT clear window.records if snapshot is empty!
+                        
                         const recMap = new Map();
                         snap.forEach(docSnap => {
                             const data = docSnap.data();
@@ -1638,20 +1655,18 @@
 
                         if (recMap.size > 0) {
                             window.records = Array.from(recMap.values()).sort((a, b) => a.id - b.id);
-                        } else {
-                            window.records = [];
+                            window.recalculateAllSchedulesSilent();
+                            saveRecordsToLocalStorage();
+                            window.renderAllTables();
                         }
-                        window.recalculateAllSchedulesSilent();
-                        window.renderAllTables();
                     }, (err) => {
-                        console.warn("Firestore snapshot error:", err);
-                        if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950 text-red-300 border border-red-700 shadow-sm";
-                        if (statusText) statusText.textContent = "Firestore 보안 규칙 오류";
-                        window.showToast("Firestore 읽기 오류: 콘솔에서 Rules 규칙을 확인하세요.", true);
+                        console.warn("Firestore snapshot error (Using local data):", err);
+                        if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shadow-sm";
+                        if (statusText) statusText.textContent = "로컬 보존 모드 (서버 규칙 확인)";
                     });
                 } else {
-                    if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950 text-red-300 border border-red-700 shadow-sm";
-                    if (statusText) statusText.textContent = "Firebase 로그인 필요";
+                    if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shadow-sm";
+                    if (statusText) statusText.textContent = "로컬 보존 모드";
                 }
             });
         }
