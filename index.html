@@ -84,9 +84,9 @@
                 </div>
                 <div class="flex items-center space-x-3 text-xs sm:text-sm">
                     <!-- Firebase Connection Status Indicator -->
-                    <button type="button" onclick="openFirebaseConfigModal()" id="firebaseStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm cursor-pointer hover:bg-amber-500/30 transition" title="클릭하여 Firebase 클라우드 연동 설정 및 가이드 확인">
+                    <button type="button" onclick="openFirebaseConfigModal()" id="firebaseStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm cursor-pointer hover:bg-amber-500/30 transition" title="클릭하여 Firebase 클라우드 연동 설정 확인">
                         <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        <span id="firebaseStatusText">Firebase 확인 중...</span>
+                        <span id="firebaseStatusText">Firebase 연동 확인 중...</span>
                     </button>
 
                     <!-- Header Alert Dashboard Triggers -->
@@ -181,6 +181,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- PRINT HEADER -->
+        <div class="hidden print-header mb-4 text-center">
+            <h1 class="text-2xl font-bold text-slate-900">세아씨엠 군산공장 CRANE WIRE ROPE 교체 현황 및 규격</h1>
+            <p class="text-sm text-slate-600 mt-1">2026년 ~ 2050년 분기별 관리표</p>
+            <hr class="mt-2 border-slate-300">
         </div>
 
         <!-- TAB 1: 교체 현황 (Timeline Grid Table 3-Year Sliding View) -->
@@ -551,53 +558,36 @@
         </div>
     </div>
 
-    <!-- FIREBASE CONFIG MODAL & SETUP GUIDE -->
-    <div id="firebaseConfigModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden transform transition-all">
-            <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between border-b border-slate-800">
-                <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2">
+    <!-- FIREBASE CONFIG MODAL -->
+    <div id="firebaseConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden transform transition-all">
+            <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2">
                     <i class="fa-solid fa-cloud text-sky-400"></i>
-                    <span>Firebase 실시간 클라우드 연동 가이드 및 설정</span>
+                    <span>Firebase 클라우드 연동 상태 및 설정</span>
                 </h3>
                 <button onclick="closeFirebaseConfigModal()" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            
-            <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
-                <!-- Status Diagnostic Box -->
-                <div id="modalFirebaseStatusBox" class="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-amber-900 font-medium">
-                    <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5"></i>
-                    <div>
-                        <strong class="font-bold block text-sm">클라우드 연동 가이드</strong>
-                        <p class="mt-0.5 leading-relaxed">여러 컴퓨터/스마트폰 간에 실시간으로 수정한 내용이 공유되도록 설정할 수 있습니다.</p>
-                    </div>
+            <div class="p-5 space-y-3.5">
+                <div id="modalFirebaseStatusBox" class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs">
+                    <p class="font-bold">🟢 Firebase 연동 진단</p>
+                    <p class="mt-1 text-[11px]" id="modalFirebaseDiagText">클라우드 서버 상태 확인 중...</p>
                 </div>
-
-                <!-- Step by step Setup Instructions -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-                    <h4 class="font-extrabold text-slate-800 flex items-center gap-1.5 text-xs border-b border-slate-200 pb-1.5">
-                        <i class="fa-solid fa-list-check text-blue-600"></i>
-                        <span>Firebase 콘솔 필수 설정 3단계</span>
-                    </h4>
-                    <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed font-medium">
-                        <li><strong>익명 로그인 활성화:</strong> Firebase Console &rarr; Authentication &rarr; Sign-in method &rarr; '익명(Anonymous)' 활성화</li>
-                        <li><strong>Firestore 데이터베이스 규칙 열기:</strong> Firestore Database &rarr; 규칙(Rules) 탭에서 <code class="bg-slate-200 text-red-600 px-1 rounded">allow read, write: if true;</code> 입력 후 게시</li>
-                        <li><strong>웹 프로젝트 Config JSON 입력:</strong> 프로젝트 설정 &rarr; 내 앱 &rarr; SDK 설정의 JSON을 아래 상자에 복사해서 저장</li>
-                    </ol>
-                </div>
-
+                <p class="text-xs text-slate-600 leading-relaxed font-medium">
+                    사용자 지정 Firebase 프로젝트 설정값(JSON)을 변경하려면 아래에 입력하세요.
+                </p>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Firebase Config JSON 입력</label>
-                    <textarea id="inputFirebaseConfigText" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}' class="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Firebase Config JSON</label>
+                    <textarea id="inputFirebaseConfigText" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", ...}' class="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                 </div>
-            </div>
-
-            <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-between">
-                <button type="button" onclick="resetFirebaseConfig()" class="text-xs font-bold text-red-600 hover:text-red-800 transition">기본 설정으로 초기화</button>
-                <div class="space-x-2">
-                    <button type="button" onclick="closeFirebaseConfigModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">닫기</button>
-                    <button type="button" onclick="saveFirebaseConfigFromInput()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">설정 저장 및 연동</button>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <button type="button" onclick="resetFirebaseConfig()" class="text-xs font-bold text-red-600 hover:text-red-800 transition">설정 초기화</button>
+                    <div class="space-x-2">
+                        <button type="button" onclick="closeFirebaseConfigModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
+                        <button type="button" onclick="saveFirebaseConfigFromInput()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">저장 및 연동 재시도</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -773,7 +763,7 @@
             }
         }
 
-        // Robust Single Equipment Schedule Recalculation (Prevents date loss bug & handles 'scheduled' status correctly)
+        // Robust Single Equipment Schedule Recalculation (Prevents date loss & handles scheduled status)
         function recalculateSingleEquipmentSchedule(item) {
             if (!item.completedDates) item.completedDates = [];
             if (!item.unexpectedDates) item.unexpectedDates = [];
@@ -869,14 +859,20 @@
         function setFirebaseStatus(isSuccess, message) {
             const statusBadge = document.getElementById('firebaseStatusBadge');
             const statusText = document.getElementById('firebaseStatusText');
-            if (!statusBadge || !statusText) return;
+            const modalDiagText = document.getElementById('modalFirebaseDiagText');
+            
+            if (statusBadge && statusText) {
+                if (isSuccess) {
+                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 shadow-sm cursor-pointer hover:bg-emerald-900 transition";
+                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span><span>${message}</span>`;
+                } else {
+                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950/90 text-red-300 border border-red-500/80 shadow-sm cursor-pointer hover:bg-red-900 transition";
+                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span><span>${message}</span>`;
+                }
+            }
 
-            if (isSuccess) {
-                statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 shadow-sm cursor-pointer hover:bg-emerald-900 transition";
-                statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span><span>${message}</span>`;
-            } else {
-                statusBadge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950/90 text-red-300 border border-red-500/80 shadow-sm cursor-pointer hover:bg-red-900 transition";
-                statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span><span>${message}</span>`;
+            if (modalDiagText) {
+                modalDiagText.textContent = message;
             }
         }
 
@@ -917,47 +913,70 @@
         }
 
         async function initFirebase() {
-            let firebaseConfig = defaultFirebaseConfig;
+            let firebaseConfig = null;
+
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                try {
+                    firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                } catch (e) {}
+            }
 
             const customStoredConfig = localStorage.getItem('sea_cm_custom_firebase_config');
             if (customStoredConfig) {
                 try { firebaseConfig = JSON.parse(customStoredConfig); } catch (e) {}
-            } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                try { firebaseConfig = JSON.parse(__firebase_config); } catch (e) {}
+            }
+
+            if (!firebaseConfig) {
+                firebaseConfig = defaultFirebaseConfig;
             }
 
             try {
                 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
                 const { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
 
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                let userCredential;
+                // Handle Auth initialization with fallback
+                let authDone = false;
                 try {
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                        try {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                            authDone = true;
+                        } catch (tokErr) {
+                            console.warn("Custom token auth failed, trying anonymous:", tokErr);
+                            await signInAnonymously(auth);
+                            authDone = true;
+                        }
                     } else {
-                        userCredential = await signInAnonymously(auth);
+                        await signInAnonymously(auth);
+                        authDone = true;
                     }
                 } catch (authErr) {
                     console.warn("Firebase Auth Error:", authErr);
-                    setFirebaseStatus(false, "Firebase 인증 실패 (익명로그인 미활성화)");
+                    setFirebaseStatus(false, "🔴 Firebase Auth 접속 오류 (로컬 모드)");
                     return;
                 }
 
-                if (userCredential && userCredential.user) {
-                    setFirebaseStatus(true, "🟢 Firebase 클라우드 연동중 (실시간 공유)");
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) {
+                        setFirebaseStatus(false, "🔴 Firebase 인증 대기 중...");
+                        return;
+                    }
+
+                    setFirebaseStatus(true, "🟢 Firebase 연결됨 (실시간 공유중)");
 
                     const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
-                    
+
                     try {
                         const snapshot = await getDocs(publicColl);
                         const existingMap = new Map();
                         snapshot.forEach(docSnap => existingMap.set(Number(docSnap.id), docSnap.data()));
 
+                        // Seed initial missing records if database is empty or missing items
                         for (const item of initialData) {
                             if (!existingMap.has(item.id)) {
                                 const cleanItem = JSON.parse(JSON.stringify(item));
@@ -965,11 +984,12 @@
                             }
                         }
                     } catch (rulesErr) {
-                        console.warn("Firestore Rules Error:", rulesErr);
-                        setFirebaseStatus(false, "🔴 Firebase 권한 차단됨 (Firestore 규칙 확인)");
+                        console.warn("Firestore Permission Error:", rulesErr);
+                        setFirebaseStatus(false, "🔴 Firebase Firestore 접근 권한 오류");
                         return;
                     }
 
+                    // Live Firestore Realtime Sync Listener
                     onSnapshot(publicColl, (snap) => {
                         if (snap.empty) return;
                         const recordMap = new Map();
@@ -986,16 +1006,17 @@
                             localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
                             recalculateAllSchedulesSilent();
                             renderAllTables();
-                            setFirebaseStatus(true, "🟢 Firebase 클라우드 연동중 (실시간 공유)");
+                            setFirebaseStatus(true, "🟢 Firebase 연결됨 (실시간 공유중)");
                         }
                     }, (error) => {
-                        console.warn("Firestore Snapshot error:", error);
-                        setFirebaseStatus(false, "🔴 Firebase 동기화 오류 (설정 클릭)");
+                        console.warn("Firestore Snapshot Error:", error);
+                        setFirebaseStatus(false, "🔴 Firebase 실시간 동기화 오류");
                     });
-                }
+                });
+
             } catch (err) {
-                console.warn("Firebase init failed:", err);
-                setFirebaseStatus(false, "🔴 Firebase 연결 안됨 (클릭하여 설정)");
+                console.warn("Firebase Init Exception:", err);
+                setFirebaseStatus(false, "🔴 Firebase 초기화 안됨 (로컬 저장중)");
             }
         }
 
@@ -1004,7 +1025,7 @@
                 try {
                     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
                     const publicDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
-                    const cleanItem = JSON.parse(JSON.stringify(item));
+                    const cleanItem = JSON.parse(JSON.stringify(item)); // Strips undefined values for Firestore
                     await setDoc(publicDocRef, cleanItem);
                 } catch (err) {
                     console.warn("Firestore sync error:", err);
@@ -1300,6 +1321,70 @@
                 badge.className = "text-xs bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-lg font-bold flex items-center space-x-1 shadow-sm";
                 if (icon) icon.className = "fa-solid fa-lock text-amber-600";
                 if (text) text.textContent = "관리자 미인증";
+            }
+        }
+
+        function openInspectionModal(equipId, year, month) {
+            if (!isAuthorized) {
+                checkAuthAndOpenModal(equipId, `${year}.${month}`, 'inspection');
+                return;
+            }
+
+            const rec = records.find(r => r.id === Number(equipId));
+            if (!rec) return;
+
+            const modal = document.getElementById('inspectionModal');
+            const ymKey = `${year}-${String(month).padStart(2, '0')}`;
+
+            document.getElementById('inspectEquipId').value = equipId;
+            document.getElementById('inspectYearMonth').value = ymKey;
+            document.getElementById('inspectTargetEquipDisplay').textContent = `[${rec.line}] ${rec.equip} (${rec.capacity}) - ${rec.hoist}`;
+            document.getElementById('inspectTargetDateDisplay').textContent = `점검 대상 연월: ${year}년 ${String(month).padStart(2, '0')}월`;
+
+            if (!rec.inspections) rec.inspections = {};
+            const inspData = rec.inspections[ymKey] || {};
+
+            document.getElementById('inputInspectStatus').value = inspData.status || 'good';
+            document.getElementById('inputInspectDate').value = dateToISO(inspData.date || `${String(year).slice(-2)}.${String(month).padStart(2, '0')}.15`);
+            document.getElementById('inputInspector').value = inspData.inspector || '';
+            document.getElementById('inputInspectNote').value = inspData.note || '';
+
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeInspectionModal() {
+            const modal = document.getElementById('inspectionModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function saveInspectionRecord(e) {
+            e.preventDefault();
+
+            const equipId = Number(document.getElementById('inspectEquipId').value);
+            const ymKey = document.getElementById('inspectYearMonth').value;
+            const status = document.getElementById('inputInspectStatus').value;
+            const rawDate = document.getElementById('inputInspectDate').value;
+            const inspector = document.getElementById('inputInspector').value.trim();
+            const note = document.getElementById('inputInspectNote').value.trim();
+
+            const rec = records.find(r => r.id === equipId);
+            if (rec) {
+                if (!rec.inspections) rec.inspections = {};
+                rec.inspections[ymKey] = {
+                    status,
+                    date: isoToShortDate(rawDate),
+                    inspector,
+                    note,
+                    updatedAt: getTodayFormatted()
+                };
+
+                localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
+                updateLastUpdatedDisplay(getTodayFormatted());
+                renderInspectionTable();
+                closeInspectionModal();
+
+                await syncRecordToFirestore(rec);
+                showToast("점검 결과가 저장되었습니다.");
             }
         }
 
