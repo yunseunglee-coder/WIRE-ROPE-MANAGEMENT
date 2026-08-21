@@ -31,7 +31,7 @@
             background-color: #f8fafc;
         }
         .table-container {
-            max-height: calc(100vh - 230px);
+            max-height: calc(100vh - 210px);
             overflow-y: auto;
         }
         @media print {
@@ -83,11 +83,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 text-xs sm:text-sm">
-                    <!-- Firebase Connection Status Indicator -->
-                    <button type="button" onclick="openFirebaseConfigModal()" id="firebaseStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm cursor-pointer hover:bg-amber-500/30 transition" title="클릭하여 Firebase 클라우드 연동 설정 확인">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        <span id="firebaseStatusText">Firebase 연동 확인 중...</span>
-                    </button>
+                    <!-- Firebase Connection Indicator -->
+                    <div id="firebaseBadge" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-amber-300 border border-slate-700 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="firebaseStatusText">Firestore 연결 중...</span>
+                    </div>
 
                     <!-- Header Alert Dashboard Triggers -->
                     <div class="flex items-center space-x-1 bg-slate-800/90 p-1 rounded-lg border border-slate-700 shadow-inner">
@@ -105,7 +105,7 @@
 
                     <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
                         <i class="fa-regular fa-clock text-blue-400"></i>
-                        <span class="text-slate-300">최신화 기준: <strong id="lastUpdatedDisplay" class="text-white">26.08.20</strong></span>
+                        <span class="text-slate-300">최신화 기준: <strong id="lastUpdatedDisplay" class="text-white">26.08.21</strong></span>
                     </div>
                 </div>
             </div>
@@ -137,48 +137,17 @@
 
                 <!-- Action Controls -->
                 <div class="flex flex-wrap items-center gap-2">
-                    <!-- Auth Lock Status Badge -->
-                    <div id="authStatusBadge" class="text-xs bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-lg font-bold flex items-center space-x-1 shadow-sm">
-                        <i id="authStatusIcon" class="fa-solid fa-lock text-amber-600"></i>
-                        <span id="authStatusText">관리자 미인증</span>
-                    </div>
-
                     <!-- Alert Summary Popup Trigger Button -->
-                    <button onclick="showInitialSummaryModal()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95" title="주기 초과 및 임박 현황 팝업창 보기">
+                    <button onclick="showInitialSummaryModal()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3.5 py-2 rounded-lg font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95" title="주기 초과 및 임박 현황 팝업창 보기">
                         <i class="fa-solid fa-bell"></i>
                         <span>점검 알림 팝업</span>
                     </button>
 
-                    <!-- Manual Save Button -->
-                    <button onclick="checkAuthAndSave()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>저장</span>
-                    </button>
-
                     <!-- Add Record Button -->
-                    <button onclick="checkAuthAndOpenModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1 shadow-sm">
+                    <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3.5 py-2 rounded-lg font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95">
                         <i class="fa-solid fa-plus"></i>
                         <span>신규 등록</span>
                     </button>
-
-                    <!-- Recalculate Follow-up Schedules Button -->
-                    <button onclick="checkAuthAndRecalculate()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95" title="모든 설비의 최신 완료일 기준 2050년까지 후속 일정 자동 재계산 및 갱신">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                        <span>후속 일정 갱신</span>
-                    </button>
-
-                    <!-- Backup / Restore Buttons -->
-                    <div class="flex items-center space-x-1 border-l border-slate-300 pl-2">
-                        <button onclick="exportBackupData()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold transition flex items-center space-x-1 shadow-sm active:scale-95" title="데이터 파일 백업 (JSON)">
-                            <i class="fa-solid fa-download"></i>
-                            <span>백업</span>
-                        </button>
-                        <button onclick="triggerRestoreData()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold transition flex items-center space-x-1 shadow-sm active:scale-95" title="데이터 파일 복구 (JSON)">
-                            <i class="fa-solid fa-upload"></i>
-                            <span>복구</span>
-                        </button>
-                        <input type="file" id="restoreFileInput" accept=".json" onchange="importBackupData(event)" class="hidden">
-                    </div>
                 </div>
             </div>
         </div>
@@ -190,7 +159,7 @@
             <hr class="mt-2 border-slate-300">
         </div>
 
-        <!-- TAB 1: 교체 현황 (Timeline Grid Table 3-Year Sliding View) -->
+        <!-- TAB 1: 교체 현황 -->
         <div id="tab1Content" class="tab-panel">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden w-full">
                 <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
@@ -200,7 +169,7 @@
                             <span>CRANE WIRE ROPE 교체 현황</span>
                         </h2>
 
-                        <!-- 3개년 이동 화살표 컨트롤 (< > 2026~2050) -->
+                        <!-- 3개년 이동 화살표 컨트롤 -->
                         <div class="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-300 shadow-xs">
                             <button type="button" onclick="shiftYears(-1)" id="prevYearBtn" title="이전 연도 보기" class="px-2 py-0.5 rounded hover:bg-slate-100 text-slate-700 font-bold transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
@@ -241,7 +210,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: 와이어 규격 (Specification List) -->
+        <!-- TAB 2: 와이어 규격 -->
         <div id="tab2Content" class="tab-panel hidden">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden w-full">
                 <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
@@ -273,7 +242,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: 크레인 점검 현황 (Monthly Inspection Grid) -->
+        <!-- TAB 3: 크레인 점검 현황 -->
         <div id="tab3Content" class="tab-panel hidden">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden w-full">
                 <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
@@ -283,7 +252,7 @@
                             <span>CRANE 월별 점검 현황 (6개월 단위)</span>
                         </h2>
 
-                        <!-- 6개월 이동 화살표 컨트롤 (< > 2026.01 ~ 2050.12) -->
+                        <!-- 6개월 이동 화살표 컨트롤 -->
                         <div class="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-300 shadow-xs">
                             <button type="button" onclick="shiftMonths(-1)" id="prevMonthBtn" title="이전 반기 보기" class="px-2 py-0.5 rounded hover:bg-slate-100 text-slate-700 font-bold transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
@@ -377,51 +346,59 @@
         </div>
     </div>
 
-    <!-- FIREBASE CONFIG & DIAGNOSTIC MODAL -->
-    <div id="firebaseConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden transform transition-all">
+    <!-- INSPECTION RECORD MODAL -->
+    <div id="inspectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden transform transition-all">
             <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
-                <h3 class="font-bold text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-sky-400"></i>
-                    <span>Firebase 파이어스토어 연동 상태 진단</span>
+                <h3 class="font-bold text-sm flex items-center gap-2" id="inspectionModalTitle">
+                    <i class="fa-solid fa-clipboard-check text-emerald-400"></i>
+                    <span>월별 크레인 점검 결과 등록</span>
                 </h3>
-                <button onclick="closeFirebaseConfigModal()" class="text-slate-400 hover:text-white transition">
+                <button onclick="closeInspectionModal()" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="p-5 space-y-4">
-                <!-- Status Box -->
-                <div id="modalFirebaseStatusBox" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
-                    <p class="font-bold text-sm" id="modalFirebaseDiagTitle">🔍 연동 진단 진행 중...</p>
-                    <p class="mt-1.5 text-xs text-amber-800 leading-relaxed font-medium" id="modalFirebaseDiagText">파이어베이스 상태를 확인하고 있습니다.</p>
-                </div>
+            
+            <form id="inspectionForm" onsubmit="saveInspectionRecord(event)" class="p-5 space-y-3.5">
+                <input type="hidden" id="inspectEquipId">
+                <input type="hidden" id="inspectYearMonth">
 
-                <!-- Fix Guide Step-by-Step -->
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2">
-                    <p class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                        <i class="fa-solid fa-screwdriver-wrench text-blue-600"></i>
-                        <span>파이어스토어에 데이터 쌓이게 하는 3단계 체크리스트</span>
-                    </p>
-                    <ol class="list-decimal list-inside space-y-1 text-slate-700 leading-relaxed font-medium text-[11px]">
-                        <li><strong>익명 로그인 허용:</strong> Firebase 콘솔 <i class="fa-solid fa-arrow-right text-[10px]"></i> Authentication <i class="fa-solid fa-arrow-right text-[10px]"></i> Sign-in method <i class="fa-solid fa-arrow-right text-[10px]"></i> <strong>익명(Anonymous) 사용 설정 ON</strong> 후 저장</li>
-                        <li><strong>Firestore 보안 규칙 열기:</strong> Firestore Database <i class="fa-solid fa-arrow-right text-[10px]"></i> 규칙(Rules) 탭 <i class="fa-solid fa-arrow-right text-[10px]"></i> <code class="bg-slate-200 px-1 py-0.5 rounded text-red-700">allow read, write: if true;</code> 입력 후 <strong>[게시]</strong></li>
-                        <li><strong>데이터베이스 ID 체크:</strong> DB 이름이 <code class="bg-slate-200 px-1 py-0.5 rounded">leeyunseung</code>인 경우 아래 Config에 추가하거나 기본 DB로 생성되었는지 확인</li>
-                    </ol>
+                <div class="p-2.5 bg-slate-100 rounded-lg border border-slate-200 text-xs">
+                    <p class="font-bold text-slate-800" id="inspectTargetEquipDisplay">설비명 정보</p>
+                    <p class="text-slate-500 mt-0.5" id="inspectTargetDateDisplay">점검 연월 정보</p>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Firebase Config JSON 설정값</label>
-                    <textarea id="inputFirebaseConfigText" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", ...}' class="w-full text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">점검 결과 상태</label>
+                    <select id="inputInspectStatus" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+                        <option value="good">점검 완료 (양호 - 녹색)</option>
+                        <option value="repair">정비/보수 필요 (주황색)</option>
+                        <option value="overdue">미점검 / 점검 지연 (빨간색)</option>
+                        <option value="scheduled">점검 예정 (회색)</option>
+                    </select>
                 </div>
 
-                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-                    <button type="button" onclick="resetFirebaseConfig()" class="text-xs font-bold text-red-600 hover:text-red-800 transition">설정 초기화</button>
-                    <div class="space-x-2">
-                        <button type="button" onclick="closeFirebaseConfigModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">닫기</button>
-                        <button type="button" onclick="saveFirebaseConfigFromInput()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">저장 및 다시 연결</button>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">실제 점검일자</label>
+                        <input type="date" id="inputInspectDate" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">점검자</label>
+                        <input type="text" id="inputInspector" placeholder="점검자 성명" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                 </div>
-            </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">점검 소견 및 조치 사항</label>
+                    <textarea id="inputInspectNote" rows="2" placeholder="점검 결과 특이사항 및 조치 내용 기록" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeInspectionModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow transition">점검결과 저장</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -521,38 +498,31 @@
         </div>
     </div>
 
-    <!-- PASSWORD VERIFICATION MODAL -->
-    <div id="passwordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full border border-slate-200 overflow-hidden transform transition-all">
-            <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
-                <h3 class="font-bold text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-400"></i>
-                    <span>관리자 비밀번호 확인</span>
-                </h3>
-                <button onclick="closePasswordModal()" class="text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <form onsubmit="verifyPassword(event)" class="p-5 space-y-4">
-                <p class="text-xs text-slate-600 font-medium">수정을 진행하려면 비밀번호를 입력하세요.</p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">비밀번호 (4자리)</label>
-                    <input type="password" id="inputAdminPassword" placeholder="비밀번호 입력" maxlength="10" required class="w-full text-center text-lg tracking-widest font-bold bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <p id="passwordError" class="text-xs text-red-600 font-bold mt-2 hidden">
-                        비밀번호가 올바르지 않습니다.
-                    </p>
-                </div>
-                <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                    <button type="button" onclick="closePasswordModal()" class="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 transition">취소</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">확인</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- FIREBASE AND APPLICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        function showToast(message, isError = false) {
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyACPbWX_SAV51Fzc9iW90Fzw64NfYbLgKg",
+            authDomain: "wire-rope-common.firebaseapp.com",
+            projectId: "wire-rope-common",
+            storageBucket: "wire-rope-common.firebasestorage.app",
+            messagingSenderId: "1086672017327",
+            appId: "1:1086672017327:web:38ab3d4fdf2bfcd25e015a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'wire-rope-common';
+        const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
+
+        // Toast Notification Function
+        window.showToast = function(message, isError = false) {
             let toast = document.getElementById('toastNotification');
             if (!toast) {
                 toast = document.createElement('div');
@@ -567,9 +537,10 @@
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
             }, 3000);
-        }
+        };
 
-        function dateToISO(dateStr) {
+        // Date Helpers
+        window.dateToISO = function(dateStr) {
             if (!dateStr || typeof dateStr !== 'string') return '';
             if (dateStr.includes('-')) return dateStr;
             const parts = dateStr.split('.');
@@ -579,9 +550,9 @@
             const m = parts[1].padStart(2, '0');
             const d = parts[2].padStart(2, '0');
             return `${y}-${m}-${d}`;
-        }
+        };
 
-        function isoToShortDate(isoStr) {
+        window.isoToShortDate = function(isoStr) {
             if (!isoStr || typeof isoStr !== 'string') return '';
             if (isoStr.includes('.')) return isoStr;
             const parts = isoStr.split('-');
@@ -590,10 +561,27 @@
             const m = parts[1].padStart(2, '0');
             const d = parts[2].padStart(2, '0');
             return `${y}.${m}.${d}`;
-        }
+        };
 
-        // Initial base crane equipment data
+        window.getTodayFormatted = function() {
+            const today = new Date();
+            const yy = String(today.getFullYear()).slice(-2);
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yy}.${mm}.${dd}`;
+        };
+
+        window.updateLastUpdatedDisplay = function(dateStr) {
+            const displayEl = document.getElementById('lastUpdatedDisplay');
+            const savedDate = dateStr || localStorage.getItem('sea_cm_rope_last_updated') || window.getTodayFormatted();
+            if (displayEl) {
+                displayEl.textContent = savedDate;
+            }
+        };
+
+        // Initial Data Structure
         const initialData = [
+            // CPL
             { id: 1, line: "CPL", seq: 1, equip: "H1", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "22.4Ø X 80M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 2, line: "CPL", seq: 2, equip: "P2", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "18Ø X 175M 6xFi(25),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.04.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 3, line: "CPL", seq: 2, equip: "P2", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.11.11"], unexpectedDates: [], manualScheduledDates: [] },
@@ -601,6 +589,7 @@
             { id: 5, line: "CPL", seq: 3, equip: "P3", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.01.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 6, line: "CPL", seq: 4, equip: "A1", capacity: "2.8TON", hoist: "주권", cycle: "2년", spec: "12.5Ø 15M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.22"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // CRM
             { id: 7, line: "CRM", seq: 1, equip: "H2", capacity: "10TON", hoist: "주권", cycle: "2년", spec: "16Ø X 55 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.06.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 8, line: "CRM", seq: 2, equip: "R1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 9, line: "CRM", seq: 3, equip: "R2", capacity: "45TON", hoist: "주권", cycle: "2년", spec: "22.4Ø X 195M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
@@ -608,6 +597,7 @@
             { id: 11, line: "CRM", seq: 4, equip: "R3", capacity: "5TON", hoist: "보권", cycle: "1년 6개월", spec: "12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.01.06"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 12, line: "CRM", seq: 5, equip: "R4", capacity: "30TON", hoist: "주권", cycle: "1년", spec: "20Ø X 68M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.06.25"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // CGL
             { id: 13, line: "CGL", seq: 1, equip: "G1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 14, line: "CGL", seq: 1, equip: "G1", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "12.5Ø X 165M 6xFi(29),IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 15, line: "CGL", seq: 2, equip: "G2", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.23"], unexpectedDates: [], manualScheduledDates: [] },
@@ -618,6 +608,7 @@
             { id: 20, line: "CGL", seq: 5, equip: "G5(바텀드로스)", capacity: "7.5TON", hoist: "주권", cycle: "6개월", spec: "12.5Ø X 15M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.05.30"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 21, line: "CGL", seq: 6, equip: "G6(프리멜트)", capacity: "3TON", hoist: "주권", cycle: "2년", spec: "14Ø X 30M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.09.11"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // 1CCL
             { id: 22, line: "1CCL", seq: 1, equip: "C1-1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "18Ø X 150M 6xFi(29) IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 23, line: "1CCL", seq: 2, equip: "C1", capacity: "25TON", hoist: "주권", cycle: "1년", spec: "18Ø X 100M 6xFi(25) IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.06.25"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 24, line: "1CCL", seq: 3, equip: "C2", capacity: "25TON", hoist: "주권", cycle: "2년", spec: "18Ø X 125M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.02.14"], unexpectedDates: [], manualScheduledDates: [] },
@@ -627,6 +618,7 @@
             { id: 28, line: "1CCL", seq: 5, equip: "C4", capacity: "15TON", hoist: "주권", cycle: "1년", spec: "20Ø X 70M 6xFi(25) IWRC, B, Z-LAY,4PART", leadSeal: "무", completedDates: ["26.04.12"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 29, line: "1CCL", seq: 6, equip: "C5", capacity: "7.5TON", hoist: "주권", cycle: "1년", spec: "14Ø X 54M 6xFi(37), FC, B, Z-LAY", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // 2CCL
             { id: 30, line: "2CCL", seq: 1, equip: "S1", capacity: "15TON", hoist: "주권", cycle: "2년", spec: "20Ø X 54M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.06.24"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 31, line: "2CCL", seq: 2, equip: "S2", capacity: "5TON", hoist: "주권", cycle: "2년", spec: "12.5Ø X 54M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.05.01"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 32, line: "2CCL", seq: 3, equip: "2C1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "20Ø X 165M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["26.05.24"], unexpectedDates: [], manualScheduledDates: [] },
@@ -640,6 +632,7 @@
             { id: 40, line: "2CCL", seq: 8, equip: "1S2", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 55M 6xFi(37),IWRC, B, Z-LAY,2PART", leadSeal: "유", completedDates: ["27.05.11"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 41, line: "2CCL", seq: 9, equip: "1S3", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "20Ø X 130M 6xFi(29),IWRC, B, Z-LAY,8PART", leadSeal: "무", completedDates: ["27.08.16"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // 3CCL
             { id: 42, line: "3CCL", seq: 1, equip: "3C1", capacity: "30TON", hoist: "주권", cycle: "2년", spec: "22.4Ø X 165.5M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["26.08.31"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 43, line: "3CCL", seq: 1, equip: "3C1", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 51.7M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 44, line: "3CCL", seq: 2, equip: "3C2", capacity: "20TON", hoist: "주권", cycle: "2년", spec: "16Ø X 200M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.08.31"], unexpectedDates: [], manualScheduledDates: [] },
@@ -651,10 +644,11 @@
             { id: 50, line: "3CCL", seq: 5, equip: "3C5", capacity: "5TON", hoist: "보권", cycle: "2년", spec: "16Ø X 30M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "유", completedDates: ["27.07.04"], unexpectedDates: [], manualScheduledDates: [] },
             { id: 51, line: "3CCL", seq: 6, equip: "3C6", capacity: "20TON", hoist: "주권", cycle: "1년 6개월", spec: "16Ø X 80M 6xFi(29),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["26.06.28"], unexpectedDates: [], manualScheduledDates: [] },
 
+            // UTILITY
             { id: 52, line: "UTILITY", seq: 1, equip: "RS1", capacity: "5TON", hoist: "주권", cycle: "5년", spec: "12.5Ø X 54M 6xFi(37),IWRC, B, Z-LAY", leadSeal: "무", completedDates: ["27.09.01"], unexpectedDates: [], manualScheduledDates: [] }
         ];
 
-        // Quarters keys array dynamically generated for 2026-2050 (100 quarters)
+        // Quarters keys array dynamically generated for 2026-2050
         const ALL_QUARTERS = [];
         for (let y = 26; y <= 50; y++) {
             const yStr = y < 10 ? `0${y}` : `${y}`;
@@ -663,72 +657,100 @@
             }
         }
 
-        // Global State Management
-        let records = null;
-        try {
-            const savedStr = localStorage.getItem('sea_cm_rope_data_v11');
-            if (savedStr) {
-                records = JSON.parse(savedStr);
+        window.records = JSON.parse(JSON.stringify(initialData));
+
+        window.currentTab = 'history';
+        window.displayStartYear = 2026; 
+        window.displayInspectStartYear = 2026; 
+        window.displayInspectStartMonth = 1;   
+
+        // Schedule Calculation Logic
+        window.parseCycleMonths = function(cycleStr) {
+            if (!cycleStr) return 12;
+            let totalMonths = 0;
+            if (cycleStr.includes("년")) {
+                const yearPart = cycleStr.split("년")[0].trim();
+                totalMonths += parseFloat(yearPart) * 12;
             }
-        } catch (e) {
-            console.warn("Failed to load local records:", e);
-        }
-
-        if (!Array.isArray(records) || records.length === 0) {
-            records = JSON.parse(JSON.stringify(initialData));
-            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-        }
-
-        records = records.filter(item => item.id !== 53 && item.equip !== 'M1');
-        records.forEach(item => {
-            if (!item.completedDates) item.completedDates = [];
-            if (!item.unexpectedDates) item.unexpectedDates = [];
-            if (!item.manualScheduledDates) item.manualScheduledDates = [];
-        });
-
-        let currentTab = 'history';
-        let isAuthorized = false;
-        let pendingEditId = null;
-        let pendingEditDate = null;
-        let pendingEditMode = 'auto';
-        let displayStartYear = 2026;
-        let displayInspectStartYear = 2026;
-        let displayInspectStartMonth = 1;
-        const ADMIN_PASSWORD = "0905";
-
-        function getTodayFormatted() {
-            const today = new Date();
-            const yy = String(today.getFullYear()).slice(-2);
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            return `${yy}.${mm}.${dd}`;
-        }
-
-        function updateLastUpdatedDisplay(dateStr) {
-            const displayEl = document.getElementById('lastUpdatedDisplay');
-            const savedDate = dateStr || localStorage.getItem('sea_cm_rope_last_updated') || getTodayFormatted();
-            if (displayEl) {
-                displayEl.textContent = savedDate;
+            if (cycleStr.includes("개월")) {
+                let monthPart = cycleStr;
+                if (cycleStr.includes("년")) {
+                    monthPart = cycleStr.split("년")[1];
+                }
+                monthPart = monthPart.replace("개월", "").trim();
+                totalMonths += parseFloat(monthPart) || 0;
             }
-        }
+            return totalMonths || 12;
+        };
 
-        // Robust Equipment Schedule Recalculation Engine
-        function recalculateSingleEquipmentSchedule(item) {
+        window.getQuarterKeyFromDateStr = function(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return null;
+            const parts = dateStr.split('.');
+            if (parts.length < 2) return null;
+
+            let year = parseInt(parts[0], 10);
+            if (year > 2000) year = year - 2000;
+            const month = parseInt(parts[1], 10);
+
+            if (isNaN(year) || isNaN(month)) return null;
+
+            let q = 1;
+            if (month >= 1 && month <= 3) q = 1;
+            else if (month >= 4 && month <= 6) q = 2;
+            else if (month >= 7 && month <= 9) q = 3;
+            else if (month >= 10 && month <= 12) q = 4;
+
+            const yearStr = year < 10 ? `0${year}` : `${year}`;
+            return `q${yearStr}_${q}`;
+        };
+
+        window.addMonthsToDateStr = function(dateStr, monthsToAdd) {
+            if (!dateStr) return null;
+            const parts = dateStr.split('.');
+            if (parts.length < 3) return null;
+
+            let year = parseInt(parts[0], 10);
+            if (year < 100) year += 2000;
+            let month = parseInt(parts[1], 10) - 1;
+            let day = parseInt(parts[2], 10);
+
+            let dt = new Date(year, month, day);
+            dt.setMonth(dt.getMonth() + monthsToAdd);
+
+            let resYear = dt.getFullYear() - 2000;
+            let resMonth = dt.getMonth() + 1;
+            let resDay = dt.getDate();
+
+            const yStr = resYear < 10 ? `0${resYear}` : `${resYear}`;
+            const mStr = resMonth < 10 ? `0${resMonth}` : `${resMonth}`;
+            const dStr = resDay < 10 ? `0${resDay}` : `${resDay}`;
+
+            const nextDateStr = `${yStr}.${mStr}.${dStr}`;
+            const quarterKey = window.getQuarterKeyFromDateStr(nextDateStr);
+
+            return { nextDateStr, quarterKey };
+        };
+
+        window.parseDateStr = function(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return null;
+            const parts = dateStr.split('.');
+            if (parts.length < 3) return null;
+            let year = parseInt(parts[0], 10);
+            if (year < 100) year += 2000;
+            let month = parseInt(parts[1], 10) - 1;
+            let day = parseInt(parts[2], 10);
+            return new Date(year, month, day);
+        };
+
+        window.recalculateSingleEquipmentSchedule = function(item) {
             if (!item.completedDates) item.completedDates = [];
             if (!item.unexpectedDates) item.unexpectedDates = [];
             if (!item.manualScheduledDates) item.manualScheduledDates = [];
 
             const actuals = Array.from(new Set([...item.completedDates, ...item.unexpectedDates])).filter(Boolean);
             actuals.sort((a, b) => {
-                let dtA = parseDateStr(a) || new Date(0);
-                let dtB = parseDateStr(b) || new Date(0);
-                return dtA - dtB;
-            });
-
-            const scheduledList = Array.from(new Set([...item.manualScheduledDates])).filter(Boolean);
-            scheduledList.sort((a, b) => {
-                let dtA = parseDateStr(a) || new Date(0);
-                let dtB = parseDateStr(b) || new Date(0);
+                let dtA = window.parseDateStr(a) || new Date(0);
+                let dtB = window.parseDateStr(b) || new Date(0);
                 return dtA - dtB;
             });
 
@@ -737,15 +759,8 @@
             });
 
             actuals.forEach(dStr => {
-                const qKey = getQuarterKeyFromDateStr(dStr);
+                const qKey = window.getQuarterKeyFromDateStr(dStr);
                 if (qKey && ALL_QUARTERS.includes(qKey)) {
-                    item[qKey] = dStr;
-                }
-            });
-
-            scheduledList.forEach(dStr => {
-                const qKey = getQuarterKeyFromDateStr(dStr);
-                if (qKey && ALL_QUARTERS.includes(qKey) && !item[qKey]) {
                     item[qKey] = dStr;
                 }
             });
@@ -753,304 +768,125 @@
             let baseDate = null;
             if (actuals.length > 0) {
                 baseDate = actuals[actuals.length - 1];
-            } else if (scheduledList.length > 0) {
-                baseDate = scheduledList[0];
+            } else if (item.manualScheduledDates && item.manualScheduledDates.length > 0) {
+                const manualSorted = [...item.manualScheduledDates].sort((a, b) => (window.parseDateStr(a) || 0) - (window.parseDateStr(b) || 0));
+                baseDate = manualSorted[manualSorted.length - 1];
             }
 
-            if (!baseDate) return;
+            if (baseDate) {
+                const cycleMonths = window.parseCycleMonths(item.cycle);
+                let current = baseDate;
 
-            const cycleMonths = parseCycleMonths(item.cycle);
-            let current = baseDate;
+                while (current) {
+                    const result = window.addMonthsToDateStr(current, cycleMonths);
+                    if (!result) break;
 
-            while (current) {
-                const result = addMonthsToDateStr(current, cycleMonths);
-                if (!result) break;
+                    const { nextDateStr, quarterKey } = result;
 
-                const { nextDateStr, quarterKey } = result;
-
-                if (ALL_QUARTERS.includes(quarterKey)) {
-                    if (!item[quarterKey]) {
-                        item[quarterKey] = nextDateStr;
+                    if (ALL_QUARTERS.includes(quarterKey)) {
+                        if (!item[quarterKey]) {
+                            item[quarterKey] = nextDateStr;
+                        }
+                        current = nextDateStr;
+                    } else {
+                        break;
                     }
-                    current = item[quarterKey] || nextDateStr;
-                } else {
-                    break;
                 }
             }
-        }
 
-        function recalculateAllSchedulesSilent() {
-            records.forEach(item => {
-                recalculateSingleEquipmentSchedule(item);
-            });
-            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-        }
-
-        // Firebase Cloud Auto-Diagnosis & Connect Logic
-        let appId = typeof __app_id !== 'undefined' ? __app_id : 'wire-rope-common';
-        let db = null;
-        let auth = null;
-
-        const defaultFirebaseConfig = {
-            apiKey: "AIzaSyACPbWX_SAV51Fzc9iW90Fzw64NfYbLgKg",
-            authDomain: "wire-rope-common.firebaseapp.com",
-            projectId: "wire-rope-common",
-            storageBucket: "wire-rope-common.firebasestorage.app",
-            messagingSenderId: "1086672017327",
-            appId: "1:1086672017327:web:38ab3d4fdf2bfcd25e015a"
+            if (item.manualScheduledDates && Array.isArray(item.manualScheduledDates)) {
+                item.manualScheduledDates.forEach(dStr => {
+                    const qKey = window.getQuarterKeyFromDateStr(dStr);
+                    if (qKey && ALL_QUARTERS.includes(qKey) && !item[qKey]) {
+                        item[qKey] = dStr;
+                    }
+                });
+            }
         };
 
-        function setFirebaseStatusUI(state, title, detail) {
-            const statusBadge = document.getElementById('firebaseStatusBadge');
-            const statusText = document.getElementById('firebaseStatusText');
-            const modalTitle = document.getElementById('modalFirebaseDiagTitle');
-            const modalText = document.getElementById('modalFirebaseDiagText');
-            const modalBox = document.getElementById('modalFirebaseStatusBox');
+        window.recalculateAllSchedulesSilent = function() {
+            window.records.forEach(item => {
+                window.recalculateSingleEquipmentSchedule(item);
+            });
+            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(window.records));
+        };
 
-            if (statusBadge && statusText) {
-                if (state === 'success') {
-                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 shadow-sm cursor-pointer hover:bg-emerald-900 transition";
-                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span><span>${title}</span>`;
-                } else if (state === 'error') {
-                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-red-950/90 text-red-300 border border-red-500/80 shadow-sm cursor-pointer hover:bg-red-900 transition";
-                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span><span>${title}</span>`;
-                } else {
-                    statusBadge.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm cursor-pointer hover:bg-amber-500/30 transition";
-                    statusBadge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span><span>${title}</span>`;
-                }
+        window.calculateDDay = function(targetDateStr) {
+            if (!targetDateStr || targetDateStr === '-') {
+                return { text: '-', colorClass: 'bg-slate-100 text-slate-500', diffDays: 9999 };
             }
 
-            if (modalTitle) modalTitle.textContent = title;
-            if (modalText) modalText.innerHTML = detail;
+            const parts = targetDateStr.split('.');
+            if (parts.length < 3) return { text: targetDateStr, colorClass: 'bg-slate-100 text-slate-700', diffDays: 9999 };
 
-            if (modalBox) {
-                if (state === 'success') {
-                    modalBox.className = "p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs";
-                } else if (state === 'error') {
-                    modalBox.className = "p-3 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs";
-                } else {
-                    modalBox.className = "p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs";
-                }
+            let year = parseInt(parts[0], 10);
+            if (year < 100) year += 2000;
+            let month = parseInt(parts[1], 10) - 1;
+            let day = parseInt(parts[2], 10);
+
+            const targetDate = new Date(year, month, day);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return { text: `D+${Math.abs(diffDays)}일 (초과)`, colorClass: 'bg-red-600 text-white font-bold', diffDays };
+            } else if (diffDays === 0) {
+                return { text: 'D-Day (오늘)', colorClass: 'bg-red-500 text-white font-bold animate-pulse', diffDays };
+            } else if (diffDays <= 30) {
+                return { text: `D-${diffDays}일 (임박)`, colorClass: 'bg-sky-500 text-white font-bold', diffDays };
+            } else {
+                return { text: `D-${diffDays}일`, colorClass: 'bg-amber-100 text-amber-800 font-bold', diffDays };
             }
-        }
+        };
 
-        function openFirebaseConfigModal() {
-            const modal = document.getElementById('firebaseConfigModal');
-            const savedConfig = localStorage.getItem('sea_cm_custom_firebase_config');
-            document.getElementById('inputFirebaseConfigText').value = savedConfig || JSON.stringify(defaultFirebaseConfig, null, 2);
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function closeFirebaseConfigModal() {
-            const modal = document.getElementById('firebaseConfigModal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function saveFirebaseConfigFromInput() {
-            const rawText = document.getElementById('inputFirebaseConfigText').value.trim();
-            try {
-                const parsed = JSON.parse(rawText);
-                if (!parsed.apiKey || !parsed.projectId) {
-                    showToast("유효한 Firebase Config JSON 형식이 아닙니다.", true);
-                    return;
-                }
-                localStorage.setItem('sea_cm_custom_firebase_config', JSON.stringify(parsed));
-                closeFirebaseConfigModal();
-                showToast("Firebase 설정이 저장되었습니다. 페이지를 새로고침합니다.");
-                setTimeout(() => location.reload(), 1000);
-            } catch (err) {
-                showToast("JSON 형식이 올바르지 않습니다.", true);
+        window.getDateStatus = function(dateStr, record) {
+            if (!dateStr || !record) return 'none';
+            
+            if (record.unexpectedDates && Array.isArray(record.unexpectedDates) && record.unexpectedDates.includes(dateStr)) {
+                return 'unexpected';
             }
-        }
-
-        function resetFirebaseConfig() {
-            localStorage.removeItem('sea_cm_custom_firebase_config');
-            closeFirebaseConfigModal();
-            showToast("기본 Firebase 설정으로 복원되었습니다.");
-            setTimeout(() => location.reload(), 1000);
-        }
-
-        async function initFirebase() {
-            setFirebaseStatusUI('loading', 'Firebase 연결 확인 중...', '서버에 연결을 시도하고 있습니다.');
-
-            let firebaseConfig = null;
-
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                try {
-                    firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                } catch (e) {}
+            if (record.completedDates && Array.isArray(record.completedDates) && record.completedDates.includes(dateStr)) {
+                return 'completed';
+            }
+            if (record.manualScheduledDates && Array.isArray(record.manualScheduledDates) && record.manualScheduledDates.includes(dateStr)) {
+                return 'scheduled';
             }
 
-            const customStoredConfig = localStorage.getItem('sea_cm_custom_firebase_config');
-            if (customStoredConfig) {
-                try { firebaseConfig = JSON.parse(customStoredConfig); } catch (e) {}
+            const dDayObj = window.calculateDDay(dateStr);
+            if (dDayObj.diffDays < 0) {
+                return 'overdue';
+            } else if (dDayObj.diffDays <= 30) {
+                return 'approaching';
             }
+            return 'scheduled';
+        };
 
-            if (!firebaseConfig) {
-                firebaseConfig = defaultFirebaseConfig;
-            }
+        window.updateHeaderAlertBadges = function() {
+            const overdueCount = document.getElementById('overdueCountBadge');
+            const approachingCount = document.getElementById('approachingCountBadge');
 
-            try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                const { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            let overdueNum = 0;
+            let approachingNum = 0;
 
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-
-                // Attempt database connection
-                try {
-                    db = getFirestore(app);
-                } catch (dbErr) {
-                    console.warn("Custom Firestore Instance Error:", dbErr);
-                    db = getFirestore(app);
-                }
-
-                // Authentication handshake
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        try {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } catch (tokErr) {
-                            await signInAnonymously(auth);
-                        }
-                    } else {
-                        await signInAnonymously(auth);
+            window.records.forEach(r => {
+                ALL_QUARTERS.forEach(qKey => {
+                    const dateVal = r[qKey];
+                    if (dateVal) {
+                        const status = window.getDateStatus(dateVal, r);
+                        if (status === 'overdue') overdueNum++;
+                        else if (status === 'approaching') approachingNum++;
                     }
-                } catch (authErr) {
-                    console.warn("Firebase Auth Error:", authErr);
-                    setFirebaseStatusUI('error', '🔴 Firebase 익명 로그인 차단됨', 'Firebase 콘솔 <strong class="underline">Authentication > Sign-in method</strong>에서 <strong>익명(Anonymous) 사용 설정</strong>을 ON으로 변경하세요.');
-                    return;
-                }
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (!user) {
-                        setFirebaseStatusUI('error', '🔴 인증 대기 실패', '사용자 인증 상태를 가져올 수 없습니다.');
-                        return;
-                    }
-
-                    const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
-
-                    try {
-                        const snapshot = await getDocs(publicColl);
-                        const existingMap = new Map();
-                        snapshot.forEach(docSnap => existingMap.set(Number(docSnap.id), docSnap.data()));
-
-                        // Seed initial missing records
-                        for (const item of initialData) {
-                            if (!existingMap.has(item.id)) {
-                                const cleanItem = JSON.parse(JSON.stringify(item));
-                                await setDoc(doc(publicColl, String(item.id)), cleanItem);
-                            }
-                        }
-
-                        setFirebaseStatusUI('success', '🟢 Firebase 연결됨 (실시간 공유중)', '데이터베이스와 완벽히 연결되었습니다. 다른 컴퓨터와 실시간 동기화됩니다.');
-
-                    } catch (rulesErr) {
-                        console.warn("Firestore Rules Permission Error:", rulesErr);
-                        setFirebaseStatusUI('error', '🔴 파이어스토어 권한 차단됨', 'Firestore 콘솔 <strong class="underline">규칙(Rules)</strong> 탭에서 <code class="bg-red-100 px-1 py-0.5 rounded text-red-900 font-mono">allow read, write: if true;</code>로 변경하고 [게시]를 누르세요.');
-                        return;
-                    }
-
-                    // Live Realtime Firestore Synchronization Listener
-                    onSnapshot(publicColl, (snap) => {
-                        if (snap.empty) return;
-                        const recordMap = new Map();
-
-                        snap.forEach(docSnap => {
-                            const data = docSnap.data();
-                            if (data && data.id) {
-                                recordMap.set(Number(data.id), data);
-                            }
-                        });
-
-                        if (recordMap.size > 0) {
-                            records = Array.from(recordMap.values()).sort((a, b) => a.id - b.id);
-                            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-                            recalculateAllSchedulesSilent();
-                            renderAllTables();
-                            setFirebaseStatusUI('success', '🟢 Firebase 연결됨 (실시간 공유중)', '클라우드 서버에서 최신 데이터를 동기화하였습니다.');
-                        }
-                    }, (error) => {
-                        console.warn("Firestore Snapshot error:", error);
-                        setFirebaseStatusUI('error', '🔴 실시간 수신 오류', '데이터 수신 중 오류가 발생했습니다: ' + error.message);
-                    });
                 });
+            });
 
-            } catch (err) {
-                console.warn("Firebase Init Error:", err);
-                setFirebaseStatusUI('error', '🔴 Firebase 연동 실패', '초기화 오류가 발생했습니다. 설정 JSON을 확인하세요.');
-            }
-        }
+            if (overdueCount) overdueCount.textContent = `${overdueNum}건`;
+            if (approachingCount) approachingCount.textContent = `${approachingNum}건`;
+        };
 
-        async function syncRecordToFirestore(item) {
-            if (db && auth && auth.currentUser) {
-                try {
-                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-                    const publicDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
-                    const cleanItem = JSON.parse(JSON.stringify(item));
-                    await setDoc(publicDocRef, cleanItem);
-                } catch (err) {
-                    console.warn("Firestore sync error:", err);
-                    showToast("클라우드 업로드 실패 (로컬에만 저장됨)", true);
-                }
-            }
-        }
-
-        async function manualSaveData() {
-            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-            const todayStr = getTodayFormatted();
-            localStorage.setItem('sea_cm_rope_last_updated', todayStr);
-            updateLastUpdatedDisplay(todayStr);
-
-            recalculateAllSchedulesSilent();
-            renderAllTables();
-
-            if (db && auth && auth.currentUser) {
-                try {
-                    const { doc, setDoc, collection } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-                    const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
-                    for (const item of records) {
-                        const cleanItem = JSON.parse(JSON.stringify(item));
-                        await setDoc(doc(publicColl, String(item.id)), cleanItem);
-                    }
-                    showToast("저장 및 클라우드 동기화가 완료되었습니다.");
-                } catch (err) {
-                    console.warn("Firestore save sync error:", err);
-                    showToast("저장이 완료되었습니다. (로컬)", false);
-                }
-            } else {
-                showToast("저장이 완료되었습니다.");
-            }
-        }
-
-        async function recalculateAllSchedules() {
-            recalculateAllSchedulesSilent();
-
-            const todayStr = getTodayFormatted();
-            localStorage.setItem('sea_cm_rope_last_updated', todayStr);
-            updateLastUpdatedDisplay(todayStr);
-            renderAllTables();
-
-            if (db && auth && auth.currentUser) {
-                try {
-                    const { doc, setDoc, collection } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-                    const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
-                    for (const item of records) {
-                        const cleanItem = JSON.parse(JSON.stringify(item));
-                        await setDoc(doc(publicColl, String(item.id)), cleanItem);
-                    }
-                    showToast("후속 일정 재계산 및 클라우드 반영이 완료되었습니다.");
-                } catch (err) {
-                    console.warn("Firestore sync error:", err);
-                    showToast("후속 일정이 재계산 및 저장되었습니다.", false);
-                }
-            } else {
-                showToast("후속 일정이 성공적으로 재계산 및 갱신되었습니다.");
-            }
-        }
-
-        function showInitialSummaryModal(filterFocus = null) {
+        window.showInitialSummaryModal = function(filterFocus = null) {
             const modal = document.getElementById('initialSummaryModal');
             const popupOverdueList = document.getElementById('popupOverdueList');
             const popupApproachingList = document.getElementById('popupApproachingList');
@@ -1064,16 +900,16 @@
             let overdueNum = 0;
             let approachingNum = 0;
 
-            records.forEach(r => {
+            window.records.forEach(r => {
                 ALL_QUARTERS.forEach(qKey => {
                     const dateVal = r[qKey];
                     if (dateVal) {
-                        const status = getDateStatus(dateVal, r);
+                        const status = window.getDateStatus(dateVal, r);
                         if (status === 'overdue') {
                             overdueNum++;
-                            const dDayObj = calculateDDay(dateVal);
+                            const dDayObj = window.calculateDDay(dateVal);
                             overdueHtml += `
-                                <div onclick="closeInitialSummaryModal(); checkAuthAndOpenModal(${r.id}, '${dateVal}', 'date')" class="p-2.5 bg-red-50 hover:bg-red-100/80 rounded-xl border border-red-200 cursor-pointer transition flex items-center justify-between shadow-xs">
+                                <div onclick="closeInitialSummaryModal(); openModal(${r.id}, '${dateVal}', 'date')" class="p-2.5 bg-red-50 hover:bg-red-100/80 rounded-xl border border-red-200 cursor-pointer transition flex items-center justify-between shadow-xs">
                                     <div>
                                         <span class="font-bold text-red-950 text-xs">[${r.line}] ${r.equip} (${r.capacity})</span>
                                         <span class="ml-1 text-slate-600 font-semibold text-[11px]">(${r.hoist})</span>
@@ -1086,9 +922,9 @@
                             `;
                         } else if (status === 'approaching') {
                             approachingNum++;
-                            const dDayObj = calculateDDay(dateVal);
+                            const dDayObj = window.calculateDDay(dateVal);
                             approachingHtml += `
-                                <div onclick="closeInitialSummaryModal(); checkAuthAndOpenModal(${r.id}, '${dateVal}', 'date')" class="p-2.5 bg-sky-50 hover:bg-sky-100/80 rounded-xl border border-sky-200 cursor-pointer transition flex items-center justify-between shadow-xs">
+                                <div onclick="closeInitialSummaryModal(); openModal(${r.id}, '${dateVal}', 'date')" class="p-2.5 bg-sky-50 hover:bg-sky-100/80 rounded-xl border border-sky-200 cursor-pointer transition flex items-center justify-between shadow-xs">
                                     <div>
                                         <span class="font-bold text-sky-950 text-xs">[${r.line}] ${r.equip} (${r.capacity})</span>
                                         <span class="ml-1 text-slate-600 font-semibold text-[11px]">(${r.hoist})</span>
@@ -1121,34 +957,34 @@
             } else if (filterFocus === 'approaching' && popupApproachingList) {
                 popupApproachingList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
-        }
+        };
 
-        function closeInitialSummaryModal() {
+        window.closeInitialSummaryModal = function() {
             const modal = document.getElementById('initialSummaryModal');
             if (modal) modal.classList.add('hidden');
-        }
+        };
 
-        function shiftYears(direction) {
-            const nextYear = displayStartYear + direction;
+        window.shiftYears = function(direction) {
+            const nextYear = window.displayStartYear + direction;
             if (nextYear >= 2026 && nextYear <= 2048) {
-                displayStartYear = nextYear;
-                renderHistoryTable();
+                window.displayStartYear = nextYear;
+                window.renderHistoryTable();
             }
-        }
+        };
 
-        function shiftMonths(direction) {
-            let halfYearIndex = (displayInspectStartYear - 2026) * 2 + (displayInspectStartMonth === 1 ? 0 : 1) + direction;
+        window.shiftMonths = function(direction) {
+            let halfYearIndex = (window.displayInspectStartYear - 2026) * 2 + (window.displayInspectStartMonth === 1 ? 0 : 1) + direction;
             if (halfYearIndex < 0) halfYearIndex = 0;
             if (halfYearIndex > 49) halfYearIndex = 49;
 
-            displayInspectStartYear = 2026 + Math.floor(halfYearIndex / 2);
-            displayInspectStartMonth = (halfYearIndex % 2 === 0) ? 1 : 7;
+            window.displayInspectStartYear = 2026 + Math.floor(halfYearIndex / 2);
+            window.displayInspectStartMonth = (halfYearIndex % 2 === 0) ? 1 : 7;
 
-            renderInspectionTable();
-        }
+            window.renderInspectionTable();
+        };
 
-        function switchTab(tab) {
-            currentTab = tab;
+        window.switchTab = function(tab) {
+            window.currentTab = tab;
             const t1 = document.getElementById('tab1Content');
             const t2 = document.getElementById('tab2Content');
             const t3 = document.getElementById('tab3Content');
@@ -1181,119 +1017,11 @@
                 if (btn2) btn2.className = inactiveClass;
                 if (btn3) btn3.className = activeClass;
             }
-            renderAllTables();
-        }
+            window.renderAllTables();
+        };
 
-        function checkAuthAndOpenModal(id = null, dateVal = null, mode = 'auto') {
-            if (isAuthorized) {
-                if (mode === 'inspection') {
-                    if (dateVal && dateVal.includes('.')) {
-                        const parts = dateVal.split('.');
-                        openInspectionModal(id, parseInt(parts[0], 10), parseInt(parts[1], 10));
-                    }
-                } else {
-                    openModal(id, dateVal, mode);
-                }
-            } else {
-                pendingEditId = id;
-                pendingEditDate = dateVal;
-                pendingEditMode = mode;
-                document.getElementById('inputAdminPassword').value = '';
-                document.getElementById('passwordError').classList.add('hidden');
-                document.getElementById('passwordModal').classList.remove('hidden');
-                setTimeout(() => document.getElementById('inputAdminPassword').focus(), 100);
-            }
-        }
-
-        function checkAuthAndSave() {
-            if (isAuthorized) {
-                manualSaveData();
-            } else {
-                pendingEditId = null;
-                pendingEditDate = null;
-                pendingEditMode = 'save';
-                document.getElementById('inputAdminPassword').value = '';
-                document.getElementById('passwordError').classList.add('hidden');
-                document.getElementById('passwordModal').classList.remove('hidden');
-                setTimeout(() => document.getElementById('inputAdminPassword').focus(), 100);
-            }
-        }
-
-        function checkAuthAndRecalculate() {
-            if (isAuthorized) {
-                recalculateAllSchedules();
-            } else {
-                pendingEditId = null;
-                pendingEditDate = null;
-                pendingEditMode = 'recalculate';
-                document.getElementById('inputAdminPassword').value = '';
-                document.getElementById('passwordError').classList.add('hidden');
-                document.getElementById('passwordModal').classList.remove('hidden');
-                setTimeout(() => document.getElementById('inputAdminPassword').focus(), 100);
-            }
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').classList.add('hidden');
-            pendingEditId = null;
-            pendingEditDate = null;
-            pendingEditMode = 'auto';
-        }
-
-        function verifyPassword(e) {
-            e.preventDefault();
-            const inputPwd = document.getElementById('inputAdminPassword').value.trim();
-            if (inputPwd === ADMIN_PASSWORD) {
-                isAuthorized = true;
-                const targetId = pendingEditId;
-                const targetDate = pendingEditDate;
-                const targetMode = pendingEditMode;
-                closePasswordModal();
-                updateAuthStatusBadge();
-
-                if (targetMode === 'save') {
-                    manualSaveData();
-                } else if (targetMode === 'recalculate') {
-                    recalculateAllSchedules();
-                } else if (targetMode === 'inspection') {
-                    if (targetDate && targetDate.includes('.')) {
-                        const parts = targetDate.split('.');
-                        openInspectionModal(targetId, parseInt(parts[0], 10), parseInt(parts[1], 10));
-                    }
-                } else {
-                    openModal(targetId, targetDate, targetMode);
-                }
-            } else {
-                document.getElementById('passwordError').classList.remove('hidden');
-                document.getElementById('inputAdminPassword').value = '';
-                document.getElementById('inputAdminPassword').focus();
-            }
-        }
-
-        function updateAuthStatusBadge() {
-            const badge = document.getElementById('authStatusBadge');
-            const icon = document.getElementById('authStatusIcon');
-            const text = document.getElementById('authStatusText');
-            if (!badge) return;
-
-            if (isAuthorized) {
-                badge.className = "text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg font-bold flex items-center space-x-1 shadow-sm";
-                if (icon) icon.className = "fa-solid fa-lock-open text-emerald-600";
-                if (text) text.textContent = "관리자 인증됨";
-            } else {
-                badge.className = "text-xs bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-lg font-bold flex items-center space-x-1 shadow-sm";
-                if (icon) icon.className = "fa-solid fa-lock text-amber-600";
-                if (text) text.textContent = "관리자 미인증";
-            }
-        }
-
-        function openInspectionModal(equipId, year, month) {
-            if (!isAuthorized) {
-                checkAuthAndOpenModal(equipId, `${year}.${month}`, 'inspection');
-                return;
-            }
-
-            const rec = records.find(r => r.id === Number(equipId));
+        window.openInspectionModal = function(equipId, year, month) {
+            const rec = window.records.find(r => r.id === Number(equipId));
             if (!rec) return;
 
             const modal = document.getElementById('inspectionModal');
@@ -1308,19 +1036,19 @@
             const inspData = rec.inspections[ymKey] || {};
 
             document.getElementById('inputInspectStatus').value = inspData.status || 'good';
-            document.getElementById('inputInspectDate').value = dateToISO(inspData.date || `${String(year).slice(-2)}.${String(month).padStart(2, '0')}.15`);
+            document.getElementById('inputInspectDate').value = window.dateToISO(inspData.date || `${String(year).slice(-2)}.${String(month).padStart(2, '0')}.15`);
             document.getElementById('inputInspector').value = inspData.inspector || '';
             document.getElementById('inputInspectNote').value = inspData.note || '';
 
             if (modal) modal.classList.remove('hidden');
-        }
+        };
 
-        function closeInspectionModal() {
+        window.closeInspectionModal = function() {
             const modal = document.getElementById('inspectionModal');
             if (modal) modal.classList.add('hidden');
-        }
+        };
 
-        async function saveInspectionRecord(e) {
+        window.saveInspectionRecord = async function(e) {
             e.preventDefault();
 
             const equipId = Number(document.getElementById('inspectEquipId').value);
@@ -1330,28 +1058,28 @@
             const inspector = document.getElementById('inputInspector').value.trim();
             const note = document.getElementById('inputInspectNote').value.trim();
 
-            const rec = records.find(r => r.id === equipId);
+            const rec = window.records.find(r => r.id === equipId);
             if (rec) {
                 if (!rec.inspections) rec.inspections = {};
                 rec.inspections[ymKey] = {
                     status,
-                    date: isoToShortDate(rawDate),
+                    date: window.isoToShortDate(rawDate),
                     inspector,
                     note,
-                    updatedAt: getTodayFormatted()
+                    updatedAt: window.getTodayFormatted()
                 };
 
-                localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-                updateLastUpdatedDisplay(getTodayFormatted());
-                renderInspectionTable();
-                closeInspectionModal();
+                localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(window.records));
+                window.updateLastUpdatedDisplay(window.getTodayFormatted());
+                window.renderInspectionTable();
+                window.closeInspectionModal();
 
-                await syncRecordToFirestore(rec);
-                showToast("점검 결과가 저장되었습니다.");
+                await saveToFirestore(rec);
+                window.showToast("점검 결과가 저장되었습니다.");
             }
-        }
+        };
 
-        function openModal(id = null, selectedDate = null, mode = 'auto') {
+        window.openModal = function(id = null, selectedDate = null, mode = 'auto') {
             const modal = document.getElementById('recordModal');
             const form = document.getElementById('recordForm');
             const modalTitle = document.getElementById('modalTitle');
@@ -1368,7 +1096,7 @@
             } else if (mode === 'spec') {
                 isDateOnlyMode = false;
             } else {
-                isDateOnlyMode = (currentTab === 'history');
+                isDateOnlyMode = (window.currentTab === 'history');
             }
 
             if (isDateOnlyMode) {
@@ -1392,7 +1120,7 @@
             }
 
             if (!isNewRecord) {
-                const rec = records.find(item => Number(item.id) === Number(id));
+                const rec = window.records.find(item => Number(item.id) === Number(id));
                 if (rec) {
                     if (isDateOnlyMode) {
                         modalTitle.innerHTML = `<i class="fa-solid fa-calendar-check text-blue-400"></i> <span>교체 일자 및 구분 등록</span>`;
@@ -1412,11 +1140,11 @@
                     if (!targetDate) {
                         targetDate = (rec.completedDates && rec.completedDates.length > 0)
                             ? rec.completedDates[rec.completedDates.length - 1]
-                            : ((rec.unexpectedDates && rec.unexpectedDates.length > 0) ? rec.unexpectedDates[rec.unexpectedDates.length - 1] : '');
+                            : ((rec.unexpectedDates && rec.unexpectedDates.length > 0) ? rec.unexpectedDates[rec.unexpectedDates.length - 1] : ((rec.manualScheduledDates && rec.manualScheduledDates.length > 0) ? rec.manualScheduledDates[rec.manualScheduledDates.length - 1] : ''));
                     }
 
                     document.getElementById('inputOriginalDate').value = targetDate || '';
-                    document.getElementById('inputDate').value = dateToISO(targetDate);
+                    document.getElementById('inputDate').value = window.dateToISO(targetDate);
 
                     if (targetDate && rec.unexpectedDates && rec.unexpectedDates.includes(targetDate)) {
                         document.getElementById('inputStatusType').value = 'unexpected';
@@ -1440,14 +1168,14 @@
                 dateSection.classList.remove('hidden');
             }
             if (modal) modal.classList.remove('hidden');
-        }
+        };
 
-        function closeModal() {
+        window.closeModal = function() {
             const modal = document.getElementById('recordModal');
             if (modal) modal.classList.add('hidden');
-        }
+        };
 
-        async function saveRecord(e) {
+        window.saveRecord = async function(e) {
             e.preventDefault();
 
             const editIdVal = document.getElementById('editId').value;
@@ -1459,7 +1187,7 @@
             const specVal = document.getElementById('inputSpec').value.trim();
             const leadSealVal = document.getElementById('inputLeadSeal').value;
             const rawDateVal = document.getElementById('inputDate').value.trim();
-            const dateVal = isoToShortDate(rawDateVal);
+            const dateVal = window.isoToShortDate(rawDateVal);
             const statusType = document.getElementById('inputStatusType').value;
 
             let equipName = equipFull;
@@ -1472,7 +1200,7 @@
 
             let targetRecord = null;
             if (editIdVal) {
-                targetRecord = records.find(r => r.id === parseInt(editIdVal, 10));
+                targetRecord = window.records.find(r => r.id === parseInt(editIdVal, 10));
             }
 
             if (targetRecord) {
@@ -1504,10 +1232,10 @@
                     }
                 }
 
-                recalculateSingleEquipmentSchedule(targetRecord);
+                window.recalculateSingleEquipmentSchedule(targetRecord);
 
             } else {
-                const newId = records.length > 0 ? Math.max(...records.map(r => r.id)) + 1 : 1;
+                const newId = window.records.length > 0 ? Math.max(...window.records.map(r => r.id)) + 1 : 1;
                 const newRec = {
                     id: newId,
                     line: lineVal,
@@ -1532,177 +1260,28 @@
                         newRec.completedDates.push(dateVal);
                     }
                 }
-                recalculateSingleEquipmentSchedule(newRec);
-                records.push(newRec);
+                window.recalculateSingleEquipmentSchedule(newRec);
+                window.records.push(newRec);
                 targetRecord = newRec;
             }
 
-            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
+            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(window.records));
 
-            const todayStr = getTodayFormatted();
+            const todayStr = window.getTodayFormatted();
             localStorage.setItem('sea_cm_rope_last_updated', todayStr);
-            updateLastUpdatedDisplay(todayStr);
+            window.updateLastUpdatedDisplay(todayStr);
 
-            renderAllTables();
-            closeModal();
+            window.renderAllTables();
+            window.closeModal();
 
             if (targetRecord) {
-                await syncRecordToFirestore(targetRecord);
+                await saveToFirestore(targetRecord);
             }
 
-            showToast("저장이 완료되었습니다.");
-        }
+            window.showToast("저장이 완료되었습니다.");
+        };
 
-        function parseCycleMonths(cycleStr) {
-            if (!cycleStr) return 12;
-            let totalMonths = 0;
-            if (cycleStr.includes("년")) {
-                const yearPart = cycleStr.split("년")[0].trim();
-                totalMonths += parseFloat(yearPart) * 12;
-            }
-            if (cycleStr.includes("개월")) {
-                let monthPart = cycleStr;
-                if (cycleStr.includes("년")) {
-                    monthPart = cycleStr.split("년")[1];
-                }
-                monthPart = monthPart.replace("개월", "").trim();
-                totalMonths += parseFloat(monthPart) || 0;
-            }
-            return totalMonths || 12;
-        }
-
-        function getQuarterKeyFromDateStr(dateStr) {
-            if (!dateStr || typeof dateStr !== 'string') return null;
-            const parts = dateStr.split('.');
-            if (parts.length < 2) return null;
-
-            let year = parseInt(parts[0], 10);
-            if (year > 2000) year = year - 2000;
-            const month = parseInt(parts[1], 10);
-
-            if (isNaN(year) || isNaN(month)) return null;
-
-            let q = 1;
-            if (month >= 1 && month <= 3) q = 1;
-            else if (month >= 4 && month <= 6) q = 2;
-            else if (month >= 7 && month <= 9) q = 3;
-            else if (month >= 10 && month <= 12) q = 4;
-
-            const yearStr = year < 10 ? `0${year}` : `${year}`;
-            return `q${yearStr}_${q}`;
-        }
-
-        function addMonthsToDateStr(dateStr, monthsToAdd) {
-            if (!dateStr) return null;
-            const parts = dateStr.split('.');
-            if (parts.length < 3) return null;
-
-            let year = parseInt(parts[0], 10);
-            if (year < 100) year += 2000;
-            let month = parseInt(parts[1], 10) - 1;
-            let day = parseInt(parts[2], 10);
-
-            let dt = new Date(year, month, day);
-            dt.setMonth(dt.getMonth() + monthsToAdd);
-
-            let resYear = dt.getFullYear() - 2000;
-            let resMonth = dt.getMonth() + 1;
-            let resDay = dt.getDate();
-
-            const yStr = resYear < 10 ? `0${resYear}` : `${resYear}`;
-            const mStr = resMonth < 10 ? `0${resMonth}` : `${resMonth}`;
-            const dStr = resDay < 10 ? `0${resDay}` : `${resDay}`;
-
-            const nextDateStr = `${yStr}.${mStr}.${dStr}`;
-            const quarterKey = getQuarterKeyFromDateStr(nextDateStr);
-
-            return { nextDateStr, quarterKey };
-        }
-
-        function parseDateStr(dateStr) {
-            if (!dateStr || typeof dateStr !== 'string') return null;
-            const parts = dateStr.split('.');
-            if (parts.length < 3) return null;
-            let year = parseInt(parts[0], 10);
-            if (year < 100) year += 2000;
-            let month = parseInt(parts[1], 10) - 1;
-            let day = parseInt(parts[2], 10);
-            return new Date(year, month, day);
-        }
-
-        function calculateDDay(targetDateStr) {
-            if (!targetDateStr || targetDateStr === '-') {
-                return { text: '-', colorClass: 'bg-slate-100 text-slate-500', diffDays: 9999 };
-            }
-
-            const parts = targetDateStr.split('.');
-            if (parts.length < 3) return { text: targetDateStr, colorClass: 'bg-slate-100 text-slate-700', diffDays: 9999 };
-
-            let year = parseInt(parts[0], 10);
-            if (year < 100) year += 2000;
-            let month = parseInt(parts[1], 10) - 1;
-            let day = parseInt(parts[2], 10);
-
-            const targetDate = new Date(year, month, day);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            const diffTime = targetDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays < 0) {
-                return { text: `D+${Math.abs(diffDays)}일 (초과)`, colorClass: 'bg-red-600 text-white font-bold', diffDays };
-            } else if (diffDays === 0) {
-                return { text: 'D-Day (오늘)', colorClass: 'bg-red-500 text-white font-bold animate-pulse', diffDays };
-            } else if (diffDays <= 30) {
-                return { text: `D-${diffDays}일 (임박)`, colorClass: 'bg-sky-500 text-white font-bold', diffDays };
-            } else {
-                return { text: `D-${diffDays}일`, colorClass: 'bg-amber-100 text-amber-800 font-bold', diffDays };
-            }
-        }
-
-        function getDateStatus(dateStr, record) {
-            if (!dateStr || !record) return 'none';
-            
-            if (record.unexpectedDates && Array.isArray(record.unexpectedDates) && record.unexpectedDates.includes(dateStr)) {
-                return 'unexpected';
-            }
-            if (record.completedDates && Array.isArray(record.completedDates) && record.completedDates.includes(dateStr)) {
-                return 'completed';
-            }
-
-            const dDayObj = calculateDDay(dateStr);
-            if (dDayObj.diffDays < 0) {
-                return 'overdue';
-            } else if (dDayObj.diffDays <= 30) {
-                return 'approaching';
-            }
-            return 'scheduled';
-        }
-
-        function updateHeaderAlertBadges() {
-            const overdueCount = document.getElementById('overdueCountBadge');
-            const approachingCount = document.getElementById('approachingCountBadge');
-
-            let overdueNum = 0;
-            let approachingNum = 0;
-
-            records.forEach(r => {
-                ALL_QUARTERS.forEach(qKey => {
-                    const dateVal = r[qKey];
-                    if (dateVal) {
-                        const status = getDateStatus(dateVal, r);
-                        if (status === 'overdue') overdueNum++;
-                        else if (status === 'approaching') approachingNum++;
-                    }
-                });
-            });
-
-            if (overdueCount) overdueCount.textContent = `${overdueNum}건`;
-            if (approachingCount) approachingCount.textContent = `${approachingNum}건`;
-        }
-
-        function renderHistoryTable() {
+        window.renderHistoryTable = function() {
             const thead = document.getElementById('historyTableHead');
             const tbody = document.getElementById('historyTableBody');
             const rangeText = document.getElementById('yearRangeText');
@@ -1711,13 +1290,13 @@
 
             if (!tbody) return;
 
-            const y1 = displayStartYear;
-            const y2 = displayStartYear + 1;
-            const y3 = displayStartYear + 2;
+            const y1 = window.displayStartYear;
+            const y2 = window.displayStartYear + 1;
+            const y3 = window.displayStartYear + 2;
 
             if (rangeText) rangeText.textContent = `${y1}년 ~ ${y3}년 (3개년)`;
-            if (prevBtn) prevBtn.disabled = (displayStartYear <= 2026);
-            if (nextBtn) nextBtn.disabled = (displayStartYear >= 2048);
+            if (prevBtn) prevBtn.disabled = (window.displayStartYear <= 2026);
+            if (nextBtn) nextBtn.disabled = (window.displayStartYear >= 2048);
 
             if (thead) {
                 thead.innerHTML = `
@@ -1735,17 +1314,14 @@
                         <th class="p-1 border-r border-slate-300"></th>
                         <th class="p-1 border-r border-slate-300"></th>
                         <th class="p-1 border-r border-slate-300"></th>
-                        <!-- ${y1}년 -->
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">1분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">2분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">3분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">4분기</th>
-                        <!-- ${y2}년 -->
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">1분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">2분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">3분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">4분기</th>
-                        <!-- ${y3}년 -->
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">1분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">2분기</th>
                         <th class="p-1 border-r border-slate-300 min-w-[55px]">3분기</th>
@@ -1766,11 +1342,11 @@
             let currentLine = '';
 
             const lineCounts = {};
-            records.forEach(r => {
+            window.records.forEach(r => {
                 lineCounts[r.line] = (lineCounts[r.line] || 0) + 1;
             });
 
-            records.forEach((r) => {
+            window.records.forEach((r) => {
                 html += `<tr class="hover:bg-slate-50 border-b border-slate-200">`;
 
                 if (r.line !== currentLine) {
@@ -1791,7 +1367,7 @@
                     let titleText = '';
 
                     if (dateVal) {
-                        const status = getDateStatus(dateVal, r);
+                        const status = window.getDateStatus(dateVal, r);
                         if (status === 'completed') {
                             badgeClass = 'badge-completed';
                             titleText = '정기 교체 완료';
@@ -1811,7 +1387,7 @@
 
                         html += `
                             <td class="p-1 border-r border-slate-200 align-middle">
-                                <button onclick="checkAuthAndOpenModal(${r.id}, '${dateVal}', 'date')" title="${titleText}" class="w-full py-1 px-1 rounded text-[11px] transition duration-150 shadow-sm ${badgeClass} hover:opacity-80">
+                                <button onclick="openModal(${r.id}, '${dateVal}', 'date')" title="${titleText}" class="w-full py-1 px-1 rounded text-[11px] transition duration-150 shadow-sm ${badgeClass} hover:opacity-80">
                                     ${dateVal}
                                 </button>
                             </td>
@@ -1825,9 +1401,9 @@
             });
 
             tbody.innerHTML = html;
-        }
+        };
 
-        function renderSpecTable() {
+        window.renderSpecTable = function() {
             const tbody = document.getElementById('specTableBody');
             if (!tbody) return;
 
@@ -1835,11 +1411,11 @@
             let currentLine = '';
 
             const lineCounts = {};
-            records.forEach(r => {
+            window.records.forEach(r => {
                 lineCounts[r.line] = (lineCounts[r.line] || 0) + 1;
             });
 
-            records.forEach((r) => {
+            window.records.forEach((r) => {
                 html += `<tr class="hover:bg-slate-50 border-b border-slate-200">`;
 
                 if (r.line !== currentLine) {
@@ -1855,7 +1431,7 @@
                     <td class="p-2.5 border-r border-slate-200 font-mono text-slate-800">${r.spec}</td>
                     <td class="p-2.5 border-r border-slate-200 font-bold text-center ${r.leadSeal === '유' ? 'text-blue-600' : 'text-slate-400'}">${r.leadSeal || '무'}</td>
                     <td class="p-2.5 text-center">
-                        <button onclick="checkAuthAndOpenModal(${r.id}, null, 'spec')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded text-xs font-bold transition">
+                        <button onclick="openModal(${r.id}, null, 'spec')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded text-xs font-bold transition">
                             수정
                         </button>
                     </td>
@@ -1863,9 +1439,9 @@
             });
 
             tbody.innerHTML = html;
-        }
+        };
 
-        function renderInspectionTable() {
+        window.renderInspectionTable = function() {
             const thead = document.getElementById('inspectionTableHead');
             const tbody = document.getElementById('inspectionTableBody');
             const rangeText = document.getElementById('monthRangeText');
@@ -1875,8 +1451,8 @@
             if (!tbody || !thead) return;
 
             const monthsList = [];
-            let currY = displayInspectStartYear;
-            let startM = displayInspectStartMonth;
+            let currY = window.displayInspectStartYear;
+            let startM = window.displayInspectStartMonth;
 
             for (let i = 0; i < 6; i++) {
                 let m = startM + i;
@@ -1888,8 +1464,8 @@
 
             if (rangeText) rangeText.textContent = `${firstM.year}년 ${String(firstM.month).padStart(2, '0')}월 ~ ${lastM.year}년 ${String(lastM.month).padStart(2, '0')}월 (6개월)`;
 
-            const isStart = (displayInspectStartYear === 2026 && displayInspectStartMonth === 1);
-            const isEnd = (displayInspectStartYear === 2050 && displayInspectStartMonth === 7);
+            const isStart = (window.displayInspectStartYear === 2026 && window.displayInspectStartMonth === 1);
+            const isEnd = (window.displayInspectStartYear === 2050 && window.displayInspectStartMonth === 7);
 
             if (prevBtn) prevBtn.disabled = isStart;
             if (nextBtn) nextBtn.disabled = isEnd;
@@ -1909,11 +1485,11 @@
             let currentLine = '';
 
             const lineCounts = {};
-            records.forEach(r => {
+            window.records.forEach(r => {
                 lineCounts[r.line] = (lineCounts[r.line] || 0) + 1;
             });
 
-            records.forEach((r) => {
+            window.records.forEach((r) => {
                 html += `<tr class="hover:bg-slate-50 border-b border-slate-200">`;
 
                 if (r.line !== currentLine) {
@@ -1949,7 +1525,7 @@
 
                     html += `
                         <td class="p-1 border-r border-slate-200 align-middle">
-                            <button onclick="checkAuthAndOpenModal(${r.id}, '${mObj.year}.${mObj.month}', 'inspection')" class="w-full py-1.5 px-1 rounded text-[11px] transition duration-150 shadow-xs ${badgeClass}">
+                            <button onclick="openInspectionModal(${r.id}, ${mObj.year}, ${mObj.month})" class="w-full py-1.5 px-1 rounded text-[11px] transition duration-150 shadow-xs ${badgeClass}">
                                 ${statusLabel}
                             </button>
                         </td>
@@ -1960,79 +1536,113 @@
             });
 
             tbody.innerHTML = html;
-        }
-
-        function renderAllTables() {
-            updateHeaderAlertBadges();
-            renderHistoryTable();
-            renderSpecTable();
-            renderInspectionTable();
-        }
-
-        // Backup & Restore via JSON File
-        function exportBackupData() {
-            const dataStr = JSON.stringify(records, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `세아씨엠_와이어로프_데이터백업_${getTodayFormatted()}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("데이터 파일 백업이 완료되었습니다.");
-        }
-
-        function triggerRestoreData() {
-            document.getElementById('restoreFileInput').click();
-        }
-
-        function importBackupData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(event) {
-                try {
-                    const parsed = JSON.parse(event.target.result);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        records = parsed;
-                        localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(records));
-                        recalculateAllSchedulesSilent();
-                        renderAllTables();
-
-                        if (db && auth && auth.currentUser) {
-                            try {
-                                const { doc, setDoc, collection } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-                                const publicColl = collection(db, 'artifacts', appId, 'public', 'data', 'rope_records');
-                                for (const item of records) {
-                                    const cleanItem = JSON.parse(JSON.stringify(item));
-                                    await setDoc(doc(publicColl, String(item.id)), cleanItem);
-                                }
-                            } catch (err) {}
-                        }
-                        showToast("데이터 복구가 완벽하게 완료되었습니다.");
-                    } else {
-                        showToast("올바른 백업 파일 형식이 아닙니다.", true);
-                    }
-                } catch (err) {
-                    showToast("파일 읽기 오류가 발생했습니다.", true);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        window.onload = function() {
-            updateLastUpdatedDisplay();
-            updateAuthStatusBadge();
-            recalculateAllSchedulesSilent();
-            renderAllTables();
-            initFirebase();
-            
-            setTimeout(() => {
-                showInitialSummaryModal();
-            }, 300);
         };
+
+        window.renderAllTables = function() {
+            window.updateHeaderAlertBadges();
+            window.renderHistoryTable();
+            window.renderSpecTable();
+            window.renderInspectionTable();
+        };
+
+        // Firestore Helper Functions
+        async function saveToFirestore(item) {
+            if (!auth.currentUser) return;
+            try {
+                const cleanItem = JSON.parse(JSON.stringify(item));
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id));
+                await setDoc(docRef, cleanItem);
+            } catch (e) {
+                console.warn("Firestore write error:", e);
+            }
+        }
+
+        async function seedInitialDataIfEmpty() {
+            if (!auth.currentUser) return;
+            try {
+                const snap = await getDocs(publicColl);
+                if (snap.empty) {
+                    for (const item of window.records) {
+                        const cleanItem = JSON.parse(JSON.stringify(item));
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rope_records', String(item.id)), cleanItem);
+                    }
+                }
+            } catch (e) {
+                console.warn("Firestore seed error:", e);
+            }
+        }
+
+        // Firebase Initialization & Sync Setup
+        async function startFirebaseSync() {
+            const badge = document.getElementById('firebaseBadge');
+            const statusText = document.getElementById('firebaseStatusText');
+
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.warn("Auth failed, attempting anonymous fallback:", e);
+                try {
+                    await signInAnonymously(auth);
+                } catch (err) {
+                    console.warn("Anonymous auth failed:", err);
+                }
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    if (badge) {
+                        badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-600/60 shadow-sm";
+                    }
+                    if (statusText) {
+                        statusText.textContent = "Firestore 실시간 연결됨";
+                    }
+
+                    await seedInitialDataIfEmpty();
+
+                    onSnapshot(publicColl, (snap) => {
+                        if (snap.empty) return;
+                        const recMap = new Map();
+                        snap.forEach(docSnap => {
+                            const data = docSnap.data();
+                            if (data && data.id) {
+                                recMap.set(Number(data.id), data);
+                            }
+                        });
+
+                        if (recMap.size > 0) {
+                            window.records = Array.from(recMap.values()).sort((a, b) => a.id - b.id);
+                            localStorage.setItem('sea_cm_rope_data_v11', JSON.stringify(window.records));
+                            window.recalculateAllSchedulesSilent();
+                            window.renderAllTables();
+                        }
+                    }, (err) => {
+                        console.warn("Firestore snapshot error:", err);
+                        if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shadow-sm";
+                        if (statusText) statusText.textContent = "로컬 저장 모드";
+                    });
+                } else {
+                    if (badge) badge.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shadow-sm";
+                    if (statusText) statusText.textContent = "로컬 저장 모드";
+                }
+            });
+        }
+
+        // Initialize App on DOM Load
+        window.addEventListener('load', function() {
+            window.updateLastUpdatedDisplay();
+            window.recalculateAllSchedulesSilent();
+            window.renderAllTables();
+            
+            startFirebaseSync();
+
+            setTimeout(() => {
+                window.showInitialSummaryModal();
+            }, 300);
+        });
     </script>
 </body>
 </html>
