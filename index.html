@@ -605,6 +605,28 @@
     </div>
   </div>
 
+  <!-- STARTUP ALL-CLEAR BANNER (auto-dismiss) -->
+  <div id="allClearBanner" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-sm font-bold opacity-0 -translate-y-4 pointer-events-none transition duration-300 no-print">
+    <i class="fa-solid fa-circle-check text-lg"></i>
+    <span>현재 교체 지연·임박 항목이 없습니다. 전체 정상입니다.</span>
+  </div>
+
+  <!-- STARTUP ALERT MODAL (requires acknowledgment) -->
+  <div id="startupAlertModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200">
+      <div class="p-5 flex flex-col items-center text-center gap-3">
+        <div id="startupAlertIcon" class="w-14 h-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="font-bold text-base text-slate-900">교체 관리 현황 확인</h3>
+        <div id="startupAlertBody" class="text-xs text-slate-600 leading-relaxed w-full space-y-1.5"></div>
+      </div>
+      <div class="border-t border-slate-200">
+        <button onclick="document.getElementById('startupAlertModal').classList.add('hidden')" type="button" class="w-full py-3 text-xs font-bold text-white bg-seah-700 hover:bg-seah-800 transition">확인했습니다</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FIREBASE AUTH & FIRESTORE MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -674,6 +696,7 @@
     } catch (e) {
       console.warn("Firebase Init notice:", e);
       updateCloudStatus(false, "로컬 모드");
+      if (window.runStartupStatusCheck) window.runStartupStatusCheck();
     }
 
     // Google Sign-In with Domain Gate
@@ -745,6 +768,7 @@
           }
         }
         showTableLoading(false);
+        if (window.runStartupStatusCheck) window.runStartupStatusCheck();
       }, (err) => {
         showTableLoading(false);
         console.warn("Firestore onSnapshot notice:", err);
@@ -1392,6 +1416,47 @@
       document.getElementById('stat-danger').innerText = `${dangerCount} 건`;
       document.getElementById('stat-imminent').innerText = `${imminentCount} 건`;
       document.getElementById('stat-done').innerText = `${totalDone} 건`;
+
+      return { dangerCount, imminentCount };
+    };
+
+    // Startup Status Check (runs once, right after the first authoritative data load)
+    let startupCheckDone = false;
+    window.runStartupStatusCheck = function() {
+      if (startupCheckDone) return;
+      startupCheckDone = true;
+
+      const { dangerCount, imminentCount } = window.updateStats();
+
+      if (dangerCount === 0 && imminentCount === 0) {
+        const banner = document.getElementById('allClearBanner');
+        banner.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        setTimeout(() => {
+          banner.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+        }, 2500);
+        return;
+      }
+
+      const body = document.getElementById('startupAlertBody');
+      const icon = document.getElementById('startupAlertIcon');
+      let html = '';
+      if (dangerCount > 0) {
+        html += `<div class="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <span class="font-semibold text-red-700 flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> 교체 지연 (위험)</span>
+          <span class="font-black text-red-700">${dangerCount}건</span>
+        </div>`;
+      }
+      if (imminentCount > 0) {
+        html += `<div class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-1.5">
+          <span class="font-semibold text-amber-700 flex items-center gap-1.5"><i class="fa-regular fa-clock"></i> 주기 임박 (30일 이내)</span>
+          <span class="font-black text-amber-700">${imminentCount}건</span>
+        </div>`;
+      }
+      body.innerHTML = html;
+      icon.className = dangerCount > 0
+        ? "w-14 h-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl"
+        : "w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-2xl";
+      document.getElementById('startupAlertModal').classList.remove('hidden');
     };
 
     // Filter by Line
