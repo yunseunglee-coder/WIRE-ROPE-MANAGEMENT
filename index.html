@@ -82,7 +82,7 @@
 
   <!-- TOP HEADER & NAVIGATION -->
   <header class="bg-gradient-to-r from-[#003366] via-[#004B87] to-[#0b63a4] text-white shadow-lg sticky top-0 z-30 no-print">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+    <div class="max-w-[1750px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
         <div class="bg-white/10 p-2.5 rounded-xl border border-white/20 shadow-inner flex items-center justify-center">
           <i class="fa-solid fa-industry text-xl text-sky-300"></i>
@@ -91,8 +91,10 @@
           <div class="flex items-center gap-2">
             <span class="bg-sky-400/30 text-sky-100 text-xs font-semibold px-2 py-0.5 rounded tracking-wide border border-sky-300/30">SeAH CM</span>
             <span class="text-xs text-sky-200">설비보전팀 / 안전환경팀</span>
-            <span id="cloudStatusBadge" class="bg-amber-400/20 text-amber-200 border border-amber-300/30 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
-              <i class="fa-solid fa-cloud-arrow-up animate-pulse"></i> 연결 중...
+            <!-- Cloud Status Badge -->
+            <span id="cloudStatusBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 transition">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="cloudStatusText">시스템 준비 완료</span>
             </span>
           </div>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -103,7 +105,7 @@
 
       <!-- Quick Action Buttons -->
       <div class="flex items-center flex-wrap gap-2">
-        <button onclick="openAddModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm">
+        <button onclick="openAddModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-plus"></i> 새 크레인 등록
         </button>
         <button onclick="exportToCSV()" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 active:scale-95 transition text-white border border-white/20 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm">
@@ -135,75 +137,75 @@
   </div>
 
   <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-[1700px] w-full mx-auto px-3 sm:px-6 py-5 flex flex-col gap-5">
+  <main class="flex-1 max-w-[1750px] w-full mx-auto px-3 sm:px-6 py-4 flex flex-col gap-4">
 
     <!-- KPI STATS SUMMARY CARDS -->
     <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print">
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
           <i class="fa-solid fa-layer-group"></i>
         </div>
         <div>
           <p class="text-xs font-medium text-slate-500">총 관리 라인</p>
-          <p class="text-lg font-bold text-slate-800" id="stat-lines">7개 라인</p>
+          <p class="text-base sm:text-lg font-bold text-slate-800" id="stat-lines">7개 라인</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
           <i class="fa-solid fa-cubes-stacked"></i>
         </div>
         <div>
           <p class="text-xs font-medium text-slate-500">크레인 설비 수</p>
-          <p class="text-lg font-bold text-slate-800" id="stat-cranes">38 대</p>
+          <p class="text-base sm:text-lg font-bold text-slate-800" id="stat-cranes">38 대</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
           <i class="fa-solid fa-link"></i>
         </div>
         <div>
-          <p class="text-xs font-medium text-slate-500">총 관리 로프 (포인트)</p>
-          <p class="text-lg font-bold text-slate-800" id="stat-ropes">52 개소</p>
+          <p class="text-xs font-medium text-slate-500">총 관리 로프</p>
+          <p class="text-base sm:text-lg font-bold text-slate-800" id="stat-ropes">52 개소</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500">교체 지연 (위험)</p>
+          <p class="text-base sm:text-lg font-bold text-red-600" id="stat-danger">0 건</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-calendar-check"></i>
+          <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
         <div>
-          <p class="text-xs font-medium text-slate-500" id="stat-window-label">조회 3개년 예정</p>
-          <p class="text-lg font-bold text-amber-600" id="stat-window-plan">0 건</p>
+          <p class="text-xs font-medium text-slate-500">주기 임박 (30일 이내)</p>
+          <p class="text-base sm:text-lg font-bold text-amber-600" id="stat-imminent">0 건</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-calendar-days"></i>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-slate-500">전체 예정 (~2030)</p>
-          <p class="text-lg font-bold text-purple-600" id="stat-total-plan">0 건</p>
-        </div>
-      </div>
-
-      <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
           <i class="fa-solid fa-circle-check"></i>
         </div>
         <div>
           <p class="text-xs font-medium text-slate-500">교체 완료 건수</p>
-          <p class="text-lg font-bold text-emerald-600" id="stat-done">0 건</p>
+          <p class="text-base sm:text-lg font-bold text-emerald-600" id="stat-done">0 건</p>
         </div>
       </div>
     </section>
 
-    <!-- INTEGRATED FILTER & SEARCH BAR (TOP) -->
-    <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-3 items-center justify-between no-print">
+    <!-- CONTROLS & FILTER BAR -->
+    <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between no-print">
       <!-- Line Filter Buttons -->
-      <div class="flex items-center flex-wrap gap-1.5 w-full lg:w-auto">
+      <div class="flex items-center flex-wrap gap-1.5 w-full md:w-auto">
         <span class="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
           <i class="fa-solid fa-filter text-slate-400"></i> 라인 필터:
         </span>
@@ -218,8 +220,8 @@
       </div>
 
       <!-- Search & Options -->
-      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
-        <div class="relative flex-1 sm:w-64">
+      <div class="flex items-center gap-2 w-full md:w-auto">
+        <div class="relative flex-1 sm:w-60">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input type="text" id="searchInput" oninput="handleSearch()" placeholder="설비명, 규격, 주기 검색..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-seah-500 bg-slate-50 focus:bg-white transition">
         </div>
@@ -228,75 +230,80 @@
           <option value="주권">주권만</option>
           <option value="보권">보권만</option>
         </select>
-        <button onclick="autoScheduleAll()" title="현재 등록된 최근 교체일자 기준 차기 주기 자동 계산 (~2030년)" class="px-2.5 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 text-xs rounded-lg font-medium transition flex items-center gap-1 shrink-0">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> 주기 자동계산
+        <button onclick="autoScheduleAll()" title="현재 등록된 최근 교체일자 기준 차기 분기 일괄 자동 계산" class="px-3 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 text-xs rounded-lg font-semibold transition flex items-center gap-1 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles text-sky-600"></i> 주기 자동계산
         </button>
       </div>
     </section>
 
-    <!-- 3-YEAR PERIOD CONTROLLER & STATUS GUIDE -->
-    <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-3 no-print">
-      <!-- 3-Year Window Controller -->
-      <div class="flex items-center gap-2 flex-wrap w-full xl:w-auto">
-        <span class="text-xs font-bold text-slate-700 mr-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-calendar-week text-seah-600"></i> 조회 기간 (3개년):
-        </span>
-        <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-          <button id="btnPrevYears" onclick="changeYearWindow(-1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-50 text-slate-700 shadow-sm border border-slate-200 flex items-center justify-center transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95" title="이전 3개년">
-            <i class="fa-solid fa-chevron-left text-xs"></i>
-          </button>
-          <div class="px-3.5 py-1 text-xs font-black text-slate-800 tracking-tight flex items-center gap-1.5 min-w-[140px] justify-center">
-            <span id="currentPeriodText" class="text-seah-700 font-extrabold text-sm">2026 ~ 2028년</span>
+    <!-- PERIOD NAVIGATION CONTROLLER (MOVED RIGHT ABOVE TABLE AS REQUESTED) -->
+    <section class="bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="fa-regular fa-calendar-days text-seah-600"></i> 조회 기간 (3개년):
+          </span>
+          <!-- < 2026 ~ 2028년 > Navigation -->
+          <div class="inline-flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-300 shadow-inner">
+            <button onclick="shiftStartYear(-1)" id="btnPrevYear" class="px-2.5 py-1 rounded-md text-slate-700 hover:bg-white hover:text-seah-700 disabled:opacity-30 disabled:pointer-events-none transition font-bold text-xs" title="이전 연도로 이동">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span id="periodLabel" class="px-3 py-0.5 text-xs font-bold text-slate-900 min-w-[110px] text-center tracking-wide">
+              2026 ~ 2028년
+            </span>
+            <button onclick="shiftStartYear(1)" id="btnNextYear" class="px-2.5 py-1 rounded-md text-slate-700 hover:bg-white hover:text-seah-700 disabled:opacity-30 disabled:pointer-events-none transition font-bold text-xs" title="다음 연도로 이동">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
-          <button id="btnNextYears" onclick="changeYearWindow(1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-50 text-slate-700 shadow-sm border border-slate-200 flex items-center justify-center transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95" title="다음 3개년">
-            <i class="fa-solid fa-chevron-right text-xs"></i>
-          </button>
         </div>
 
-        <!-- Quick Presets -->
-        <div class="flex items-center gap-1 ml-1">
-          <button onclick="setYearWindow(2026)" class="year-preset-btn px-2.5 py-1 text-[11px] font-bold rounded-lg transition border" data-start="2026">26~28년</button>
-          <button onclick="setYearWindow(2027)" class="year-preset-btn px-2.5 py-1 text-[11px] font-bold rounded-lg transition border" data-start="2027">27~29년</button>
-          <button onclick="setYearWindow(2028)" class="year-preset-btn px-2.5 py-1 text-[11px] font-bold rounded-lg transition border" data-start="2028">28~30년</button>
+        <!-- Quick Period Buttons -->
+        <div class="hidden sm:flex items-center gap-1">
+          <button onclick="setStartYear(2026)" id="btn2628" class="px-2.5 py-1 text-xs rounded-md font-bold transition bg-seah-700 text-white shadow-sm">26~28년</button>
+          <button onclick="setStartYear(2027)" id="btn2729" class="px-2.5 py-1 text-xs rounded-md font-bold transition bg-slate-100 hover:bg-slate-200 text-slate-700">27~29년</button>
+          <button onclick="setStartYear(2028)" id="btn2830" class="px-2.5 py-1 text-xs rounded-md font-bold transition bg-slate-100 hover:bg-slate-200 text-slate-700">28~30년</button>
         </div>
       </div>
 
-      <!-- Legend & Status Guide -->
-      <div class="flex flex-wrap items-center justify-between xl:justify-end text-xs text-slate-600 gap-3 w-full xl:w-auto">
-        <div class="flex items-center gap-3.5 flex-wrap">
-          <span class="font-bold text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-sky-600"></i> 상태 판정 기준:</span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-            <span>정상 예정 (D-30일 초과)</span>
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
-            <span>주기 임박 (D-30일 이내)</span>
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span>
-            <span class="font-bold text-rose-600">교체 위험 (당일 도래 및 경과 지연)</span>
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-            <span>교체 완료</span>
-          </span>
-        </div>
-        <div class="text-slate-400 text-xs border-l border-slate-200 pl-3">
-          <span id="filteredCountBadge" class="font-bold text-slate-800">52</span>개 표시 중
-        </div>
+      <!-- LEGEND / STATUS GUIDE -->
+      <div class="flex items-center gap-3.5 flex-wrap text-xs text-slate-600">
+        <span class="font-bold text-slate-700 flex items-center gap-1">
+          <i class="fa-solid fa-circle-info text-sky-600"></i> 상태 범례:
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-3 h-3 rounded-full bg-red-500 inline-block shadow-sm animate-pulse"></span>
+          <span class="font-semibold text-red-600">교체 지연 (위험)</span>
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm"></span>
+          <span class="font-semibold text-amber-700">주기 임박 (30일 이내)</span>
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-3 h-3 rounded-full bg-blue-500 inline-block shadow-sm"></span>
+          <span>교체 예정</span>
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block shadow-sm"></span>
+          <span class="font-semibold text-emerald-700">교체 완료 (일자 표기)</span>
+        </span>
+        <span class="text-slate-400">| <span id="filteredCountBadge" class="font-bold text-slate-700">52</span>개소 표시 중</span>
       </div>
     </section>
 
     <!-- WIRE ROPE TABLE CONTAINER -->
     <div class="table-container bg-white rounded-xl border border-slate-300 shadow-sm overflow-x-auto custom-scrollbar">
-      <table class="w-full text-center border-collapse min-w-[1280px] text-xs" id="craneTable">
-        <thead id="tableHeader"></thead>
-        <tbody id="tableBody" class="divide-y divide-slate-200"></tbody>
+      <table class="w-full text-center border-collapse min-w-[1250px] text-xs" id="craneTable">
+        <!-- DYNAMIC HEADER -->
+        <thead id="tableHeader">
+          <!-- Populated by JS -->
+        </thead>
+        <tbody id="tableBody" class="divide-y divide-slate-200">
+          <!-- Dynamically populated via JS -->
+        </tbody>
       </table>
     </div>
 
-    <!-- FOOTER NOTES -->
+    <!-- FOOTER NOTES / AUDIT INFO -->
     <div class="bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
       <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
       <div>
@@ -339,23 +346,23 @@
         <div>
           <label class="block font-bold text-slate-700 mb-1.5">교체 상태 선택</label>
           <div class="grid grid-cols-4 gap-2">
-            <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-2 has-[:checked]:ring-blue-400">
-              <input type="radio" name="modalStatus" value="plan" class="hidden">
-              <span class="w-3.5 h-3.5 rounded-full bg-blue-500"></span>
-              <span class="font-bold text-blue-700">계획(예정)</span>
-            </label>
             <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50 has-[:checked]:ring-2 has-[:checked]:ring-emerald-400">
-              <input type="radio" name="modalStatus" value="done" class="hidden">
+              <input type="radio" name="modalStatus" value="done" onchange="onStatusRadioChange()" class="hidden">
               <span class="w-3.5 h-3.5 rounded-full bg-emerald-500"></span>
               <span class="font-bold text-emerald-700">교체 완료</span>
             </label>
+            <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-2 has-[:checked]:ring-blue-400">
+              <input type="radio" name="modalStatus" value="plan" onchange="onStatusRadioChange()" class="hidden">
+              <span class="w-3.5 h-3.5 rounded-full bg-blue-500"></span>
+              <span class="font-bold text-blue-700">교체 예정</span>
+            </label>
             <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/50 has-[:checked]:ring-2 has-[:checked]:ring-amber-400">
-              <input type="radio" name="modalStatus" value="warn" class="hidden">
+              <input type="radio" name="modalStatus" value="warn" onchange="onStatusRadioChange()" class="hidden">
               <span class="w-3.5 h-3.5 rounded-full bg-amber-400"></span>
-              <span class="font-bold text-amber-700">주기 임박</span>
+              <span class="font-bold text-amber-700">점검 요망</span>
             </label>
             <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-slate-400 has-[:checked]:bg-slate-100 has-[:checked]:ring-2 has-[:checked]:ring-slate-300">
-              <input type="radio" name="modalStatus" value="none" class="hidden">
+              <input type="radio" name="modalStatus" value="none" onchange="onStatusRadioChange()" class="hidden">
               <span class="w-3.5 h-3.5 rounded-full bg-slate-300"></span>
               <span class="font-bold text-slate-600">없음(해제)</span>
             </label>
@@ -363,13 +370,14 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">상세 작업 일자 (선택)</label>
-          <input type="date" id="modalExactDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none">
+          <label class="block font-bold text-slate-700 mb-1">상세 작업 / 예정 일자</label>
+          <input type="date" id="modalExactDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none font-medium">
+          <p class="text-[11px] text-slate-400 mt-1">※ '교체 완료' 등록 시 입력된 일자를 기준으로 2030년까지의 차기 주기가 자동 연쇄 계산됩니다.</p>
         </div>
 
         <div>
           <label class="block font-bold text-slate-700 mb-1">작업자 및 비고 / 교체 로프 규격 메모</label>
-          <textarea id="modalMemo" rows="2" placeholder="예: 고려제강 6xFi(29) IWRC 교체 완료 / 특이사항 없음" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none"></textarea>
+          <textarea id="modalMemo" rows="2" placeholder="예: 고려제강 6xFi(29) IWRC 교체 완료 / 이상무" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none"></textarea>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
@@ -385,7 +393,7 @@
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
       <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-crane text-emerald-400"></i>
+          <i class="fa-solid fa-industry text-emerald-400"></i>
           <h3 class="font-bold text-sm" id="craneModalTitle">신규 크레인 및 와이어로프 등록</h3>
         </div>
         <button onclick="closeModal('craneModal')" class="text-white/80 hover:text-white text-lg">
@@ -443,7 +451,6 @@
         <div>
           <label class="block font-bold text-slate-700 mb-1">최근 교체일 (최초 기준일)</label>
           <input type="date" id="formLastReplaced" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500">
-          <p class="text-[11px] text-slate-400 mt-0.5">입력 시 주기 계산을 통해 차기 예정 분기에 자동으로 표시됩니다.</p>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
@@ -454,35 +461,19 @@
     </div>
   </div>
 
-  <!-- CUSTOM CONFIRM MODAL -->
-  <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 border border-slate-200">
-      <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-      </div>
-      <h4 class="text-center font-bold text-slate-800 text-sm mb-1" id="confirmTitle">확인</h4>
-      <p class="text-center text-xs text-slate-600 mb-4" id="confirmMessage">작업을 진행하시겠습니까?</p>
-      <div class="flex items-center justify-center gap-2">
-        <button id="btnConfirmCancel" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold text-xs">취소</button>
-        <button id="btnConfirmOk" class="w-1/2 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-xs shadow">확인</button>
-      </div>
-    </div>
-  </div>
-
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition duration-200 border border-slate-700 pointer-events-none text-xs">
     <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
     <span id="toastMsg" class="font-medium">알림 메시지</span>
   </div>
 
-  <!-- FIREBASE & CORE APPLICATION SCRIPT -->
+  <!-- FIREBASE SCRIPTS (MODULAR VIA CDN) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // 사용자 제공 Firebase Configuration 연동
-    const userFirebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyACPbWX_SAV51Fzc9iW90Fzw64NfYbLgKg",
       authDomain: "wire-rope-common.firebaseapp.com",
       projectId: "wire-rope-common",
@@ -491,13 +482,84 @@
       appId: "1:1086672017327:web:6acd51df06c355385e015a"
     };
 
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userFirebaseConfig;
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'wire-rope-common';
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    let db = null;
+    let auth = null;
+    let isCloudReady = false;
 
-    // --- MASTER RAW DATA (FROM THE PROVIDED IMAGE EXACTLY) ---
+    // Background Firebase Init (Resilient - never crashes UI)
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+
+      signInAnonymously(auth).then(async (userCredential) => {
+        isCloudReady = true;
+        updateCloudStatus(true, "실시간 클라우드 연결됨");
+        
+        // Listen to Firestore updates
+        const docRef = doc(db, 'crane_wirerope', 'master_data');
+        onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const remoteData = docSnap.data();
+            if (remoteData && Array.isArray(remoteData.ropeList)) {
+              window.ropeList = remoteData.ropeList;
+              localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
+              window.renderTable();
+              window.updateStats();
+            }
+          }
+        }, (err) => {
+          console.warn("Firestore onSnapshot permission notice:", err);
+          updateCloudStatus(false, "로컬 보존 모드");
+        });
+
+      }).catch((err) => {
+        console.warn("Firebase Auth Notice:", err.message);
+        updateCloudStatus(false, "로컬 캐시 저장 모드");
+      });
+    } catch (e) {
+      console.warn("Firebase Init notice:", e);
+      updateCloudStatus(false, "로컬 모드 동작");
+    }
+
+    // Global Cloud Save Function
+    window.saveDataToFirestore = async function() {
+      // 1. Always save to Local Cache first
+      try {
+        localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
+      } catch(e) {}
+
+      // 2. Save to Firestore if connected
+      if (isCloudReady && db) {
+        try {
+          const docRef = doc(db, 'crane_wirerope', 'master_data');
+          await setDoc(docRef, {
+            ropeList: window.ropeList,
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+        } catch (err) {
+          console.warn("Firestore save fallback to local:", err);
+        }
+      }
+    };
+
+    function updateCloudStatus(connected, text) {
+      const badge = document.getElementById('cloudStatusBadge');
+      const textEl = document.getElementById('cloudStatusText');
+      if (!badge || !textEl) return;
+
+      textEl.innerText = text;
+      if (connected) {
+        badge.className = "text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 transition";
+      } else {
+        badge.className = "text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 flex items-center gap-1.5 transition";
+      }
+    }
+  </script>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // --- MASTER SEAH CRANE RAW DATA (ALL 38 CRANES, 52 POINTS - DEFAULT BLANK SCHEDULES) ---
     const DEFAULT_ROPE_DATA = [
       // CPL
       { id: 'cpl-1', line: 'CPL', seq: 1, name: 'H1', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
@@ -567,147 +629,37 @@
       { id: 'ut-2', line: 'UTILITY', seq: 2, name: 'M1', cap: '5TON', type: '주권', cycle: '10년', lastDate: '', schedules: {} }
     ];
 
-    const MIN_START_YEAR = 2026;
-    const MAX_START_YEAR = 2028;
+    // ALL 20 QUARTERS (2026 ~ 2030)
+    const ALL_QUARTERS = [];
+    for (let y = 2026; y <= 2030; y++) {
+      for (let q = 1; q <= 4; q++) {
+        ALL_QUARTERS.push(`${y}_${q}Q`);
+      }
+    }
 
     // App State
-    let ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
-    let viewStartYear = 2026;
+    let startYear = 2026; // Shows 3 consecutive years (e.g. 2026 ~ 2028)
     let currentLineFilter = 'ALL';
     let currentTypeFilter = 'ALL';
     let currentSearchTerm = '';
-    let currentUser = null;
-    let isSavingToCloud = false;
 
-    // Firestore 공용 데이터 저장 경로
-    const getCraneDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'crane_wirerope', 'master_data');
-
-    async function initCloudSync() {
-      const badge = document.getElementById('cloudStatusBadge');
-      let user = null;
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          const cred = await signInWithCustomToken(auth, __initial_auth_token);
-          user = cred.user;
-        } else {
-          const cred = await signInAnonymously(auth);
-          user = cred.user;
-        }
-      } catch (err) {
-        console.warn('Initial auth fallback to anonymous:', err);
-        try {
-          const cred = await signInAnonymously(auth);
-          user = cred.user;
-        } catch (authErr) {
-          console.error('Anonymous auth failed:', authErr);
-        }
-      }
-
-      if (!user) {
-        badge.className = "bg-rose-400/20 text-rose-200 border border-rose-300/30 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-medium";
-        badge.innerHTML = '<i class="fa-solid fa-cloud-slash"></i> 오프라인 모드';
-        return;
-      }
-
-      currentUser = user;
-      badge.className = "bg-emerald-400/20 text-emerald-200 border border-emerald-300/30 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-medium";
-      badge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> 실시간 클라우드 연결됨';
-
-      // Firestore 실시간 리스너 (페이지를 열거나 다른 사용자가 수정 시 자동 테이블 갱신)
-      const docRef = getCraneDocRef();
-      onSnapshot(docRef, (docSnap) => {
-        if (isSavingToCloud) return; // 저장 중 발생하는 로컬 에코 방지
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data && Array.isArray(data.list) && data.list.length > 0) {
-            ropeList = data.list;
-            renderTable();
-            updateStats();
-          }
-        } else {
-          // Firestore에 최초 데이터가 없는 경우 초기 마스터 데이터 자동 업로드
-          saveDataToFirestore(DEFAULT_ROPE_DATA, false);
-        }
-      }, (error) => {
-        console.error("Firestore Snapshot Error:", error);
-        badge.className = "bg-amber-400/20 text-amber-200 border border-amber-300/30 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-medium";
-        badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> 동기화 대기';
-        showToast('클라우드 동기화 중 일시적 지연이 발생했습니다.', true);
-      });
+    // Load Local Cache if available
+    let cached = localStorage.getItem('seah_crane_ropes_cache');
+    try {
+      window.ropeList = cached ? JSON.parse(cached) : JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
+    } catch(e) {
+      window.ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
     }
 
-    // 데이터 저장 시 Firestore로 비동기 저장
-    async function saveDataToFirestore(newList, notify = true) {
-      if (!auth.currentUser) return;
-      try {
-        isSavingToCloud = true;
-        const docRef = getCraneDocRef();
-        await setDoc(docRef, {
-          list: newList,
-          updatedAt: new Date().toISOString(),
-          updatedBy: auth.currentUser.uid
-        });
-        if (notify) {
-          showToast('클라우드 저장소에 안전하게 저장되었습니다.');
-        }
-      } catch (err) {
-        console.error("Save to Firestore failed:", err);
-        showToast('클라우드 저장에 실패했습니다. (네트워크 확인 요망)', true);
-      } finally {
-        setTimeout(() => { isSavingToCloud = false; }, 300);
-      }
-    }
+    // Init App
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('printDate').innerText = new Date().toLocaleDateString('ko-KR');
+      renderHeader();
+      window.renderTable();
+      window.updateStats();
+    });
 
-    function getActiveYears() {
-      return [viewStartYear, viewStartYear + 1, viewStartYear + 2];
-    }
-
-    function getActiveQuarters() {
-      const qList = [];
-      getActiveYears().forEach(y => {
-        for (let q = 1; q <= 4; q++) {
-          qList.push(`${y}_${q}Q`);
-        }
-      });
-      return qList;
-    }
-
-    function changeYearWindow(delta) {
-      const target = viewStartYear + delta;
-      if (target >= MIN_START_YEAR && target <= MAX_START_YEAR) {
-        setYearWindow(target);
-      }
-    }
-
-    function setYearWindow(startYear) {
-      viewStartYear = Math.max(MIN_START_YEAR, Math.min(MAX_START_YEAR, startYear));
-      updateYearControls();
-      renderTableHeader();
-      renderTable();
-      updateStats();
-    }
-
-    function updateYearControls() {
-      const endYear = viewStartYear + 2;
-      document.getElementById('currentPeriodText').innerText = `${viewStartYear} ~ ${endYear}년`;
-      document.getElementById('stat-window-label').innerText = `${viewStartYear.toString().slice(2)}~${endYear.toString().slice(2)}년 교체 예정`;
-
-      const btnPrev = document.getElementById('btnPrevYears');
-      const btnNext = document.getElementById('btnNextYears');
-
-      btnPrev.disabled = (viewStartYear <= MIN_START_YEAR);
-      btnNext.disabled = (viewStartYear >= MAX_START_YEAR);
-
-      document.querySelectorAll('.year-preset-btn').forEach(btn => {
-        const y = parseInt(btn.dataset.start, 10);
-        if (y === viewStartYear) {
-          btn.className = "year-preset-btn px-2.5 py-1 text-[11px] font-bold rounded-lg transition border bg-seah-700 text-white border-seah-800 shadow-sm";
-        } else {
-          btn.className = "year-preset-btn px-2.5 py-1 text-[11px] font-bold rounded-lg transition border bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200";
-        }
-      });
-    }
-
+    // Helper: Parse Cycle to Months
     function cycleToMonths(cycleStr) {
       if (!cycleStr) return 12;
       let totalMonths = 0;
@@ -718,116 +670,177 @@
       return totalMonths > 0 ? totalMonths : 12;
     }
 
+    // Helper: Format Date String
+    function formatDate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatShortDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length >= 3) {
+        return `${parts[0].slice(2)}.${parts[1]}.${parts[2]}`;
+      }
+      return dateStr;
+    }
+
+    // Parse Local Date without UTC timezone drift
     function parseLocalDate(dateStr) {
       if (!dateStr) return null;
-      const parts = dateStr.split('-');
-      if (parts.length === 3) {
-        const y = parseInt(parts[0], 10);
-        const m = parseInt(parts[1], 10) - 1;
-        const d = parseInt(parts[2], 10);
-        const dt = new Date(y, m, d);
-        dt.setHours(0, 0, 0, 0);
-        return dt;
-      }
-      const dt = new Date(dateStr);
-      if (!isNaN(dt.getTime())) {
-        dt.setHours(0, 0, 0, 0);
-        return dt;
-      }
-      return null;
+      const [y, m, d] = dateStr.split('-').map(Number);
+      if (!y || !m || !d) return null;
+      return new Date(y, m - 1, d);
     }
 
-    function calculateNextDateString(baseDateStr, months) {
-      const d = parseLocalDate(baseDateStr) || new Date(baseDateStr);
-      if (isNaN(d.getTime())) return null;
-      const originalDay = d.getDate();
-      d.setMonth(d.getMonth() + months);
-      if (d.getDate() !== originalDay) {
-        d.setDate(0);
-      }
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    }
-
+    // Dynamic Cascade Forecast Recalculation (2026 ~ 2030)
     function recalculateRopeForecast(item) {
-      if (!item) return;
       if (!item.schedules) item.schedules = {};
 
-      Object.keys(item.schedules).forEach(key => {
-        const s = item.schedules[key];
+      // 1. Collect all completed events (done)
+      const completedEvents = [];
+      Object.keys(item.schedules).forEach(k => {
+        const s = item.schedules[k];
+        if (s && s.status === 'done' && s.date) {
+          completedEvents.push({ quarter: k, date: s.date });
+        }
+      });
+
+      // Clear non-manual plan schedules so forecasts stay completely clean and accurate
+      Object.keys(item.schedules).forEach(k => {
+        const s = item.schedules[k];
         if (s && s.status === 'plan' && !s.manual) {
-          delete item.schedules[key];
+          delete item.schedules[k];
         }
       });
 
-      const cycleMonths = cycleToMonths(item.cycle);
-      if (cycleMonths <= 0) return;
-
-      const doneList = [];
-      Object.entries(item.schedules).forEach(([qKey, s]) => {
-        if (s && s.status === 'done') {
-          doneList.push({
-            qKey: qKey,
-            date: s.date || `${qKey.split('_')[0]}-01-01`
-          });
-        }
-      });
-
-      doneList.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      let baseDateStr = '';
-      if (doneList.length > 0) {
-        baseDateStr = doneList[doneList.length - 1].date;
+      // 2. Identify the latest reference date
+      let baseDateStr = item.lastDate || '';
+      if (completedEvents.length > 0) {
+        completedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        baseDateStr = completedEvents[completedEvents.length - 1].date;
         item.lastDate = baseDateStr;
-      } else if (item.lastDate) {
-        baseDateStr = item.lastDate;
       }
 
       if (!baseDateStr) return;
 
-      let currentDateStr = baseDateStr;
-      const maxIterations = 30;
-      let iter = 0;
+      const baseDate = parseLocalDate(baseDateStr);
+      if (!baseDate) return;
 
-      while (iter < maxIterations) {
-        iter++;
-        const nextDateStr = calculateNextDateString(currentDateStr, cycleMonths);
-        if (!nextDateStr) break;
+      const stepMonths = cycleToMonths(item.cycle);
+      let curr = new Date(baseDate);
 
-        const nextDateObj = parseLocalDate(nextDateStr);
-        const year = nextDateObj.getFullYear();
-        if (year > 2030) break;
+      // Cascade forward up to 2030
+      while (true) {
+        curr.setMonth(curr.getMonth() + stepMonths);
+        const y = curr.getFullYear();
+        if (y > 2030) break;
 
-        const month = nextDateObj.getMonth() + 1;
-        const quarter = Math.ceil(month / 3);
-        const targetQKey = `${year}_${quarter}Q`;
+        const m = curr.getMonth() + 1;
+        const q = Math.ceil(m / 3);
+        const qKey = `${y}_${q}Q`;
 
-        if (!item.schedules[targetQKey]) {
-          item.schedules[targetQKey] = {
+        // If not already marked done, assign the calculated forecast date
+        if (!item.schedules[qKey] || item.schedules[qKey].status !== 'done') {
+          item.schedules[qKey] = {
             status: 'plan',
-            date: nextDateStr,
-            memo: `교체주기(${item.cycle}) 기준 자동 예측`,
+            date: formatDate(curr),
             manual: false
           };
         }
-
-        currentDateStr = nextDateStr;
       }
     }
 
-    function autoScheduleAll() {
-      ropeList.forEach(item => {
-        recalculateRopeForecast(item);
-      });
+    // Dynamic 3-Year Table Header Rendering
+    function renderHeader() {
+      const thead = document.getElementById('tableHeader');
+      const y1 = startYear;
+      const y2 = startYear + 1;
+      const y3 = startYear + 2;
 
-      renderTable();
-      updateStats();
-      saveDataToFirestore(ropeList);
-      showToast('모든 크레인의 주기를 바탕으로 2030년까지의 예측 일정이 자동 계산되어 클라우드에 저장되었습니다.');
+      thead.innerHTML = `
+        <tr class="bg-slate-800 text-white font-semibold">
+          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-16 sticky left-0 bg-slate-800 z-10">LINE</th>
+          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-12">순번</th>
+          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-28">설비명</th>
+          <th colspan="2" class="p-2 border-r border-slate-700">규격 및 구분</th>
+          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-20">교체주기</th>
+          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-sky-950 font-bold text-sky-200 border-b">${y1}년 교체일</th>
+          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-indigo-950 font-bold text-indigo-200 border-b">${y2}년 교체일</th>
+          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-slate-900 font-bold text-slate-200 border-b">${y3}년 교체일</th>
+          <th rowspan="2" class="p-2.5 border-l border-slate-700 w-16 no-print">관리</th>
+        </tr>
+        <tr class="bg-slate-700 text-slate-200 text-[11px] font-medium border-b border-slate-600">
+          <th class="p-1.5 border-r border-slate-600 w-20">용량</th>
+          <th class="p-1.5 border-r border-slate-600 w-14">구분</th>
+          <!-- Y1 -->
+          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-1분기</th>
+          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-2분기</th>
+          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-3분기</th>
+          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-4분기</th>
+          <!-- Y2 -->
+          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-1분기</th>
+          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-2분기</th>
+          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-3분기</th>
+          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-4분기</th>
+          <!-- Y3 -->
+          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-1분기</th>
+          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-2분기</th>
+          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-3분기</th>
+          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-4분기</th>
+        </tr>
+      `;
+
+      // Update Navigation Buttons state
+      document.getElementById('periodLabel').innerText = `${y1} ~ ${y3}년`;
+      document.getElementById('btnPrevYear').disabled = (startYear <= 2026);
+      document.getElementById('btnNextYear').disabled = (startYear >= 2028);
+
+      const b2628 = document.getElementById('btn2628');
+      const b2729 = document.getElementById('btn2729');
+      const b2830 = document.getElementById('btn2830');
+
+      [b2628, b2729, b2830].forEach(b => b.className = "px-2.5 py-1 text-xs rounded-md font-bold transition bg-slate-100 hover:bg-slate-200 text-slate-700");
+      if (startYear === 2026) b2628.className = "px-2.5 py-1 text-xs rounded-md font-bold transition bg-seah-700 text-white shadow-sm";
+      else if (startYear === 2027) b2729.className = "px-2.5 py-1 text-xs rounded-md font-bold transition bg-seah-700 text-white shadow-sm";
+      else if (startYear === 2028) b2830.className = "px-2.5 py-1 text-xs rounded-md font-bold transition bg-seah-700 text-white shadow-sm";
     }
 
+    // Period Navigation handlers
+    window.shiftStartYear = function(delta) {
+      const next = startYear + delta;
+      if (next >= 2026 && next <= 2028) {
+        startYear = next;
+        renderHeader();
+        window.renderTable();
+      }
+    };
+
+    window.setStartYear = function(year) {
+      if (year >= 2026 && year <= 2028) {
+        startYear = year;
+        renderHeader();
+        window.renderTable();
+      }
+    };
+
+    // Auto Schedule Calculation for All Cranes
+    window.autoScheduleAll = function() {
+      let count = 0;
+      window.ropeList.forEach(item => {
+        recalculateRopeForecast(item);
+        count++;
+      });
+
+      window.renderTable();
+      window.updateStats();
+      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      showToast(`전체 크레인의 주기 예측이 최신화되었습니다.`);
+    };
+
+    // Toast Notification System
     function showToast(msg, isWarn = false) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toastMsg');
@@ -846,61 +859,25 @@
       }, 3000);
     }
 
-    function renderTableHeader() {
-      const thead = document.getElementById('tableHeader');
-      const activeYears = getActiveYears();
-
-      const yearTheme = [
-        { bgHeader: 'bg-sky-950/80 text-sky-200', colBg: 'bg-sky-950/50 text-sky-200' },
-        { bgHeader: 'bg-indigo-950/80 text-indigo-200', colBg: 'bg-indigo-950/50 text-indigo-200' },
-        { bgHeader: 'bg-slate-950/90 text-slate-200', colBg: 'bg-slate-900/60 text-slate-200' }
-      ];
-
-      let yearHeadersHtml = '';
-      let quarterHeadersHtml = '';
-
-      activeYears.forEach((y, idx) => {
-        const theme = yearTheme[idx];
-        yearHeadersHtml += `
-          <th colspan="4" class="p-2 border-b border-slate-700 ${theme.bgHeader} tracking-wider font-bold">
-            ${y}년 교체일
-          </th>
-        `;
-
-        const shortY = y.toString().slice(2);
-        for (let q = 1; q <= 4; q++) {
-          quarterHeadersHtml += `
-            <th class="p-1.5 border-r border-slate-600 ${theme.colBg} w-16" title="${y}년 ${q}분기">
-              ${shortY}-${q}분기
-            </th>
-          `;
-        }
-      });
-
-      thead.innerHTML = `
-        <tr class="bg-slate-800 text-white font-semibold">
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-16 sticky left-0 bg-slate-800 z-10">LINE</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-12">순번</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-28">설비명</th>
-          <th colspan="2" class="p-2 border-r border-slate-700">규격 및 구분</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-20">교체주기</th>
-          ${yearHeadersHtml}
-          <th rowspan="2" class="p-2.5 border-l border-slate-700 w-20 no-print">관리</th>
-        </tr>
-        <tr class="bg-slate-700 text-slate-200 text-[11px] font-medium border-b border-slate-600">
-          <th class="p-1.5 border-r border-slate-600 w-20">용량</th>
-          <th class="p-1.5 border-r border-slate-600 w-14">구분</th>
-          ${quarterHeadersHtml}
-        </tr>
-      `;
-    }
-
-    function renderTable() {
+    // Render Table Logic
+    window.renderTable = function() {
       const tbody = document.getElementById('tableBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
-      const activeQuarters = getActiveQuarters();
 
-      let filtered = ropeList.filter(item => {
+      // Active 12 quarters for the current 3-year view
+      const activeQuarters = [];
+      for (let y = startYear; y <= startYear + 2; y++) {
+        for (let q = 1; q <= 4; q++) {
+          activeQuarters.push(`${y}_${q}Q`);
+        }
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Filter
+      let filtered = window.ropeList.filter(item => {
         const matchLine = (currentLineFilter === 'ALL' || item.line === currentLineFilter);
         const matchType = (currentTypeFilter === 'ALL' || item.type === currentTypeFilter);
         const search = currentSearchTerm.toLowerCase();
@@ -919,9 +896,9 @@
         return;
       }
 
+      // Grouping calculations
       const lineCounts = {};
       const nameCounts = {};
-
       filtered.forEach(item => {
         lineCounts[item.line] = (lineCounts[item.line] || 0) + 1;
         const nameKey = `${item.line}_${item.seq}_${item.name}`;
@@ -934,10 +911,9 @@
       filtered.forEach((item) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-sky-50/40 transition-colors border-b border-slate-200';
-
         const nameKey = `${item.line}_${item.seq}_${item.name}`;
 
-        // 1. LINE
+        // 1. LINE Column
         if (!renderedLines[item.line]) {
           renderedLines[item.line] = true;
           const tdLine = document.createElement('td');
@@ -968,7 +944,7 @@
           const tdName = document.createElement('td');
           tdName.rowSpan = nameCounts[nameKey];
           tdName.className = 'font-bold text-slate-900 border-r border-slate-200 align-middle bg-white';
-          tdName.innerHTML = `<div class="flex items-center justify-center gap-1"><span>${item.name}</span></div>`;
+          tdName.innerHTML = `<div class="flex items-center justify-center gap-1 font-bold"><span>${item.name}</span></div>`;
           tr.appendChild(tdName);
         }
 
@@ -978,7 +954,7 @@
         tdCap.innerText = item.cap;
         tr.appendChild(tdCap);
 
-        // 4. HOIST TYPE
+        // 4. TYPE (주권 / 보권)
         const tdType = document.createElement('td');
         tdType.className = 'border-r border-slate-200 font-semibold py-2';
         if (item.type === '주권') {
@@ -994,76 +970,90 @@
         tdCycle.innerText = item.cycle;
         tr.appendChild(tdCycle);
 
-        // 6. QUARTERLY CELLS
+        // 6. 12 QUARTER CELLS
         activeQuarters.forEach((qKey) => {
           const tdQ = document.createElement('td');
-          const cellYear = parseInt(qKey.split('_')[0], 10);
+          const isY1 = qKey.startsWith(String(startYear));
+          const isY2 = qKey.startsWith(String(startYear + 1));
+          const bgShade = isY1 ? 'bg-sky-50/20' : (isY2 ? 'bg-indigo-50/20' : 'bg-slate-50/20');
           
-          let colBg = 'bg-slate-50/10';
-          if (cellYear === viewStartYear) colBg = 'bg-sky-50/10';
-          else if (cellYear === viewStartYear + 1) colBg = 'bg-indigo-50/10';
-          else colBg = 'bg-slate-50/20';
-
-          tdQ.className = `p-1 border-r border-slate-200 cursor-pointer transition hover:bg-sky-100/70 select-none h-8 ${colBg}`;
+          tdQ.className = `p-1 border-r border-slate-200 cursor-pointer transition hover:bg-sky-100/50 select-none ${bgShade}`;
           tdQ.onclick = () => openScheduleModal(item.id, qKey);
 
           const sched = item.schedules && item.schedules[qKey];
-          if (sched && sched.status) {
+          if (sched && sched.status && sched.status !== 'none') {
             let badge = '';
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
 
-            let schedDate = null;
-            if (sched.date) {
-              schedDate = parseLocalDate(sched.date);
-            } else {
-              const parts = qKey.split('_');
-              const y = parseInt(parts[0], 10);
-              const qNum = parseInt(parts[1].replace('Q', ''), 10);
-              const qEndMonths = [2, 5, 8, 11];
-              const qEndDays = [31, 30, 30, 31];
-              schedDate = new Date(y, qEndMonths[qNum - 1], qEndDays[qNum - 1]);
-              schedDate.setHours(0, 0, 0, 0);
-            }
-
+            // 1) 교체 완료
             if (sched.status === 'done') {
-              const rawDate = sched.date || new Date().toISOString().slice(0, 10);
-              const formattedDate = rawDate.length >= 10 ? rawDate.slice(2).replace(/-/g, '.') : rawDate;
-              badge = `<div class="bg-emerald-600 text-white text-[11px] font-semibold py-1 px-0.5 rounded shadow-sm flex items-center justify-center tracking-tighter" title="교체 완료일: ${rawDate}${sched.memo ? ' (' + sched.memo + ')' : ''}"><i class="fa-solid fa-check text-[9px] mr-1"></i>${formattedDate}</div>`;
-            } else if (sched.status === 'plan' || sched.status === 'warn') {
-              const fDate = sched.date && sched.date.length >= 10 ? sched.date.slice(2).replace(/-/g, '.') : (sched.date || '');
-              
-              const diffTime = schedDate.getTime() - today.getTime();
-              const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-              if (diffDays < 0) {
-                const overdueDays = Math.abs(diffDays);
-                badge = `<div class="bg-rose-600 text-white text-[10px] font-extrabold py-1 px-0.5 rounded shadow flex items-center justify-center tracking-tighter animate-pulse" title="[교체 위험] 예정일(${sched.date || '해당 분기'}) 경과! (${overdueDays}일 지연 - 즉시 교체 필요)"><span class="bg-rose-900 text-rose-100 text-[9px] px-1 py-0.2 rounded mr-1">지연</span>${fDate} (+${overdueDays}d)</div>`;
-              } else if (diffDays === 0) {
-                badge = `<div class="bg-rose-600 text-white text-[10px] font-extrabold py-1 px-0.5 rounded shadow flex items-center justify-center tracking-tighter animate-pulse" title="[교체 위험] 예정일 당일입니다! 즉시 교체 작업을 확인하세요."><span class="bg-rose-900 text-rose-100 text-[9px] px-1 py-0.2 rounded mr-1">당일</span>${fDate} (D-Day)</div>`;
-              } else if (diffDays <= 30 || sched.status === 'warn') {
-                badge = `<div class="bg-amber-400 text-slate-950 text-[10px] font-extrabold py-1 px-0.5 rounded shadow flex items-center justify-center tracking-tighter border border-amber-500/50" title="[주기 임박] 교체 예정일(${sched.date || '해당 분기'})까지 ${diffDays}일 남음"><span class="bg-amber-600 text-white text-[9px] font-black px-1 py-0.2 rounded mr-1">임박</span>${fDate} (-${diffDays}d)</div>`;
-              } else {
-                badge = `<div class="bg-blue-600 text-white text-[10.5px] font-semibold py-1 px-0.5 rounded shadow-sm flex items-center justify-center tracking-tighter" title="교체 예정일: ${sched.date || '미정'}${sched.memo ? ' (' + sched.memo + ')' : ''}"><span class="bg-blue-800 text-[9px] font-bold px-1 py-0.2 rounded mr-1">예정</span>${fDate}</div>`;
+              const displayDate = formatShortDate(sched.date) || '완료';
+              badge = `
+                <div class="bg-emerald-600 text-white text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5 tracking-tight" title="교체 완료일: ${sched.date || ''} ${sched.memo ? ' / ' + sched.memo : ''}">
+                  <i class="fa-solid fa-check text-[10px]"></i>
+                  <span>${displayDate}</span>
+                </div>`;
+            }
+            // 2) 교체 예정
+            else if (sched.status === 'plan') {
+              const targetDate = parseLocalDate(sched.date);
+              let diffDays = null;
+              if (targetDate) {
+                const diffTime = targetDate.getTime() - today.getTime();
+                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
               }
+
+              const displayDate = formatShortDate(sched.date);
+
+              // 🔴 지연 / 당일 (위험)
+              if (diffDays !== null && diffDays <= 0) {
+                const overdueText = diffDays === 0 ? 'D-Day' : `+${Math.abs(diffDays)}d`;
+                badge = `
+                  <div class="bg-red-600 text-white text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5 tracking-tight animate-pulse" title="[교체 위험] 예정일 경과 (${Math.abs(diffDays)}일 지연)! 즉시 교체 필요">
+                    <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                    <span>지연 ${displayDate || overdueText}</span>
+                  </div>`;
+              }
+              // 🟡 30일 이내 (임박)
+              else if (diffDays !== null && diffDays <= 30) {
+                badge = `
+                  <div class="bg-amber-400 text-slate-950 text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5 tracking-tight" title="[주기 임박] 교체 예정일까지 ${diffDays}일 남음">
+                    <i class="fa-regular fa-clock text-[10px]"></i>
+                    <span>임박 ${displayDate || `-${diffDays}d`}</span>
+                  </div>`;
+              }
+              // 🔵 30일 초과 (정상 예정)
+              else {
+                badge = `
+                  <div class="bg-blue-600 text-white text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5 tracking-tight" title="교체 예정일: ${sched.date || '미정'}">
+                    <span class="text-[10px] opacity-80">예정</span>
+                    <span>${displayDate || ''}</span>
+                  </div>`;
+              }
+            }
+            // 3) 점검 요망
+            else if (sched.status === 'warn') {
+              badge = `
+                <div class="bg-amber-500 text-slate-900 text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5" title="${sched.memo || '점검 필요'}">
+                  <i class="fa-solid fa-exclamation text-[10px]"></i> 점검
+                </div>`;
             }
 
             tdQ.innerHTML = badge;
           } else {
-            tdQ.innerHTML = `<div class="w-full h-full min-h-[22px]"></div>`;
+            tdQ.innerHTML = `<span class="text-slate-300 text-[10px] hover:text-slate-500">•</span>`;
           }
           tr.appendChild(tdQ);
         });
 
-        // 7. ACTIONS
+        // 7. ACTIONS (수정 / 삭제)
         const tdAction = document.createElement('td');
         tdAction.className = 'py-1 px-2 no-print border-l border-slate-200';
         tdAction.innerHTML = `
           <div class="flex items-center justify-center gap-1.5">
-            <button onclick="editCrane('${item.id}')" class="text-slate-500 hover:text-sky-600 p-1 rounded hover:bg-sky-50 transition" title="수정">
+            <button onclick="editCrane('${item.id}')" class="text-slate-500 hover:text-sky-600 p-1 rounded hover:bg-sky-50 transition" title="설비 사양 수정">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button onclick="deleteCrane('${item.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition" title="삭제">
+            <button onclick="deleteCrane('${item.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition" title="항목 삭제">
               <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
@@ -1072,29 +1062,33 @@
 
         tbody.appendChild(tr);
       });
-    }
+    };
 
-    function updateStats() {
-      const distinctLines = new Set(ropeList.map(r => r.line)).size;
-      const distinctCranes = new Set(ropeList.map(r => `${r.line}_${r.name}`)).size;
-      const totalRopes = ropeList.length;
+    // Update Statistics
+    window.updateStats = function() {
+      const distinctLines = new Set(window.ropeList.map(r => r.line)).size;
+      const distinctCranes = new Set(window.ropeList.map(r => `${r.line}_${r.name}`)).size;
+      const totalRopes = window.ropeList.length;
 
-      let windowPlan = 0;
-      let totalPlan = 0;
+      let dangerCount = 0;
+      let imminentCount = 0;
       let totalDone = 0;
 
-      const activeYears = getActiveYears();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      ropeList.forEach(item => {
+      window.ropeList.forEach(item => {
         if (!item.schedules) return;
-        Object.entries(item.schedules).forEach(([qKey, data]) => {
+        Object.values(item.schedules).forEach(data => {
           if (data.status === 'done') {
             totalDone++;
-          } else if (data.status === 'plan') {
-            totalPlan++;
-            const y = parseInt(qKey.split('_')[0], 10);
-            if (activeYears.includes(y)) {
-              windowPlan++;
+          } else if (data.status === 'plan' && data.date) {
+            const targetDate = parseLocalDate(data.date);
+            if (targetDate) {
+              const diffTime = targetDate.getTime() - today.getTime();
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              if (diffDays <= 0) dangerCount++;
+              else if (diffDays <= 30) imminentCount++;
             }
           }
         });
@@ -1103,12 +1097,13 @@
       document.getElementById('stat-lines').innerText = `${distinctLines}개 라인`;
       document.getElementById('stat-cranes').innerText = `${distinctCranes} 대`;
       document.getElementById('stat-ropes').innerText = `${totalRopes} 개소`;
-      document.getElementById('stat-window-plan').innerText = `${windowPlan} 건`;
-      document.getElementById('stat-total-plan').innerText = `${totalPlan} 건`;
+      document.getElementById('stat-danger').innerText = `${dangerCount} 건`;
+      document.getElementById('stat-imminent').innerText = `${imminentCount} 건`;
       document.getElementById('stat-done').innerText = `${totalDone} 건`;
-    }
+    };
 
-    function setFilterLine(line) {
+    // Filter by Line
+    window.setFilterLine = function(line) {
       currentLineFilter = line;
       document.querySelectorAll('.line-btn').forEach(btn => {
         if (btn.dataset.line === line) {
@@ -1117,25 +1112,26 @@
           btn.className = "line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700";
         }
       });
-      renderTable();
-    }
+      window.renderTable();
+    };
 
-    function handleTypeFilter() {
+    window.handleTypeFilter = function() {
       currentTypeFilter = document.getElementById('typeFilter').value;
-      renderTable();
-    }
+      window.renderTable();
+    };
 
-    function handleSearch() {
+    window.handleSearch = function() {
       currentSearchTerm = document.getElementById('searchInput').value.trim();
-      renderTable();
-    }
+      window.renderTable();
+    };
 
-    function closeModal(modalId) {
+    window.closeModal = function(modalId) {
       document.getElementById(modalId).classList.add('hidden');
-    }
+    };
 
-    function openScheduleModal(ropeId, quarterKey) {
-      const item = ropeList.find(r => r.id === ropeId);
+    // Open Schedule Modal
+    window.openScheduleModal = function(ropeId, quarterKey) {
+      const item = window.ropeList.find(r => r.id === ropeId);
       if (!item) return;
 
       document.getElementById('modalRopeId').value = ropeId;
@@ -1145,8 +1141,7 @@
       document.getElementById('modalInfoLine').innerText = item.line;
       document.getElementById('modalInfoSpec').innerText = `${item.cap} (${item.type}) / 주기: ${item.cycle}`;
 
-      const year = quarterKey.split('_')[0];
-      const q = quarterKey.split('_')[1];
+      const [year, q] = quarterKey.split('_');
       document.getElementById('modalInfoQuarter').innerText = `${year}년 ${q.replace('Q', '')}분기`;
 
       const currentSched = (item.schedules && item.schedules[quarterKey]) || { status: 'none', date: '', memo: '' };
@@ -1154,27 +1149,27 @@
       const radios = document.getElementsByName('modalStatus');
       radios.forEach(r => {
         r.checked = (r.value === (currentSched.status || 'none'));
-        r.onchange = () => {
-          const dateEl = document.getElementById('modalExactDate');
-          if (r.checked && !dateEl.value) {
-            if (r.value === 'done') {
-              dateEl.value = new Date().toISOString().slice(0, 10);
-            } else if (r.value === 'plan') {
-              const qNum = parseInt(q.replace('Q', ''), 10);
-              const defaultMonth = String((qNum - 1) * 3 + 1).padStart(2, '0');
-              dateEl.value = `${year}-${defaultMonth}-01`;
-            }
-          }
-        };
       });
 
       document.getElementById('modalExactDate').value = currentSched.date || '';
       document.getElementById('modalMemo').value = currentSched.memo || '';
 
       document.getElementById('scheduleModal').classList.remove('hidden');
-    }
+    };
 
-    async function saveSchedule(e) {
+    // Auto set date when user clicks '교체 완료' radio
+    window.onStatusRadioChange = function() {
+      const radios = document.getElementsByName('modalStatus');
+      let val = 'none';
+      radios.forEach(r => { if (r.checked) val = r.value; });
+      const dateInput = document.getElementById('modalExactDate');
+      if (val === 'done' && !dateInput.value) {
+        dateInput.value = formatDate(new Date());
+      }
+    };
+
+    // Save Schedule Data
+    window.saveSchedule = function(e) {
       e.preventDefault();
       const ropeId = document.getElementById('modalRopeId').value;
       const quarterKey = document.getElementById('modalQuarterKey').value;
@@ -1187,56 +1182,55 @@
       let exactDate = document.getElementById('modalExactDate').value;
       const memo = document.getElementById('modalMemo').value.trim();
 
-      if (selectedStatus === 'done' && !exactDate) {
-        exactDate = new Date().toISOString().slice(0, 10);
-      }
-
-      const item = ropeList.find(r => r.id === ropeId);
-      let toastMsg = '교체 일정이 업데이트되었습니다.';
-
+      const item = window.ropeList.find(r => r.id === ropeId);
       if (item) {
         if (!item.schedules) item.schedules = {};
 
         if (selectedStatus === 'none') {
           delete item.schedules[quarterKey];
+          // Recalculate remaining forecasts
+          recalculateRopeForecast(item);
         } else {
+          // If status is done/plan and no date selected, default smartly
+          if (!exactDate) {
+            const [y, q] = quarterKey.split('_');
+            const qNum = parseInt(q.replace('Q', ''), 10);
+            const midMonth = (qNum - 1) * 3 + 2;
+            exactDate = `${y}-${String(midMonth).padStart(2, '0')}-15`;
+          }
+
           item.schedules[quarterKey] = {
             status: selectedStatus,
             date: exactDate,
             memo: memo,
-            manual: true
+            manual: (selectedStatus === 'plan')
           };
-        }
 
-        recalculateRopeForecast(item);
-
-        if (selectedStatus === 'done') {
-          toastMsg = `[${item.name}] 교체완료(${exactDate}) 등록! 주기(${item.cycle}) 기준 차기 일정이 자동 연계되었습니다.`;
-        } else if (selectedStatus === 'plan') {
-          toastMsg = `[${item.name}] ${exactDate ? exactDate + ' ' : ''}교체 예정 일정이 등록되었습니다.`;
-        } else if (selectedStatus === 'none') {
-          toastMsg = `[${item.name}] 해당 분기 일정이 해제되었습니다.`;
+          if (selectedStatus === 'done') {
+            item.lastDate = exactDate;
+            recalculateRopeForecast(item);
+          }
         }
       }
 
-      closeModal('scheduleModal');
-      renderTable();
-      updateStats();
-      showToast(toastMsg);
+      window.closeModal('scheduleModal');
+      window.renderTable();
+      window.updateStats();
+      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      showToast('교체 일정이 성공적으로 저장되었습니다.');
+    };
 
-      // Persist into Firestore
-      await saveDataToFirestore(ropeList);
-    }
-
-    function openAddModal() {
+    // Add New Crane Modal
+    window.openAddModal = function() {
       document.getElementById('craneModalTitle').innerText = '신규 크레인 및 와이어로프 등록';
       document.getElementById('editCraneId').value = '';
       document.getElementById('craneForm').reset();
       document.getElementById('craneModal').classList.remove('hidden');
-    }
+    };
 
-    function editCrane(ropeId) {
-      const item = ropeList.find(r => r.id === ropeId);
+    // Edit Existing Crane
+    window.editCrane = function(ropeId) {
+      const item = window.ropeList.find(r => r.id === ropeId);
       if (!item) return;
 
       document.getElementById('craneModalTitle').innerText = `크레인 로프 사양 수정 (${item.name})`;
@@ -1250,9 +1244,10 @@
       document.getElementById('formLastReplaced').value = item.lastDate || '';
 
       document.getElementById('craneModal').classList.remove('hidden');
-    }
+    };
 
-    async function saveCraneData(e) {
+    // Save Crane Data
+    window.saveCraneData = function(e) {
       e.preventDefault();
       const editId = document.getElementById('editCraneId').value;
       const line = document.getElementById('formLine').value;
@@ -1264,7 +1259,7 @@
       const lastDate = document.getElementById('formLastReplaced').value;
 
       if (editId) {
-        const item = ropeList.find(r => r.id === editId);
+        const item = window.ropeList.find(r => r.id === editId);
         if (item) {
           item.line = line;
           item.seq = seq;
@@ -1275,7 +1270,7 @@
           item.lastDate = lastDate;
           recalculateRopeForecast(item);
         }
-        showToast('설비 사양 및 연동된 예측 주기가 수정되었습니다.');
+        showToast('설비 사양이 수정되었습니다.');
       } else {
         const newId = 'rope_' + Date.now();
         const newItem = {
@@ -1289,102 +1284,56 @@
           lastDate: lastDate,
           schedules: {}
         };
-        recalculateRopeForecast(newItem);
-        ropeList.push(newItem);
+        if (lastDate) recalculateRopeForecast(newItem);
+        window.ropeList.push(newItem);
         showToast('새 크레인 와이어로프가 등록되었습니다.');
       }
 
-      closeModal('craneModal');
-      renderTable();
-      updateStats();
+      window.closeModal('craneModal');
+      window.renderTable();
+      window.updateStats();
+      if (window.saveDataToFirestore) window.saveDataToFirestore();
+    };
 
-      // Persist to Cloud
-      await saveDataToFirestore(ropeList);
-    }
-
-    function showConfirmModal(title, message, onConfirm) {
-      const modal = document.getElementById('confirmModal');
-      document.getElementById('confirmTitle').innerText = title;
-      document.getElementById('confirmMessage').innerText = message;
-      modal.classList.remove('hidden');
-
-      const btnOk = document.getElementById('btnConfirmOk');
-      const btnCancel = document.getElementById('btnConfirmCancel');
-
-      const cleanup = () => {
-        modal.classList.add('hidden');
-        btnOk.onclick = null;
-        btnCancel.onclick = null;
-      };
-
-      btnOk.onclick = () => {
-        cleanup();
-        onConfirm();
-      };
-      btnCancel.onclick = cleanup;
-    }
-
-    function deleteCrane(ropeId) {
-      const item = ropeList.find(r => r.id === ropeId);
+    // Delete Crane Item
+    window.deleteCrane = function(ropeId) {
+      const item = window.ropeList.find(r => r.id === ropeId);
       if (!item) return;
 
-      showConfirmModal(
-        '크레인 삭제 확인',
-        `[${item.line}] ${item.name} (${item.cap} ${item.type}) 항목을 정말 삭제하시겠습니까?`,
-        async () => {
-          ropeList = ropeList.filter(r => r.id !== ropeId);
-          renderTable();
-          updateStats();
-          showToast('해당 항목이 삭제되었습니다.');
-          await saveDataToFirestore(ropeList);
-        }
-      );
-    }
-
-    function resetToDefaultData() {
-      showConfirmModal(
-        '초기화 확인',
-        '모든 교체 일정 및 크레인 설정을 초기 원본 상태로 되돌리시겠습니까?',
-        async () => {
-          ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
-          renderTable();
-          updateStats();
-          showToast('초기 데이터로 복원되었습니다.');
-          await saveDataToFirestore(ropeList);
-        }
-      );
-    }
-
-    function exportToCSV() {
-      let csvContent = "\uFEFF";
-      const allExportQuarters = [];
-      for (let y = 2026; y <= 2030; y++) {
-        for (let q = 1; q <= 4; q++) {
-          allExportQuarters.push(`${y}_${q}분기`);
-        }
+      if (window.confirm(`[${item.line}] ${item.name} (${item.cap} ${item.type}) 항목을 정말 삭제하시겠습니까?`)) {
+        window.ropeList = window.ropeList.filter(r => r.id !== ropeId);
+        window.renderTable();
+        window.updateStats();
+        if (window.saveDataToFirestore) window.saveDataToFirestore();
+        showToast('해당 항목이 삭제되었습니다.');
       }
+    };
 
-      csvContent += ["LINE", "순번", "설비명", "용량", "구분", "교체주기", ...allExportQuarters].join(",") + "\n";
+    // Reset Data to Default
+    window.resetToDefaultData = function() {
+      if (window.confirm('모든 데이터를 초기 원본 상태로 되돌리시겠습니까?')) {
+        window.ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
+        window.renderTable();
+        window.updateStats();
+        if (window.saveDataToFirestore) window.saveDataToFirestore();
+        showToast('초기 데이터로 복원되었습니다.');
+      }
+    };
 
-      ropeList.forEach(item => {
-        const qVals = [];
-        for (let y = 2026; y <= 2030; y++) {
-          for (let q = 1; q <= 4; q++) {
-            const qKey = `${y}_${q}Q`;
-            const s = item.schedules && item.schedules[qKey];
-            if (!s) {
-              qVals.push("");
-            } else if (s.status === 'done') {
-              qVals.push(s.date || "완료");
-            } else if (s.status === 'plan') {
-              qVals.push(s.date ? `예정(${s.date})` : "예정");
-            } else if (s.status === 'warn') {
-              qVals.push("점검");
-            } else {
-              qVals.push("");
-            }
-          }
-        }
+    // Export to Excel-compatible CSV (2026 ~ 2030 Full 20 Quarters)
+    window.exportToCSV = function() {
+      let csvContent = "\uFEFF"; // UTF-8 BOM
+      csvContent += "LINE,순번,설비명,용량,구분,교체주기," + ALL_QUARTERS.join(",") + "\n";
+
+      window.ropeList.forEach(item => {
+        const qVals = ALL_QUARTERS.map(q => {
+          const s = item.schedules && item.schedules[q];
+          if (!s) return "";
+          if (s.status === 'done') return `${s.date || '완료'}`;
+          if (s.status === 'plan') return `예정(${s.date || ''})`;
+          if (s.status === 'warn') return "점검";
+          return "";
+        });
 
         const row = [
           `"${item.line}"`,
@@ -1402,38 +1351,11 @@
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `세아씨엠_크레인_와이어로프_교체주기현황(2026-2030)_${new Date().toISOString().slice(0,10)}.csv`);
+      link.setAttribute("download", `세아씨엠_크레인_와이어로프_교체주기현황_${new Date().toISOString().slice(0,10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('2026~2030년 전체 엑셀(CSV) 파일이 성공적으로 다운로드되었습니다.');
-    }
-
-    // Expose functions globally for UI buttons
-    window.openAddModal = openAddModal;
-    window.editCrane = editCrane;
-    window.deleteCrane = deleteCrane;
-    window.resetToDefaultData = resetToDefaultData;
-    window.exportToCSV = exportToCSV;
-    window.setFilterLine = setFilterLine;
-    window.handleTypeFilter = handleTypeFilter;
-    window.handleSearch = handleSearch;
-    window.closeModal = closeModal;
-    window.openScheduleModal = openScheduleModal;
-    window.saveSchedule = saveSchedule;
-    window.saveCraneData = saveCraneData;
-    window.changeYearWindow = changeYearWindow;
-    window.setYearWindow = setYearWindow;
-    window.autoScheduleAll = autoScheduleAll;
-
-    // Initialization on window load
-    window.onload = function () {
-      document.getElementById('printDate').innerText = new Date().toLocaleDateString('ko-KR');
-      updateYearControls();
-      renderTableHeader();
-      renderTable();
-      updateStats();
-      initCloudSync();
+      showToast('전체 5개년(2026~2030) 엑셀 CSV 파일이 다운로드되었습니다.');
     };
   </script>
 </body>
