@@ -539,7 +539,7 @@
     try {
       const app = initializeApp(firebaseConfig);
       auth = getAuth(app);
-      db = getFirestore(app);
+      db = getFirestore(app, "leeyunseung");
 
       // Auth State Listener: Strictly restrict to @seah.co.kr
       onAuthStateChanged(auth, async (user) => {
@@ -650,6 +650,8 @@
         }
       }, (err) => {
         console.warn("Firestore onSnapshot notice:", err);
+        updateCloudStatus(false, `동기화 오류: ${err.code || err.message}`);
+        window.showToast && window.showToast(`클라우드 데이터를 불러오지 못했습니다 (${err.code || err.message}). 관리자에게 문의하세요.`, true);
       });
     }
 
@@ -669,9 +671,14 @@
             updatedBy: currentUser.email,
             updatedAt: new Date().toISOString()
           }, { merge: true });
+          updateCloudStatus(true, `클라우드 저장됨: ${currentUser.email.split('@')[0]}`);
         } catch (err) {
           console.warn("Firestore save warning:", err);
+          updateCloudStatus(false, `저장 실패: ${err.code || err.message}`);
+          window.showToast && window.showToast(`⚠ 클라우드 저장 실패 (${err.code || err.message}) - 이 기기에만 저장되었습니다!`, true);
         }
+      } else if (!isCloudReady) {
+        window.showToast && window.showToast('⚠ 로그인 상태가 아니라 이 기기에만 저장되었습니다.', true);
       }
     };
 
