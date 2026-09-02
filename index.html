@@ -192,6 +192,19 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-[1750px] w-full mx-auto px-3 sm:px-6 py-4 flex flex-col gap-4">
 
+    <!-- TAB NAVIGATION -->
+    <div class="flex items-end gap-1 border-b border-slate-300 no-print">
+      <button onclick="switchTab('history')" id="tabBtnHistory" class="px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 transition flex items-center gap-2 bg-white border-slate-300 text-seah-700 shadow-sm relative top-px">
+        <i class="fa-solid fa-clock-rotate-left"></i> 와이어로프 이력현황
+      </button>
+      <button onclick="switchTab('spec')" id="tabBtnSpec" class="px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 border-transparent transition flex items-center gap-2 text-slate-500 hover:text-seah-700 hover:bg-white/60">
+        <i class="fa-solid fa-ruler-combined"></i> 와이어로프 규격
+      </button>
+    </div>
+
+    <!-- TAB PANEL: 이력현황 -->
+    <div id="tabPanelHistory" class="flex flex-col gap-4">
+
     <!-- KPI STATS SUMMARY CARDS -->
     <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print">
       <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm flex items-center gap-3">
@@ -360,6 +373,52 @@
       </table>
     </div>
 
+    </div>
+    <!-- END TAB PANEL: 이력현황 -->
+
+    <!-- TAB PANEL: 규격 -->
+    <div id="tabPanelSpec" class="hidden flex flex-col gap-4">
+      <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between no-print">
+        <div class="flex items-center flex-wrap gap-1.5 w-full md:w-auto">
+          <span class="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
+            <i class="fa-solid fa-filter text-slate-400"></i> 라인 필터:
+          </span>
+          <button onclick="setFilterLine('ALL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-800 text-white shadow-sm" data-line="ALL">전체 (All)</button>
+          <button onclick="setFilterLine('CPL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="CPL">CPL</button>
+          <button onclick="setFilterLine('CRM')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="CRM">CRM</button>
+          <button onclick="setFilterLine('CGL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="CGL">CGL</button>
+          <button onclick="setFilterLine('1CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="1CCL">1CCL</button>
+          <button onclick="setFilterLine('2CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="2CCL">2CCL</button>
+          <button onclick="setFilterLine('3CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="3CCL">3CCL</button>
+          <button onclick="setFilterLine('UTILITY')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="UTILITY">UTILITY</button>
+        </div>
+        <div class="relative w-full md:w-60">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="specSearchInput" oninput="handleSpecSearch()" placeholder="설비명, 규격 검색..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-seah-500 bg-slate-50 focus:bg-white transition">
+        </div>
+      </section>
+
+      <div class="table-container bg-white rounded-xl border border-slate-300 shadow-sm overflow-x-auto custom-scrollbar">
+        <table class="w-full text-center border-collapse min-w-[900px] text-xs">
+          <thead>
+            <tr class="bg-slate-800 text-white font-semibold">
+              <th class="p-2.5 border-r border-slate-700 w-16">LINE</th>
+              <th class="p-2.5 border-r border-slate-700 w-12">순번</th>
+              <th class="p-2.5 border-r border-slate-700 w-28">설비명</th>
+              <th class="p-2.5 border-r border-slate-700 w-20">용량</th>
+              <th class="p-2.5 border-r border-slate-700 w-14">구분</th>
+              <th class="p-2.5 border-r border-slate-700 w-24">교체주기</th>
+              <th class="p-2.5">와이어 규격</th>
+            </tr>
+          </thead>
+          <tbody id="specTableBody" class="divide-y divide-slate-200">
+            <!-- Dynamically populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- END TAB PANEL: 규격 -->
+
     <!-- FOOTER NOTES / AUDIT INFO -->
     <div class="bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
       <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
@@ -503,6 +562,11 @@
             <label class="block font-bold text-slate-700 mb-1">교체주기*</label>
             <input type="text" id="formCycle" required class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500" placeholder="예: 1년, 1년 6개월, 2년, 5년">
           </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">와이어 규격</label>
+          <input type="text" id="formSpec" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 font-mono" placeholder="예: 18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART">
         </div>
 
         <div>
@@ -668,11 +732,13 @@
           const remoteData = docSnap.data();
           if (remoteData && Array.isArray(remoteData.ropeList)) {
             window.ropeList = remoteData.ropeList;
+            if (window.mergeDefaultSpecs) window.mergeDefaultSpecs();
             try {
               localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
             } catch(e) {}
             window.renderTable();
             window.updateStats();
+            if (window.renderSpecTable) window.renderSpecTable();
           }
           if (remoteData && remoteData.updatedBy && remoteData.updatedAt) {
             updateLastModifiedUI(remoteData.updatedBy, remoteData.updatedAt);
@@ -758,72 +824,81 @@
     // --- MASTER SEAH CRANE RAW DATA (ALL 38 CRANES, 52 POINTS) ---
     const DEFAULT_ROPE_DATA = [
       // CPL
-      { id: 'cpl-1', line: 'CPL', seq: 1, name: 'H1', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: 'cpl-2-1', line: 'CPL', seq: 2, name: 'P2', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: 'cpl-2-2', line: 'CPL', seq: 2, name: 'P2', cap: '5TON', type: '보권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: 'cpl-3-1', line: 'CPL', seq: 3, name: 'P3', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: 'cpl-3-2', line: 'CPL', seq: 3, name: 'P3', cap: '5TON', type: '보권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: 'cpl-4', line: 'CPL', seq: 4, name: 'A1', cap: '2.8TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
+      { id: 'cpl-1', line: 'CPL', seq: 1, name: 'H1', cap: '30TON', type: '주권', cycle: '1년', spec: '22.4Ø X 80M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'cpl-2-1', line: 'CPL', seq: 2, name: 'P2', cap: '30TON', type: '주권', cycle: '1년', spec: '18Ø X 175M 6xFi(25),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'cpl-2-2', line: 'CPL', seq: 2, name: 'P2', cap: '5TON', type: '보권', cycle: '1년 6개월', spec: '12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'cpl-3-1', line: 'CPL', seq: 3, name: 'P3', cap: '30TON', type: '주권', cycle: '1년', spec: '18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'cpl-3-2', line: 'CPL', seq: 3, name: 'P3', cap: '5TON', type: '보권', cycle: '1년 6개월', spec: '12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'cpl-4', line: 'CPL', seq: 4, name: 'A1', cap: '2.8TON', type: '주권', cycle: '2년', spec: '12.5Ø 15M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
 
       // CRM
-      { id: 'crm-1', line: 'CRM', seq: 1, name: 'H2', cap: '10TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'crm-2', line: 'CRM', seq: 2, name: 'R1', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'crm-3', line: 'CRM', seq: 3, name: 'R2', cap: '45TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'crm-4-1', line: 'CRM', seq: 4, name: 'R3', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: 'crm-4-2', line: 'CRM', seq: 4, name: 'R3', cap: '5TON', type: '보권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: 'crm-5', line: 'CRM', seq: 5, name: 'R4', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
+      { id: 'crm-1', line: 'CRM', seq: 1, name: 'H2', cap: '10TON', type: '주권', cycle: '2년', spec: '16Ø X 55 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'crm-2', line: 'CRM', seq: 2, name: 'R1', cap: '30TON', type: '주권', cycle: '2년', spec: '18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'crm-3', line: 'CRM', seq: 3, name: 'R2', cap: '45TON', type: '주권', cycle: '2년', spec: '22.4Ø X 195M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'crm-4-1', line: 'CRM', seq: 4, name: 'R3', cap: '30TON', type: '주권', cycle: '1년', spec: '22.4Ø X 195M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'crm-4-2', line: 'CRM', seq: 4, name: 'R3', cap: '5TON', type: '보권', cycle: '1년 6개월', spec: '12.5Ø X 100M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'crm-5', line: 'CRM', seq: 5, name: 'R4', cap: '30TON', type: '주권', cycle: '1년', spec: '20Ø X 68M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
 
       // CGL
-      { id: 'cgl-1-1', line: 'CGL', seq: 1, name: 'G1', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-1-2', line: 'CGL', seq: 1, name: 'G1', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-2-1', line: 'CGL', seq: 2, name: 'G2', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-2-2', line: 'CGL', seq: 2, name: 'G2', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-3-1', line: 'CGL', seq: 3, name: 'G3', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-3-2', line: 'CGL', seq: 3, name: 'G3', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-4', line: 'CGL', seq: 4, name: 'G4', cap: '15TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: 'cgl-5', line: 'CGL', seq: 5, name: 'G5(바텀 드로스)', cap: '7.5TON', type: '주권', cycle: '6개월', lastDate: '', schedules: {} },
-      { id: 'cgl-6', line: 'CGL', seq: 6, name: 'G6(프리멜트)', cap: '3TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
+      { id: 'cgl-1-1', line: 'CGL', seq: 1, name: 'G1', cap: '30TON', type: '주권', cycle: '2년', spec: '18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'cgl-1-2', line: 'CGL', seq: 1, name: 'G1', cap: '5TON', type: '보권', cycle: '2년', spec: '', lastDate: '', schedules: {} },
+      { id: 'cgl-2-1', line: 'CGL', seq: 2, name: 'G2', cap: '30TON', type: '주권', cycle: '2년', spec: '18Ø X 310M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'cgl-2-2', line: 'CGL', seq: 2, name: 'G2', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Ø X 165M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'cgl-3-1', line: 'CGL', seq: 3, name: 'G3', cap: '30TON', type: '주권', cycle: '2년', spec: '18Ø X 175M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: 'cgl-3-2', line: 'CGL', seq: 3, name: 'G3', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Ø X 90M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'cgl-4', line: 'CGL', seq: 4, name: 'G4', cap: '15TON', type: '주권', cycle: '2년', spec: '18Ø X 56M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'cgl-5', line: 'CGL', seq: 5, name: 'G5(바텀 드로스)', cap: '7.5TON', type: '주권', cycle: '6개월', spec: '14Φ X 30M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'cgl-6', line: 'CGL', seq: 6, name: 'G6(프리멜트)', cap: '3TON', type: '주권', cycle: '2년', spec: '12.5Ø X 15M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
 
       // 1CCL
-      { id: '1ccl-1', line: '1CCL', seq: 1, name: 'C1-1', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '1ccl-2', line: '1CCL', seq: 2, name: 'C1', cap: '25TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: '1ccl-3-1', line: '1CCL', seq: 3, name: 'C2', cap: '25TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '1ccl-3-2', line: '1CCL', seq: 3, name: 'C2', cap: '5TON', type: '보권', cycle: '2년 6개월', lastDate: '', schedules: {} },
-      { id: '1ccl-4-1', line: '1CCL', seq: 4, name: 'C3', cap: '25TON', type: '주권', cycle: '4년', lastDate: '', schedules: {} },
-      { id: '1ccl-4-2', line: '1CCL', seq: 4, name: 'C3', cap: '5TON', type: '보권', cycle: '2년 6개월', lastDate: '', schedules: {} },
-      { id: '1ccl-5', line: '1CCL', seq: 5, name: 'C4', cap: '15TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
-      { id: '1ccl-6', line: '1CCL', seq: 6, name: 'C5', cap: '7.5TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
+      { id: '1ccl-1', line: '1CCL', seq: 1, name: 'C1-1', cap: '30TON', type: '주권', cycle: '2년', spec: '18Ø X 150M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '1ccl-2', line: '1CCL', seq: 2, name: 'C1', cap: '25TON', type: '주권', cycle: '1년', spec: '18Ø X 100M 6xFi(25),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: '1ccl-3-1', line: '1CCL', seq: 3, name: 'C2', cap: '25TON', type: '주권', cycle: '2년', spec: '18Ø X 125M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: '1ccl-3-2', line: '1CCL', seq: 3, name: 'C2', cap: '5TON', type: '보권', cycle: '2년 6개월', spec: '12.5Ø X 70M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '1ccl-4-1', line: '1CCL', seq: 4, name: 'C3', cap: '25TON', type: '주권', cycle: '4년', spec: '18Ø X 125M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: '1ccl-4-2', line: '1CCL', seq: 4, name: 'C3', cap: '5TON', type: '보권', cycle: '2년 6개월', spec: '12.5Ø X 70M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '1ccl-5', line: '1CCL', seq: 5, name: 'C4', cap: '15TON', type: '주권', cycle: '1년', spec: '20Ø X 70M 6xFi(25),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '1ccl-6', line: '1CCL', seq: 6, name: 'C5', cap: '7.5TON', type: '주권', cycle: '1년', spec: '14Φ X 54M 6xFi(37),FC, B, Z-LAY', lastDate: '', schedules: {} },
 
       // 2CCL
-      { id: '2ccl-1', line: '2CCL', seq: 1, name: 'S1', cap: '15TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-2', line: '2CCL', seq: 2, name: 'S2', cap: '5TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-3-1', line: '2CCL', seq: 3, name: '2C1', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-3-2', line: '2CCL', seq: 3, name: '2C1', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-4-1', line: '2CCL', seq: 4, name: '2C2', cap: '20TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-4-2', line: '2CCL', seq: 4, name: '2C2', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-5', line: '2CCL', seq: 5, name: '2C3', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-6', line: '2CCL', seq: 6, name: '2C4', cap: '15TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-7', line: '2CCL', seq: 7, name: '1S1', cap: '20TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-8-1', line: '2CCL', seq: 8, name: '1S2', cap: '20TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-8-2', line: '2CCL', seq: 8, name: '1S2', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '2ccl-9', line: '2CCL', seq: 9, name: '1S3', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
+      { id: '2ccl-1', line: '2CCL', seq: 1, name: 'S1', cap: '15TON', type: '주권', cycle: '2년', spec: '20Ø X 54M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '2ccl-2', line: '2CCL', seq: 2, name: 'S2', cap: '5TON', type: '주권', cycle: '2년', spec: '12.5Ø X 54M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '2ccl-3-1', line: '2CCL', seq: 3, name: '2C1', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 165M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+      { id: '2ccl-3-2', line: '2CCL', seq: 3, name: '2C1', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Ø X 67M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '2ccl-4-1', line: '2CCL', seq: 4, name: '2C2', cap: '20TON', type: '주권', cycle: '2년', spec: '20Ø X 100M 6xFi(29),IWRC, B, Z-LAY,6PART', lastDate: '', schedules: {} },
+      { id: '2ccl-4-2', line: '2CCL', seq: 4, name: '2C2', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Ø X 67M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '2ccl-5', line: '2CCL', seq: 5, name: '2C3', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 100M 6xFi(29),IWRC, B, Z-LAY,6PART', lastDate: '', schedules: {} },
+      { id: '2ccl-6', line: '2CCL', seq: 6, name: '2C4', cap: '15TON', type: '주권', cycle: '2년', spec: '20Ø X 57M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '2ccl-7', line: '2CCL', seq: 7, name: '1S1', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '2ccl-8-1', line: '2CCL', seq: 8, name: '1S2', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(37),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: '2ccl-8-2', line: '2CCL', seq: 8, name: '1S2', cap: '5TON', type: '보권', cycle: '2년', spec: '16Ø X 55M 6xFi(37),IWRC, B, Z-LAY,2PART', lastDate: '', schedules: {} },
+      { id: '2ccl-9', line: '2CCL', seq: 9, name: '1S3', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 130M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
 
       // 3CCL
-      { id: '3ccl-1-1', line: '3CCL', seq: 1, name: '3C1', cap: '30TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-1-2', line: '3CCL', seq: 1, name: '3C1', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-2-1', line: '3CCL', seq: 2, name: '3C2', cap: '20TON', type: '주권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-2-2', line: '3CCL', seq: 2, name: '3C2', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-3-1', line: '3CCL', seq: 3, name: '3C3', cap: '30TON', type: '주권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: '3ccl-3-2', line: '3CCL', seq: 3, name: '3C3', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-4', line: '3CCL', seq: 4, name: '3C4', cap: '20TON', type: '주권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: '3ccl-5-1', line: '3CCL', seq: 5, name: '3C5', cap: '20TON', type: '주권', cycle: '1년 6개월', lastDate: '', schedules: {} },
-      { id: '3ccl-5-2', line: '3CCL', seq: 5, name: '3C5', cap: '5TON', type: '보권', cycle: '2년', lastDate: '', schedules: {} },
-      { id: '3ccl-6', line: '3CCL', seq: 6, name: '3C6', cap: '20TON', type: '주권', cycle: '1년 6개월', lastDate: '', schedules: {} },
+      { id: '3ccl-1-1', line: '3CCL', seq: 1, name: '3C1', cap: '30TON', type: '주권', cycle: '2년', spec: '22.4Φ X 165.5M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-1-2', line: '3CCL', seq: 1, name: '3C1', cap: '5TON', type: '보권', cycle: '2년', spec: '16Φ X 51.7M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-2-1', line: '3CCL', seq: 2, name: '3C2', cap: '20TON', type: '주권', cycle: '2년', spec: '16Φ X 200M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-2-2', line: '3CCL', seq: 2, name: '3C2', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Φ X 115M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-3-1', line: '3CCL', seq: 3, name: '3C3', cap: '30TON', type: '주권', cycle: '1년 6개월', spec: '22.4Φ X 87M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-3-2', line: '3CCL', seq: 3, name: '3C3', cap: '5TON', type: '보권', cycle: '2년', spec: '16Φ X 30M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-4', line: '3CCL', seq: 4, name: '3C4', cap: '20TON', type: '주권', cycle: '1년 6개월', spec: '22.4Φ X 57.5M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-5-1', line: '3CCL', seq: 5, name: '3C5', cap: '20TON', type: '주권', cycle: '1년 6개월', spec: '22.4Φ X 57.5M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-5-2', line: '3CCL', seq: 5, name: '3C5', cap: '5TON', type: '보권', cycle: '2년', spec: '16Φ X 30M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: '3ccl-6', line: '3CCL', seq: 6, name: '3C6', cap: '20TON', type: '주권', cycle: '1년 6개월', spec: '16Φ X 80M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
 
       // UTILITY
-      { id: 'ut-1', line: 'UTILITY', seq: 1, name: 'RS1', cap: '5TON', type: '주권', cycle: '5년', lastDate: '', schedules: {} },
-      { id: 'ut-2', line: 'UTILITY', seq: 2, name: 'M1', cap: '5TON', type: '주권', cycle: '10년', lastDate: '', schedules: {} }
+      { id: 'ut-1', line: 'UTILITY', seq: 1, name: 'RS1', cap: '5TON', type: '주권', cycle: '5년', spec: '12.5Φ X 54M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
+      { id: 'ut-2', line: 'UTILITY', seq: 2, name: 'M1', cap: '5TON', type: '주권', cycle: '10년', spec: '12.5Φ X 54M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} }
     ];
+
+    // Backfill spec for existing cloud/local data that predates this field (matches by id; never overwrites a value the user already entered)
+    function mergeDefaultSpecs() {
+      const specMap = {};
+      DEFAULT_ROPE_DATA.forEach(d => { specMap[d.id] = d.spec; });
+      (window.ropeList || []).forEach(item => {
+        if (!item.spec && specMap[item.id]) item.spec = specMap[item.id];
+      });
+    }
 
     // ALL 20 QUARTERS (2026 ~ 2030)
     const ALL_QUARTERS = [];
@@ -846,6 +921,9 @@
     } catch(e) {
       window.ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
     }
+
+    window.mergeDefaultSpecs = mergeDefaultSpecs;
+    mergeDefaultSpecs();
 
     // Init App
     document.addEventListener('DOMContentLoaded', () => {
@@ -1327,6 +1405,123 @@
         }
       });
       window.renderTable();
+      if (window.renderSpecTable) window.renderSpecTable();
+    };
+
+    // Tab Switching
+    let currentSpecSearchTerm = '';
+    const TAB_ACTIVE_CLASS = "px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 transition flex items-center gap-2 bg-white border-slate-300 text-seah-700 shadow-sm relative top-px";
+    const TAB_INACTIVE_CLASS = "px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 border-transparent transition flex items-center gap-2 text-slate-500 hover:text-seah-700 hover:bg-white/60";
+
+    window.switchTab = function(tab) {
+      const isHistory = tab === 'history';
+      document.getElementById('tabPanelHistory').classList.toggle('hidden', !isHistory);
+      document.getElementById('tabPanelSpec').classList.toggle('hidden', isHistory);
+      document.getElementById('tabBtnHistory').className = isHistory ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
+      document.getElementById('tabBtnSpec').className = !isHistory ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
+      if (!isHistory) window.renderSpecTable();
+    };
+
+    window.handleSpecSearch = function() {
+      currentSpecSearchTerm = document.getElementById('specSearchInput').value.trim();
+      window.renderSpecTable();
+    };
+
+    // Render Spec Table (와이어로프 규격 탭)
+    window.renderSpecTable = function() {
+      const tbody = document.getElementById('specTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const search = currentSpecSearchTerm.toLowerCase();
+      const filtered = window.ropeList.filter(item => {
+        const matchLine = (currentLineFilter === 'ALL' || item.line === currentLineFilter);
+        const matchSearch = !search ||
+          item.name.toLowerCase().includes(search) ||
+          (item.spec || '').toLowerCase().includes(search);
+        return matchLine && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-slate-400 font-medium">검색 조건에 일치하는 규격 데이터가 없습니다.</td></tr>`;
+        return;
+      }
+
+      const lineCounts = {};
+      const nameCounts = {};
+      filtered.forEach(item => {
+        lineCounts[item.line] = (lineCounts[item.line] || 0) + 1;
+        const nameKey = `${item.line}_${item.seq}_${item.name}`;
+        nameCounts[nameKey] = (nameCounts[nameKey] || 0) + 1;
+      });
+
+      const renderedLines = {};
+      const renderedNames = {};
+
+      filtered.forEach((item) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-sky-50/40 transition-colors border-b border-slate-200';
+        const nameKey = `${item.line}_${item.seq}_${item.name}`;
+
+        if (!renderedLines[item.line]) {
+          renderedLines[item.line] = true;
+          const tdLine = document.createElement('td');
+          tdLine.rowSpan = lineCounts[item.line];
+          tdLine.className = 'font-bold bg-slate-100/90 text-slate-800 border-r border-slate-300 align-middle';
+
+          let badgeColor = "bg-slate-200 text-slate-800";
+          if (item.line === 'CPL') badgeColor = "bg-blue-100 text-blue-800 border-blue-200";
+          else if (item.line === 'CRM') badgeColor = "bg-amber-100 text-amber-800 border-amber-200";
+          else if (item.line === 'CGL') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+          else if (item.line.includes('CCL')) badgeColor = "bg-indigo-100 text-indigo-800 border-indigo-200";
+          else if (item.line === 'UTILITY') badgeColor = "bg-purple-100 text-purple-800 border-purple-200";
+
+          tdLine.innerHTML = `<span class="inline-block px-2 py-1 rounded text-xs font-black border ${badgeColor}">${escapeHtml(item.line)}</span>`;
+          tr.appendChild(tdLine);
+        }
+
+        if (!renderedNames[nameKey]) {
+          renderedNames[nameKey] = true;
+
+          const tdSeq = document.createElement('td');
+          tdSeq.rowSpan = nameCounts[nameKey];
+          tdSeq.className = 'font-semibold text-slate-700 border-r border-slate-200 align-middle bg-slate-50/50';
+          tdSeq.innerText = item.seq;
+          tr.appendChild(tdSeq);
+
+          const tdName = document.createElement('td');
+          tdName.rowSpan = nameCounts[nameKey];
+          tdName.className = 'font-bold text-slate-900 border-r border-slate-200 align-middle bg-white';
+          tdName.innerText = item.name;
+          tr.appendChild(tdName);
+        }
+
+        const tdCap = document.createElement('td');
+        tdCap.className = 'font-medium text-slate-800 border-r border-slate-200 py-2';
+        tdCap.innerText = item.cap;
+        tr.appendChild(tdCap);
+
+        const tdType = document.createElement('td');
+        tdType.className = 'border-r border-slate-200 font-semibold py-2';
+        if (item.type === '주권') {
+          tdType.innerHTML = `<span class="text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">주권</span>`;
+        } else {
+          tdType.innerHTML = `<span class="text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200">보권</span>`;
+        }
+        tr.appendChild(tdType);
+
+        const tdCycle = document.createElement('td');
+        tdCycle.className = 'font-bold text-slate-700 border-r border-slate-200 bg-slate-50/30';
+        tdCycle.innerText = item.cycle;
+        tr.appendChild(tdCycle);
+
+        const tdSpec = document.createElement('td');
+        tdSpec.className = 'text-left pl-4 py-2 font-mono text-slate-700';
+        tdSpec.innerText = item.spec || '-';
+        tr.appendChild(tdSpec);
+
+        tbody.appendChild(tr);
+      });
     };
 
     window.handleTypeFilter = function() {
@@ -1453,6 +1648,7 @@
       document.getElementById('formCapacity').value = item.cap;
       document.getElementById('formType').value = item.type;
       document.getElementById('formCycle').value = item.cycle;
+      document.getElementById('formSpec').value = item.spec || '';
       document.getElementById('formLastReplaced').value = item.lastDate || '';
 
       document.getElementById('craneModal').classList.remove('hidden');
@@ -1468,6 +1664,7 @@
       const cap = document.getElementById('formCapacity').value.trim();
       const type = document.getElementById('formType').value;
       const cycle = document.getElementById('formCycle').value.trim();
+      const spec = document.getElementById('formSpec').value.trim();
       const lastDate = document.getElementById('formLastReplaced').value;
 
       if (editId) {
@@ -1479,6 +1676,7 @@
           item.cap = cap;
           item.type = type;
           item.cycle = cycle;
+          item.spec = spec;
           item.lastDate = lastDate;
           recalculateRopeForecast(item);
         }
@@ -1493,6 +1691,7 @@
           cap: cap,
           type: type,
           cycle: cycle,
+          spec: spec,
           lastDate: lastDate,
           schedules: {}
         };
@@ -1504,6 +1703,7 @@
       window.closeModal('craneModal');
       window.renderTable();
       window.updateStats();
+      if (window.renderSpecTable) window.renderSpecTable();
       if (window.saveDataToFirestore) window.saveDataToFirestore();
     };
 
@@ -1520,6 +1720,7 @@
         window.ropeList = window.ropeList.filter(r => r.id !== ropeId);
         window.renderTable();
         window.updateStats();
+        if (window.renderSpecTable) window.renderSpecTable();
         if (window.saveDataToFirestore) window.saveDataToFirestore();
         showToast('해당 항목이 삭제되었습니다.');
       }
@@ -1535,6 +1736,7 @@
         window.ropeList = JSON.parse(JSON.stringify(DEFAULT_ROPE_DATA));
         window.renderTable();
         window.updateStats();
+        if (window.renderSpecTable) window.renderSpecTable();
         if (window.saveDataToFirestore) window.saveDataToFirestore();
         showToast('초기 데이터로 복원되었습니다.');
       }
