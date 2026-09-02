@@ -78,7 +78,47 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans antialiased flex flex-col relative">
+
+  <!-- AUTH REQUIRED LOGIN OVERLAY (GATED ACCESS) -->
+  <div id="authGateOverlay" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 text-center p-8 flex flex-col items-center">
+      <div class="w-16 h-16 rounded-2xl bg-seah-700 text-white flex items-center justify-center text-2xl mb-4 shadow-lg shadow-seah-700/30">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-seah-700 border border-sky-200 mb-2">
+        SeAH CM 사내 보안 시스템
+      </span>
+      <h2 class="text-xl font-bold text-slate-900 mb-1">
+        크레인 와이어로프 관리 시스템
+      </h2>
+      <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+        본 시스템은 사내 보안 정보가 포함되어 있어<br>
+        <strong class="text-seah-700 font-bold">@seah.co.kr</strong> 계정으로만 접근이 허용됩니다.
+      </p>
+
+      <!-- Error Alert Message -->
+      <div id="authErrorBox" class="w-full hidden mb-4 bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl flex items-start gap-2 text-left">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-500 text-sm"></i>
+        <span id="authErrorMsg">세아 사내 계정(@seah.co.kr)으로만 로그인할 수 있습니다.</span>
+      </div>
+
+      <!-- Google Sign-in Button -->
+      <button onclick="signInWithGoogle()" id="btnGoogleLogin" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:scale-[0.98] border border-slate-300 rounded-xl font-bold text-xs text-slate-700 shadow-sm flex items-center justify-center gap-3 transition">
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>세아 구글 계정(@seah.co.kr)으로 로그인</span>
+      </button>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-400">
+        (주)세아씨엠 설비보전팀 / 안전환경팀
+      </div>
+    </div>
+  </div>
 
   <!-- TOP HEADER & NAVIGATION -->
   <header class="bg-gradient-to-r from-[#003366] via-[#004B87] to-[#0b63a4] text-white shadow-lg sticky top-0 z-30 no-print">
@@ -94,7 +134,7 @@
             <!-- Cloud Status Badge -->
             <span id="cloudStatusBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 transition">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span id="cloudStatusText">시스템 준비 완료</span>
+              <span id="cloudStatusText">연결 대기중</span>
             </span>
           </div>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -103,8 +143,17 @@
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
+      <!-- User Info & Action Buttons -->
       <div class="flex items-center flex-wrap gap-2">
+        <!-- Logged User Info Badge -->
+        <div id="userInfoContainer" class="hidden items-center gap-2 bg-white/10 border border-white/20 px-3 py-1.5 rounded-xl text-xs">
+          <i class="fa-solid fa-user-check text-emerald-300"></i>
+          <span id="userEmailBadge" class="font-medium text-sky-100 max-w-[150px] truncate">user@seah.co.kr</span>
+          <button onclick="handleSignOut()" class="text-slate-300 hover:text-red-300 ml-1 underline text-[11px]" title="로그아웃">
+            로그아웃
+          </button>
+        </div>
+
         <button onclick="openAddModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-plus"></i> 새 크레인 등록
         </button>
@@ -236,7 +285,7 @@
       </div>
     </section>
 
-    <!-- PERIOD NAVIGATION CONTROLLER (MOVED RIGHT ABOVE TABLE AS REQUESTED) -->
+    <!-- PERIOD NAVIGATION CONTROLLER -->
     <section class="bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
@@ -467,10 +516,10 @@
     <span id="toastMsg" class="font-medium">알림 메시지</span>
   </div>
 
-  <!-- FIREBASE SCRIPTS (MODULAR VIA CDN) -->
+  <!-- FIREBASE AUTH & FIRESTORE MODULE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -484,61 +533,144 @@
 
     let db = null;
     let auth = null;
+    let currentUser = null;
     let isCloudReady = false;
 
-    // Background Firebase Init (Resilient - never crashes UI)
     try {
       const app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
 
-      signInAnonymously(auth).then(async (userCredential) => {
-        isCloudReady = true;
-        updateCloudStatus(true, "실시간 클라우드 연결됨");
-        
-        // Listen to Firestore updates
-        const docRef = doc(db, 'crane_wirerope', 'master_data');
-        onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const remoteData = docSnap.data();
-            if (remoteData && Array.isArray(remoteData.ropeList)) {
-              window.ropeList = remoteData.ropeList;
-              localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
-              window.renderTable();
-              window.updateStats();
-            }
-          }
-        }, (err) => {
-          console.warn("Firestore onSnapshot permission notice:", err);
-          updateCloudStatus(false, "로컬 보존 모드");
-        });
+      // Auth State Listener: Strictly restrict to @seah.co.kr
+      onAuthStateChanged(auth, async (user) => {
+        const overlay = document.getElementById('authGateOverlay');
+        const userInfo = document.getElementById('userInfoContainer');
+        const userEmailBadge = document.getElementById('userEmailBadge');
 
-      }).catch((err) => {
-        console.warn("Firebase Auth Notice:", err.message);
-        updateCloudStatus(false, "로컬 캐시 저장 모드");
+        if (user && user.email) {
+          const email = user.email.toLowerCase().trim();
+
+          // Check domain restriction (@seah.co.kr)
+          if (email.endsWith('@seah.co.kr')) {
+            currentUser = user;
+            isCloudReady = true;
+            overlay.classList.add('hidden');
+            userInfo.classList.remove('hidden');
+            userInfo.classList.add('flex');
+            userEmailBadge.innerText = email;
+            updateCloudStatus(true, `로그인: ${email.split('@')[0]}`);
+
+            // Start Firestore sync
+            initFirestoreSync();
+          } else {
+            // Unauthorized domain -> sign out immediately
+            await signOut(auth);
+            currentUser = null;
+            isCloudReady = false;
+            overlay.classList.remove('hidden');
+            userInfo.classList.add('hidden');
+            showAuthError(`접속 불가: '${email}' 은 허용되지 않은 계정입니다. @seah.co.kr 계정으로 로그인해 주세요.`);
+          }
+        } else {
+          // Not logged in
+          currentUser = null;
+          isCloudReady = false;
+          overlay.classList.remove('hidden');
+          userInfo.classList.add('hidden');
+          updateCloudStatus(false, "로그인 필요");
+        }
       });
+
     } catch (e) {
       console.warn("Firebase Init notice:", e);
-      updateCloudStatus(false, "로컬 모드 동작");
+      updateCloudStatus(false, "로컬 모드");
+    }
+
+    // Google Sign-In with Domain Gate
+    window.signInWithGoogle = async function() {
+      if (!auth) return;
+      hideAuthError();
+
+      const btn = document.getElementById('btnGoogleLogin');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'pointer-events-none');
+
+      try {
+        const provider = new GoogleAuthProvider();
+        // Optional hint for hosted domain
+        provider.setCustomParameters({ hd: "seah.co.kr", prompt: "select_account" });
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showAuthError(`로그인 오류: ${err.message}`);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    };
+
+    // Sign Out
+    window.handleSignOut = async function() {
+      if (!auth) return;
+      if (confirm('로그아웃 하시겠습니까?')) {
+        await signOut(auth);
+      }
+    };
+
+    function showAuthError(msg) {
+      const box = document.getElementById('authErrorBox');
+      const text = document.getElementById('authErrorMsg');
+      if (box && text) {
+        text.innerText = msg;
+        box.classList.remove('hidden');
+      }
+    }
+
+    function hideAuthError() {
+      const box = document.getElementById('authErrorBox');
+      if (box) box.classList.add('hidden');
+    }
+
+    // Firestore Sync
+    function initFirestoreSync() {
+      if (!db || !currentUser) return;
+      const docRef = doc(db, 'crane_wirerope', 'master_data');
+      onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const remoteData = docSnap.data();
+          if (remoteData && Array.isArray(remoteData.ropeList)) {
+            window.ropeList = remoteData.ropeList;
+            try {
+              localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
+            } catch(e) {}
+            window.renderTable();
+            window.updateStats();
+          }
+        }
+      }, (err) => {
+        console.warn("Firestore onSnapshot notice:", err);
+      });
     }
 
     // Global Cloud Save Function
     window.saveDataToFirestore = async function() {
-      // 1. Always save to Local Cache first
+      // 1. Local Cache save
       try {
         localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
       } catch(e) {}
 
-      // 2. Save to Firestore if connected
-      if (isCloudReady && db) {
+      // 2. Firestore save if authorized
+      if (isCloudReady && db && currentUser) {
         try {
           const docRef = doc(db, 'crane_wirerope', 'master_data');
           await setDoc(docRef, {
             ropeList: window.ropeList,
+            updatedBy: currentUser.email,
             updatedAt: new Date().toISOString()
           }, { merge: true });
         } catch (err) {
-          console.warn("Firestore save fallback to local:", err);
+          console.warn("Firestore save warning:", err);
         }
       }
     };
@@ -559,7 +691,7 @@
 
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
-    // --- MASTER SEAH CRANE RAW DATA (ALL 38 CRANES, 52 POINTS - DEFAULT BLANK SCHEDULES) ---
+    // --- MASTER SEAH CRANE RAW DATA (ALL 38 CRANES, 52 POINTS) ---
     const DEFAULT_ROPE_DATA = [
       // CPL
       { id: 'cpl-1', line: 'CPL', seq: 1, name: 'H1', cap: '30TON', type: '주권', cycle: '1년', lastDate: '', schedules: {} },
@@ -638,7 +770,7 @@
     }
 
     // App State
-    let startYear = 2026; // Shows 3 consecutive years (e.g. 2026 ~ 2028)
+    let startYear = 2026;
     let currentLineFilter = 'ALL';
     let currentTypeFilter = 'ALL';
     let currentSearchTerm = '';
@@ -670,7 +802,6 @@
       return totalMonths > 0 ? totalMonths : 12;
     }
 
-    // Helper: Format Date String
     function formatDate(d) {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -687,7 +818,6 @@
       return dateStr;
     }
 
-    // Parse Local Date without UTC timezone drift
     function parseLocalDate(dateStr) {
       if (!dateStr) return null;
       const [y, m, d] = dateStr.split('-').map(Number);
@@ -699,7 +829,6 @@
     function recalculateRopeForecast(item) {
       if (!item.schedules) item.schedules = {};
 
-      // 1. Collect all completed events (done)
       const completedEvents = [];
       Object.keys(item.schedules).forEach(k => {
         const s = item.schedules[k];
@@ -708,7 +837,7 @@
         }
       });
 
-      // Clear non-manual plan schedules so forecasts stay completely clean and accurate
+      // Clear non-manual plan schedules
       Object.keys(item.schedules).forEach(k => {
         const s = item.schedules[k];
         if (s && s.status === 'plan' && !s.manual) {
@@ -716,7 +845,6 @@
         }
       });
 
-      // 2. Identify the latest reference date
       let baseDateStr = item.lastDate || '';
       if (completedEvents.length > 0) {
         completedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -732,7 +860,6 @@
       const stepMonths = cycleToMonths(item.cycle);
       let curr = new Date(baseDate);
 
-      // Cascade forward up to 2030
       while (true) {
         curr.setMonth(curr.getMonth() + stepMonths);
         const y = curr.getFullYear();
@@ -742,7 +869,6 @@
         const q = Math.ceil(m / 3);
         const qKey = `${y}_${q}Q`;
 
-        // If not already marked done, assign the calculated forecast date
         if (!item.schedules[qKey] || item.schedules[qKey].status !== 'done') {
           item.schedules[qKey] = {
             status: 'plan',
@@ -775,17 +901,14 @@
         <tr class="bg-slate-700 text-slate-200 text-[11px] font-medium border-b border-slate-600">
           <th class="p-1.5 border-r border-slate-600 w-20">용량</th>
           <th class="p-1.5 border-r border-slate-600 w-14">구분</th>
-          <!-- Y1 -->
           <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-1분기</th>
           <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-2분기</th>
           <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-3분기</th>
           <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-4분기</th>
-          <!-- Y2 -->
           <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-1분기</th>
           <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-2분기</th>
           <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-3분기</th>
           <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-4분기</th>
-          <!-- Y3 -->
           <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-1분기</th>
           <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-2분기</th>
           <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-3분기</th>
@@ -793,7 +916,6 @@
         </tr>
       `;
 
-      // Update Navigation Buttons state
       document.getElementById('periodLabel').innerText = `${y1} ~ ${y3}년`;
       document.getElementById('btnPrevYear').disabled = (startYear <= 2026);
       document.getElementById('btnNextYear').disabled = (startYear >= 2028);
@@ -808,7 +930,6 @@
       else if (startYear === 2028) b2830.className = "px-2.5 py-1 text-xs rounded-md font-bold transition bg-seah-700 text-white shadow-sm";
     }
 
-    // Period Navigation handlers
     window.shiftStartYear = function(delta) {
       const next = startYear + delta;
       if (next >= 2026 && next <= 2028) {
@@ -826,7 +947,6 @@
       }
     };
 
-    // Auto Schedule Calculation for All Cranes
     window.autoScheduleAll = function() {
       let count = 0;
       window.ropeList.forEach(item => {
@@ -840,7 +960,6 @@
       showToast(`전체 크레인의 주기 예측이 최신화되었습니다.`);
     };
 
-    // Toast Notification System
     function showToast(msg, isWarn = false) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toastMsg');
@@ -865,7 +984,6 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      // Active 12 quarters for the current 3-year view
       const activeQuarters = [];
       for (let y = startYear; y <= startYear + 2; y++) {
         for (let q = 1; q <= 4; q++) {
@@ -876,7 +994,6 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Filter
       let filtered = window.ropeList.filter(item => {
         const matchLine = (currentLineFilter === 'ALL' || item.line === currentLineFilter);
         const matchType = (currentTypeFilter === 'ALL' || item.type === currentTypeFilter);
@@ -896,7 +1013,6 @@
         return;
       }
 
-      // Grouping calculations
       const lineCounts = {};
       const nameCounts = {};
       filtered.forEach(item => {
@@ -1045,7 +1161,7 @@
           tr.appendChild(tdQ);
         });
 
-        // 7. ACTIONS (수정 / 삭제)
+        // 7. ACTIONS
         const tdAction = document.createElement('td');
         tdAction.className = 'py-1 px-2 no-print border-l border-slate-200';
         tdAction.innerHTML = `
@@ -1188,10 +1304,8 @@
 
         if (selectedStatus === 'none') {
           delete item.schedules[quarterKey];
-          // Recalculate remaining forecasts
           recalculateRopeForecast(item);
         } else {
-          // If status is done/plan and no date selected, default smartly
           if (!exactDate) {
             const [y, q] = quarterKey.split('_');
             const qNum = parseInt(q.replace('Q', ''), 10);
@@ -1322,7 +1436,7 @@
 
     // Export to Excel-compatible CSV (2026 ~ 2030 Full 20 Quarters)
     window.exportToCSV = function() {
-      let csvContent = "\uFEFF"; // UTF-8 BOM
+      let csvContent = "\uFEFF";
       csvContent += "LINE,순번,설비명,용량,구분,교체주기," + ALL_QUARTERS.join(",") + "\n";
 
       window.ropeList.forEach(item => {
