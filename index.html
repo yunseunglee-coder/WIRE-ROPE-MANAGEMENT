@@ -233,6 +233,7 @@
         <button onclick="setFilterLine('1CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="1CCL">1CCL</button>
         <button onclick="setFilterLine('2CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="2CCL">2CCL</button>
         <button onclick="setFilterLine('3CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="3CCL">3CCL</button>
+        <button onclick="setFilterLine('SSCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="SSCL">SSCL</button>
         <button onclick="setFilterLine('UTILITY')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="UTILITY">UTILITY</button>
       </div>
 
@@ -341,6 +342,7 @@
           <button onclick="setFilterLine('1CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="1CCL">1CCL</button>
           <button onclick="setFilterLine('2CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="2CCL">2CCL</button>
           <button onclick="setFilterLine('3CCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="3CCL">3CCL</button>
+          <button onclick="setFilterLine('SSCL')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="SSCL">SSCL</button>
           <button onclick="setFilterLine('UTILITY')" class="line-btn px-2.5 py-1 text-xs rounded-md font-semibold transition active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700" data-line="UTILITY">UTILITY</button>
         </div>
         <div class="relative w-full md:w-60">
@@ -353,13 +355,14 @@
         <table class="w-full text-center border-collapse min-w-[900px] text-xs">
           <thead>
             <tr class="bg-slate-800 text-white font-semibold">
-              <th class="p-2.5 border-r border-slate-700 w-16">LINE</th>
-              <th class="p-2.5 border-r border-slate-700 w-12">순번</th>
-              <th class="p-2.5 border-r border-slate-700 w-28">설비명</th>
-              <th class="p-2.5 border-r border-slate-700 w-20">용량</th>
-              <th class="p-2.5 border-r border-slate-700 w-14">구분</th>
-              <th class="p-2.5 border-r border-slate-700 w-24">교체주기</th>
+              <th class="p-2.5 w-16">LINE</th>
+              <th class="p-2.5 w-12">순번</th>
+              <th class="p-2.5 w-28">설비명</th>
+              <th class="p-2.5 w-20">용량</th>
+              <th class="p-2.5 w-14">구분</th>
+              <th class="p-2.5 w-24">교체주기</th>
               <th class="p-2.5">와이어 규격</th>
+              <th class="p-2.5 w-16 no-print">관리</th>
             </tr>
           </thead>
           <tbody id="specTableBody" class="divide-y divide-slate-200">
@@ -481,6 +484,7 @@
               <option value="1CCL">1CCL</option>
               <option value="2CCL">2CCL</option>
               <option value="3CCL">3CCL</option>
+              <option value="SSCL">SSCL</option>
               <option value="UTILITY">UTILITY</option>
             </select>
           </div>
@@ -753,10 +757,12 @@
       { id: '2ccl-4-2', line: '2CCL', seq: 4, name: '2C2', cap: '5TON', type: '보권', cycle: '2년', spec: '12.5Ø X 67M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
       { id: '2ccl-5', line: '2CCL', seq: 5, name: '2C3', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 100M 6xFi(29),IWRC, B, Z-LAY,6PART', lastDate: '', schedules: {} },
       { id: '2ccl-6', line: '2CCL', seq: 6, name: '2C4', cap: '15TON', type: '주권', cycle: '2년', spec: '20Ø X 57M 6xFi(29),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
-      { id: '2ccl-7', line: '2CCL', seq: 7, name: '1S1', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
-      { id: '2ccl-8-1', line: '2CCL', seq: 8, name: '1S2', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(37),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
-      { id: '2ccl-8-2', line: '2CCL', seq: 8, name: '1S2', cap: '5TON', type: '보권', cycle: '2년', spec: '16Ø X 55M 6xFi(37),IWRC, B, Z-LAY,2PART', lastDate: '', schedules: {} },
-      { id: '2ccl-9', line: '2CCL', seq: 9, name: '1S3', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 130M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
+
+      // SSCL
+      { id: 'sscl-1', line: 'SSCL', seq: 1, name: '1S1', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(29),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'sscl-2-1', line: 'SSCL', seq: 2, name: '1S2', cap: '20TON', type: '주권', cycle: '2년', spec: '22.4Ø X 55M 6xFi(37),IWRC, B, Z-LAY,4PART', lastDate: '', schedules: {} },
+      { id: 'sscl-2-2', line: 'SSCL', seq: 2, name: '1S2', cap: '5TON', type: '보권', cycle: '2년', spec: '16Ø X 55M 6xFi(37),IWRC, B, Z-LAY,2PART', lastDate: '', schedules: {} },
+      { id: 'sscl-3', line: 'SSCL', seq: 3, name: '1S3', cap: '30TON', type: '주권', cycle: '2년', spec: '20Ø X 130M 6xFi(29),IWRC, B, Z-LAY,8PART', lastDate: '', schedules: {} },
 
       // 3CCL
       { id: '3ccl-1-1', line: '3CCL', seq: 1, name: '3C1', cap: '30TON', type: '주권', cycle: '2년', spec: '22.4Φ X 165.5M 6xFi(37),IWRC, B, Z-LAY', lastDate: '', schedules: {} },
@@ -844,6 +850,33 @@
       return dateStr;
     }
 
+    // Fixed display order for lines. Unrecognized lines fall back to the end, in their original order.
+    const LINE_ORDER = ['CPL', 'CRM', 'CGL', '1CCL', '2CCL', '3CCL', 'SSCL', 'UTILITY'];
+
+    // Group items by line (and seq) so same-line rows always render contiguously,
+    // regardless of insertion order in window.ropeList — required for the LINE/설비명 rowSpan logic below.
+    function sortByLineGroup(list) {
+      return list.slice().sort((a, b) => {
+        const la = LINE_ORDER.indexOf(a.line);
+        const lb = LINE_ORDER.indexOf(b.line);
+        const ra = la === -1 ? LINE_ORDER.length : la;
+        const rb = lb === -1 ? LINE_ORDER.length : lb;
+        if (ra !== rb) return ra - rb;
+        return a.seq - b.seq;
+      });
+    }
+
+    // Per-line tint/border classes used to visually group lines in the ALL view
+    function getLineStyle(line) {
+      if (line === 'CPL') return { tint: 'bg-blue-50/60', border: 'border-blue-400' };
+      if (line === 'CRM') return { tint: 'bg-amber-50/60', border: 'border-amber-400' };
+      if (line === 'CGL') return { tint: 'bg-emerald-50/60', border: 'border-emerald-400' };
+      if (line === 'SSCL') return { tint: 'bg-teal-50/60', border: 'border-teal-400' };
+      if (line.includes('CCL')) return { tint: 'bg-indigo-50/60', border: 'border-indigo-400' };
+      if (line === 'UTILITY') return { tint: 'bg-purple-50/60', border: 'border-purple-400' };
+      return { tint: 'bg-slate-50/60', border: 'border-slate-400' };
+    }
+
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
       return String(str).replace(/[&<>"']/g, (c) => ({
@@ -921,31 +954,31 @@
 
       thead.innerHTML = `
         <tr class="bg-slate-800 text-white font-semibold">
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-16 sticky left-0 bg-slate-800 z-10">LINE</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-12">순번</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-28">설비명</th>
-          <th colspan="2" class="p-2 border-r border-slate-700">규격 및 구분</th>
-          <th rowspan="2" class="p-2.5 border-r border-slate-700 w-20">교체주기</th>
-          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-sky-950 font-bold text-sky-200 border-b">${y1}년 교체일</th>
-          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-indigo-950 font-bold text-indigo-200 border-b">${y2}년 교체일</th>
-          <th colspan="4" class="p-1.5 border-r border-slate-700 bg-slate-900 font-bold text-slate-200 border-b">${y3}년 교체일</th>
-          <th rowspan="2" class="p-2.5 border-l border-slate-700 w-16 no-print">관리</th>
+          <th rowspan="2" class="p-2.5 w-16 sticky left-0 bg-slate-800 z-10">LINE</th>
+          <th rowspan="2" class="p-2.5 w-12">순번</th>
+          <th rowspan="2" class="p-2.5 w-28">설비명</th>
+          <th colspan="2" class="p-2">규격 및 구분</th>
+          <th rowspan="2" class="p-2.5 w-20">교체주기</th>
+          <th colspan="4" class="p-1.5 bg-sky-950 font-bold text-sky-200 border-b">${y1}년 교체일</th>
+          <th colspan="4" class="p-1.5 bg-indigo-950 font-bold text-indigo-200 border-b">${y2}년 교체일</th>
+          <th colspan="4" class="p-1.5 bg-slate-900 font-bold text-slate-200 border-b">${y3}년 교체일</th>
+          <th rowspan="2" class="p-2.5 w-16 no-print">관리</th>
         </tr>
         <tr class="bg-slate-700 text-slate-200 text-[11px] font-medium border-b border-slate-600">
-          <th class="p-1.5 border-r border-slate-600 w-20">용량</th>
-          <th class="p-1.5 border-r border-slate-600 w-14">구분</th>
-          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-1분기</th>
-          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-2분기</th>
-          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-3분기</th>
-          <th class="p-1 border-r border-slate-600 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-4분기</th>
-          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-1분기</th>
-          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-2분기</th>
-          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-3분기</th>
-          <th class="p-1 border-r border-slate-600 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-4분기</th>
-          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-1분기</th>
-          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-2분기</th>
-          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-3분기</th>
-          <th class="p-1 border-r border-slate-600 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-4분기</th>
+          <th class="p-1.5 w-20">용량</th>
+          <th class="p-1.5 w-14">구분</th>
+          <th class="p-1 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-1분기</th>
+          <th class="p-1 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-2분기</th>
+          <th class="p-1 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-3분기</th>
+          <th class="p-1 bg-sky-900/50 text-sky-200 w-16">${String(y1).slice(2)}-4분기</th>
+          <th class="p-1 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-1분기</th>
+          <th class="p-1 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-2분기</th>
+          <th class="p-1 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-3분기</th>
+          <th class="p-1 bg-indigo-900/50 text-indigo-200 w-16">${String(y2).slice(2)}-4분기</th>
+          <th class="p-1 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-1분기</th>
+          <th class="p-1 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-2분기</th>
+          <th class="p-1 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-3분기</th>
+          <th class="p-1 bg-slate-800/80 text-slate-200 w-16">${String(y3).slice(2)}-4분기</th>
         </tr>
       `;
 
@@ -1058,13 +1091,14 @@
         const matchLine = (currentLineFilter === 'ALL' || item.line === currentLineFilter);
         const matchType = (currentTypeFilter === 'ALL' || item.type === currentTypeFilter);
         const search = currentSearchTerm.toLowerCase();
-        const matchSearch = !search || 
+        const matchSearch = !search ||
           item.line.toLowerCase().includes(search) ||
           item.name.toLowerCase().includes(search) ||
           item.cap.toLowerCase().includes(search) ||
           item.cycle.toLowerCase().includes(search);
         return matchLine && matchType && matchSearch;
       });
+      filtered = sortByLineGroup(filtered);
 
       document.getElementById('filteredCountBadge').innerText = filtered.length;
 
@@ -1084,22 +1118,29 @@
       const renderedLines = {};
       const renderedNames = {};
 
-      filtered.forEach((item) => {
+      filtered.forEach((item, rowIndex) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-sky-50/40 transition-colors border-b border-slate-200';
         const nameKey = `${item.line}_${item.seq}_${item.name}`;
 
+        const isNewLineGroup = !renderedLines[item.line];
+        const lineStyle = getLineStyle(item.line);
+        const groupBorderClasses = (isNewLineGroup && rowIndex > 0)
+          ? `border-t-4 ${lineStyle.border}`
+          : '';
+
         // 1. LINE Column
-        if (!renderedLines[item.line]) {
+        if (isNewLineGroup) {
           renderedLines[item.line] = true;
           const tdLine = document.createElement('td');
           tdLine.rowSpan = lineCounts[item.line];
-          tdLine.className = 'font-bold bg-slate-100/90 text-slate-800 border-r border-slate-300 align-middle sticky left-0 z-10';
-          
+          tdLine.className = `font-bold bg-slate-100/90 text-slate-800 align-middle sticky left-0 z-10 ${groupBorderClasses}`;
+
           let badgeColor = "bg-slate-200 text-slate-800";
           if (item.line === 'CPL') badgeColor = "bg-blue-100 text-blue-800 border-blue-200";
           else if (item.line === 'CRM') badgeColor = "bg-amber-100 text-amber-800 border-amber-200";
           else if (item.line === 'CGL') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+          else if (item.line === 'SSCL') badgeColor = "bg-teal-100 text-teal-800 border-teal-200";
           else if (item.line.includes('CCL')) badgeColor = "bg-indigo-100 text-indigo-800 border-indigo-200";
           else if (item.line === 'UTILITY') badgeColor = "bg-purple-100 text-purple-800 border-purple-200";
 
@@ -1113,26 +1154,26 @@
 
           const tdSeq = document.createElement('td');
           tdSeq.rowSpan = nameCounts[nameKey];
-          tdSeq.className = 'font-semibold text-slate-700 border-r border-slate-200 align-middle bg-slate-50/50';
+          tdSeq.className = `font-semibold text-slate-700 align-middle ${lineStyle.tint} ${groupBorderClasses}`;
           tdSeq.innerText = item.seq;
           tr.appendChild(tdSeq);
 
           const tdName = document.createElement('td');
           tdName.rowSpan = nameCounts[nameKey];
-          tdName.className = 'font-bold text-slate-900 border-r border-slate-200 align-middle bg-white';
+          tdName.className = `font-bold text-slate-900 align-middle ${lineStyle.tint} ${groupBorderClasses}`;
           tdName.innerHTML = `<div class="flex items-center justify-center gap-1 font-bold"><span>${escapeHtml(item.name)}</span></div>`;
           tr.appendChild(tdName);
         }
 
         // 3. CAPACITY
         const tdCap = document.createElement('td');
-        tdCap.className = 'font-medium text-slate-800 border-r border-slate-200 py-2';
+        tdCap.className = `font-medium text-slate-800 py-2 ${lineStyle.tint} ${groupBorderClasses}`;
         tdCap.innerText = item.cap;
         tr.appendChild(tdCap);
 
         // 4. TYPE (주권 / 보권)
         const tdType = document.createElement('td');
-        tdType.className = 'border-r border-slate-200 font-semibold py-2';
+        tdType.className = `font-semibold py-2 ${lineStyle.tint} ${groupBorderClasses}`;
         if (item.type === '주권') {
           tdType.innerHTML = `<span class="text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">주권</span>`;
         } else {
@@ -1142,7 +1183,7 @@
 
         // 5. CYCLE
         const tdCycle = document.createElement('td');
-        tdCycle.className = 'font-bold text-slate-700 border-r border-slate-200 bg-slate-50/30';
+        tdCycle.className = `font-bold text-slate-700 ${lineStyle.tint} ${groupBorderClasses}`;
         tdCycle.innerText = item.cycle;
         tr.appendChild(tdCycle);
 
@@ -1153,7 +1194,7 @@
           const isY2 = qKey.startsWith(String(startYear + 1));
           const bgShade = isY1 ? 'bg-sky-50/20' : (isY2 ? 'bg-indigo-50/20' : 'bg-slate-50/20');
           
-          tdQ.className = `p-1 border-r border-slate-200 cursor-pointer transition hover:bg-sky-100/50 select-none ${bgShade}`;
+          tdQ.className = `p-1 cursor-pointer transition hover:bg-sky-100/50 select-none ${bgShade} ${groupBorderClasses}`;
           tdQ.onclick = () => openScheduleModal(item.id, qKey);
 
           const sched = item.schedules && item.schedules[qKey];
@@ -1223,7 +1264,7 @@
 
         // 7. ACTIONS
         const tdAction = document.createElement('td');
-        tdAction.className = 'py-1 px-2 no-print border-l border-slate-200';
+        tdAction.className = `py-1 px-2 no-print ${groupBorderClasses}`;
         tdAction.innerHTML = `
           <div class="flex items-center justify-center gap-1.5">
             <button onclick="editCrane('${item.id}')" class="text-slate-500 hover:text-sky-600 p-1 rounded hover:bg-sky-50 transition" title="설비 사양 수정">
@@ -1359,16 +1400,17 @@
       tbody.innerHTML = '';
 
       const search = currentSpecSearchTerm.toLowerCase();
-      const filtered = window.ropeList.filter(item => {
+      let filtered = window.ropeList.filter(item => {
         const matchLine = (currentLineFilter === 'ALL' || item.line === currentLineFilter);
         const matchSearch = !search ||
           item.name.toLowerCase().includes(search) ||
           (item.spec || '').toLowerCase().includes(search);
         return matchLine && matchSearch;
       });
+      filtered = sortByLineGroup(filtered);
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-slate-400 font-medium">검색 조건에 일치하는 규격 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-400 font-medium">검색 조건에 일치하는 규격 데이터가 없습니다.</td></tr>`;
         return;
       }
 
@@ -1383,21 +1425,28 @@
       const renderedLines = {};
       const renderedNames = {};
 
-      filtered.forEach((item) => {
+      filtered.forEach((item, rowIndex) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-sky-50/40 transition-colors border-b border-slate-200';
         const nameKey = `${item.line}_${item.seq}_${item.name}`;
 
-        if (!renderedLines[item.line]) {
+        const isNewLineGroup = !renderedLines[item.line];
+        const lineStyle = getLineStyle(item.line);
+        const groupBorderClasses = (isNewLineGroup && rowIndex > 0)
+          ? `border-t-4 ${lineStyle.border}`
+          : '';
+
+        if (isNewLineGroup) {
           renderedLines[item.line] = true;
           const tdLine = document.createElement('td');
           tdLine.rowSpan = lineCounts[item.line];
-          tdLine.className = 'font-bold bg-slate-100/90 text-slate-800 border-r border-slate-300 align-middle';
+          tdLine.className = `font-bold bg-slate-100/90 text-slate-800 align-middle ${groupBorderClasses}`;
 
           let badgeColor = "bg-slate-200 text-slate-800";
           if (item.line === 'CPL') badgeColor = "bg-blue-100 text-blue-800 border-blue-200";
           else if (item.line === 'CRM') badgeColor = "bg-amber-100 text-amber-800 border-amber-200";
           else if (item.line === 'CGL') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+          else if (item.line === 'SSCL') badgeColor = "bg-teal-100 text-teal-800 border-teal-200";
           else if (item.line.includes('CCL')) badgeColor = "bg-indigo-100 text-indigo-800 border-indigo-200";
           else if (item.line === 'UTILITY') badgeColor = "bg-purple-100 text-purple-800 border-purple-200";
 
@@ -1410,24 +1459,24 @@
 
           const tdSeq = document.createElement('td');
           tdSeq.rowSpan = nameCounts[nameKey];
-          tdSeq.className = 'font-semibold text-slate-700 border-r border-slate-200 align-middle bg-slate-50/50';
+          tdSeq.className = `font-semibold text-slate-700 align-middle ${lineStyle.tint} ${groupBorderClasses}`;
           tdSeq.innerText = item.seq;
           tr.appendChild(tdSeq);
 
           const tdName = document.createElement('td');
           tdName.rowSpan = nameCounts[nameKey];
-          tdName.className = 'font-bold text-slate-900 border-r border-slate-200 align-middle bg-white';
+          tdName.className = `font-bold text-slate-900 align-middle ${lineStyle.tint} ${groupBorderClasses}`;
           tdName.innerText = item.name;
           tr.appendChild(tdName);
         }
 
         const tdCap = document.createElement('td');
-        tdCap.className = 'font-medium text-slate-800 border-r border-slate-200 py-2';
+        tdCap.className = `font-medium text-slate-800 py-2 ${lineStyle.tint} ${groupBorderClasses}`;
         tdCap.innerText = item.cap;
         tr.appendChild(tdCap);
 
         const tdType = document.createElement('td');
-        tdType.className = 'border-r border-slate-200 font-semibold py-2';
+        tdType.className = `font-semibold py-2 ${lineStyle.tint} ${groupBorderClasses}`;
         if (item.type === '주권') {
           tdType.innerHTML = `<span class="text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">주권</span>`;
         } else {
@@ -1436,14 +1485,23 @@
         tr.appendChild(tdType);
 
         const tdCycle = document.createElement('td');
-        tdCycle.className = 'font-bold text-slate-700 border-r border-slate-200 bg-slate-50/30';
+        tdCycle.className = `font-bold text-slate-700 ${lineStyle.tint} ${groupBorderClasses}`;
         tdCycle.innerText = item.cycle;
         tr.appendChild(tdCycle);
 
         const tdSpec = document.createElement('td');
-        tdSpec.className = 'text-left pl-4 py-2 font-mono text-slate-700';
+        tdSpec.className = `text-left pl-4 py-2 font-mono text-slate-700 ${lineStyle.tint} ${groupBorderClasses}`;
         tdSpec.innerText = item.spec || '-';
         tr.appendChild(tdSpec);
+
+        const tdSpecAction = document.createElement('td');
+        tdSpecAction.className = `py-1 px-2 no-print ${groupBorderClasses}`;
+        tdSpecAction.innerHTML = `
+          <button onclick="editCrane('${item.id}')" class="text-slate-500 hover:text-sky-600 p-1 rounded hover:bg-sky-50 transition" title="와이어 규격 수정">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+        `;
+        tr.appendChild(tdSpecAction);
 
         tbody.appendChild(tr);
       });
