@@ -447,8 +447,23 @@
 
     <!-- TAB PANEL: 배치도 -->
     <div id="tabPanelLayout" class="hidden flex flex-col gap-4">
-      <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-sm overflow-x-auto custom-scrollbar">
-        <img src="crane-layout.png" alt="크레인 배치도" class="max-w-none w-full min-w-[1200px]">
+      <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+        <div class="text-xs text-slate-500 flex items-center gap-1.5" id="layoutLastModifiedInfo">
+          <i class="fa-regular fa-clock"></i> 최근 수정: <span id="layoutLastModifiedText" class="font-semibold text-slate-600">등록된 수정 이력 없음</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="file" id="layoutImageInput" accept="image/*" class="hidden" onchange="handleLayoutImageSelect(event)">
+          <button onclick="document.getElementById('layoutImageInput').click()" class="px-3.5 py-2 bg-seah-700 hover:bg-seah-800 active:scale-95 transition text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-upload"></i> 배치도 이미지 업로드
+          </button>
+        </div>
+      </section>
+      <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-sm overflow-x-auto custom-scrollbar relative">
+        <div id="layoutUploadOverlay" class="hidden absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex-col items-center justify-center gap-2 no-print">
+          <i class="fa-solid fa-circle-notch fa-spin text-2xl text-seah-600"></i>
+          <span class="text-xs font-semibold text-slate-500">이미지 업로드 중...</span>
+        </div>
+        <img id="layoutImage" src="crane-layout.png" alt="크레인 배치도" class="max-w-none w-full min-w-[1200px]">
       </div>
     </div>
     <!-- END TAB PANEL: 배치도 -->
@@ -759,6 +774,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyACPbWX_SAV51Fzc9iW90Fzw64NfYbLgKg",
@@ -770,11 +786,13 @@
     };
 
     let db = null;
+    let storage = null;
     let isCloudReady = false;
 
     try {
       const app = initializeApp(firebaseConfig);
       db = getFirestore(app, "leeyunseung");
+      storage = getStorage(app);
       isCloudReady = true;
       updateCloudStatus(true, "클라우드 연결됨");
       showTableLoading(true);
@@ -812,6 +830,9 @@
           }
           if (remoteData && remoteData.updatedBy && remoteData.updatedAt) {
             updateLastModifiedUI(remoteData.updatedBy, remoteData.updatedAt);
+          }
+          if (remoteData && remoteData.layoutImageUrl) {
+            updateLayoutImageUI(remoteData.layoutImageUrl, remoteData.layoutUpdatedBy, remoteData.layoutUpdatedAt);
           }
         }
         showTableLoading(false);
@@ -889,6 +910,63 @@
       info.classList.remove('hidden');
       info.classList.add('flex');
     }
+
+    function updateLayoutImageUI(url, editor, isoDate) {
+      const imgEl = document.getElementById('layoutImage');
+      if (imgEl && url) imgEl.src = url;
+      const textEl = document.getElementById('layoutLastModifiedText');
+      if (!textEl || !editor || !isoDate) return;
+      const d = new Date(isoDate);
+      const timeStr = isNaN(d.getTime()) ? '' : d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      textEl.innerText = `${editor} · ${timeStr}`;
+    }
+
+    // Crane Layout Image Upload (Firebase Storage)
+    window.handleLayoutImageSelect = async function(event) {
+      const file = event.target.files && event.target.files[0];
+      event.target.value = '';
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        window.showToast && window.showToast('이미지 파일만 업로드할 수 있습니다.', true);
+        return;
+      }
+      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+      if (file.size > MAX_SIZE) {
+        window.showToast && window.showToast('파일 용량이 너무 큽니다 (최대 10MB).', true);
+        return;
+      }
+      if (!isCloudReady || !storage || !db) {
+        window.showToast && window.showToast('클라우드에 연결되어 있지 않아 업로드할 수 없습니다.', true);
+        return;
+      }
+
+      const overlay = document.getElementById('layoutUploadOverlay');
+      if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
+
+      try {
+        const fileRef = ref(storage, 'layout/crane-layout');
+        await uploadBytes(fileRef, file, { contentType: file.type });
+        const url = await getDownloadURL(fileRef);
+
+        const editorName = (window.getCurrentUserName && window.getCurrentUserName()) || '익명 사용자';
+        const nowIso = new Date().toISOString();
+        const docRef = doc(db, 'crane_wirerope', 'master_data');
+        await setDoc(docRef, {
+          layoutImageUrl: url,
+          layoutUpdatedBy: editorName,
+          layoutUpdatedAt: nowIso
+        }, { merge: true });
+
+        updateLayoutImageUI(url, editorName, nowIso);
+        window.showToast && window.showToast('크레인 배치도가 업데이트되었습니다.');
+      } catch (err) {
+        console.warn('Layout image upload failed:', err);
+        window.showToast && window.showToast(`이미지 업로드 실패 (${err.code || err.message})`, true);
+      } finally {
+        if (overlay) { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
+      }
+    };
   </script>
 
   <!-- JAVASCRIPT APPLICATION LOGIC -->
