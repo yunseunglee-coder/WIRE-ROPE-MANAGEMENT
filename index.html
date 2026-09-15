@@ -156,9 +156,6 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center flex-wrap gap-2">
-        <button onclick="openUserNameModal()" id="userNameBadge" class="px-3 py-2 bg-white/10 hover:bg-white/20 active:scale-95 transition text-sky-100 border border-white/20 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm" title="작성자 이름 설정/변경">
-          <i class="fa-solid fa-user-pen text-sky-300"></i> <span id="userNameBadgeText">이름 설정</span>
-        </button>
         <button onclick="openAddModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-plus"></i> 새 크레인 등록
         </button>
@@ -692,32 +689,6 @@
     </div>
   </div>
 
-  <!-- USER NAME MODAL (lightweight, self-reported — not authentication) -->
-  <div id="userNameModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200">
-      <div class="bg-gradient-to-r from-seah-700 to-seah-900 text-white p-4 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-user-pen text-sky-300"></i>
-          <h3 class="font-bold text-sm">작성자 이름 설정</h3>
-        </div>
-        <button onclick="closeModal('userNameModal')" class="text-white/80 hover:text-white text-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <form id="userNameForm" onsubmit="saveUserName(event)" class="p-5 space-y-3 text-xs">
-        <p class="text-slate-500 leading-relaxed">
-          로그인 없이 사용하는 대신, 수정 이력에 남길 이름(또는 소속·사번)을 입력해주세요.
-          이 브라우저에 저장되며, 앞으로 저장하는 모든 변경 내역에 함께 기록됩니다.
-        </p>
-        <input type="text" id="userNameInput" placeholder="예: 홍길동 / 설비보전팀" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none font-medium">
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
-          <button type="button" onclick="closeModal('userNameModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold">익명으로 계속</button>
-          <button type="submit" class="px-4 py-2 bg-seah-700 hover:bg-seah-800 text-white rounded-lg font-bold shadow">저장</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- CRANE INSPECTION MODAL -->
   <div id="inspectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]">
@@ -964,6 +935,7 @@
 
     function unlockApp(user) {
       document.body.classList.remove('auth-locked');
+      window.currentAuthUserName = (user && (user.displayName || user.email)) || '';
       const badge = document.getElementById('authUserBadge');
       const emailEl = document.getElementById('authUserEmail');
       if (badge && emailEl && user) {
@@ -1565,49 +1537,12 @@
       });
     });
 
-    // Lightweight self-reported name tag (not authentication) — restores an audit trail
-    // ("who changed this") without requiring login, since the app is now open to anyone.
+    // Audit trail name now comes straight from the signed-in Google account (set by unlockApp
+    // in the auth module script), not a self-reported tag — login is required to use the app.
     function getCurrentUserName() {
-      try {
-        return (localStorage.getItem('seah_user_name') || '').trim();
-      } catch (e) {
-        return '';
-      }
+      return window.currentAuthUserName || '';
     }
     window.getCurrentUserName = getCurrentUserName;
-
-    function setCurrentUserName(name) {
-      try {
-        localStorage.setItem('seah_user_name', name);
-      } catch (e) {}
-    }
-
-    function updateUserNameBadge() {
-      const name = getCurrentUserName();
-      const badgeText = document.getElementById('userNameBadgeText');
-      if (badgeText) badgeText.innerText = name || '이름 설정';
-    }
-
-    window.openUserNameModal = function() {
-      document.getElementById('userNameInput').value = getCurrentUserName();
-      document.getElementById('userNameModal').classList.remove('hidden');
-      document.getElementById('userNameInput').focus();
-    };
-
-    window.saveUserName = function(e) {
-      e.preventDefault();
-      const val = document.getElementById('userNameInput').value.trim();
-      setCurrentUserName(val);
-      updateUserNameBadge();
-      window.closeModal('userNameModal');
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      updateUserNameBadge();
-      if (!getCurrentUserName()) {
-        window.openUserNameModal();
-      }
-    });
 
     // Render Table Logic
     window.renderTable = function() {
