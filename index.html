@@ -425,6 +425,10 @@
             <span class="font-semibold text-red-600">이상 발견</span>
           </span>
           <span class="inline-flex items-center gap-1">
+            <span class="w-3 h-3 rounded-full bg-orange-500 inline-block shadow-sm"></span>
+            <span class="font-semibold text-orange-700">추가점검필요</span>
+          </span>
+          <span class="inline-flex items-center gap-1">
             <span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm"></span>
             <span class="font-semibold text-amber-700">미실시 (지난 달)</span>
           </span>
@@ -662,18 +666,18 @@
 
   <!-- CRANE INSPECTION MODAL -->
   <div id="inspectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-      <div class="bg-gradient-to-r from-seah-700 to-seah-900 text-white p-4 flex items-center justify-between">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]">
+      <div class="bg-gradient-to-r from-seah-700 to-seah-900 text-white p-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-clipboard-check text-sky-300"></i>
-          <h3 class="font-bold text-sm">월간 점검 결과 입력</h3>
+          <h3 class="font-bold text-sm">월간 점검 결과 입력 (CRANE 점검표)</h3>
         </div>
         <button onclick="closeModal('inspectionModal')" class="text-white/80 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <form id="inspectionForm" onsubmit="saveInspection(event)" class="p-5 space-y-4 text-xs">
+      <form id="inspectionForm" onsubmit="saveInspection(event)" class="p-5 space-y-4 text-xs overflow-y-auto custom-scrollbar">
         <input type="hidden" id="inspModalCraneKey">
         <input type="hidden" id="inspModalMonthKey">
 
@@ -687,34 +691,47 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1.5">점검 결과</label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50 has-[:checked]:ring-2 has-[:checked]:ring-emerald-400">
-              <input type="radio" name="inspStatus" value="done" onchange="onInspStatusRadioChange()" class="hidden">
-              <span class="w-3.5 h-3.5 rounded-full bg-emerald-500"></span>
-              <span class="font-bold text-emerald-700">이상무</span>
-            </label>
-            <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50 has-[:checked]:ring-2 has-[:checked]:ring-red-400">
-              <input type="radio" name="inspStatus" value="issue" onchange="onInspStatusRadioChange()" class="hidden">
-              <span class="w-3.5 h-3.5 rounded-full bg-red-500"></span>
-              <span class="font-bold text-red-700">이상 발견</span>
-            </label>
-            <label class="border rounded-lg p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center gap-1.5 transition has-[:checked]:border-slate-400 has-[:checked]:bg-slate-100 has-[:checked]:ring-2 has-[:checked]:ring-slate-300">
-              <input type="radio" name="inspStatus" value="none" onchange="onInspStatusRadioChange()" class="hidden">
-              <span class="w-3.5 h-3.5 rounded-full bg-slate-300"></span>
-              <span class="font-bold text-slate-600">미실시(해제)</span>
-            </label>
+          <div class="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+            <label class="block font-bold text-slate-700">점검 항목별 결과</label>
+            <span class="text-[11px] text-slate-500 flex items-center gap-2">
+              상태:
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span class="font-semibold text-emerald-700">○ 양호</span></span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span><span class="font-semibold text-orange-700">△ 추가점검필요</span></span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span><span class="font-semibold text-red-700">X 불량</span></span>
+            </span>
+          </div>
+          <div class="border border-slate-200 rounded-lg overflow-y-auto max-h-72 custom-scrollbar">
+            <table class="w-full text-[11px] border-collapse">
+              <thead class="sticky top-0 bg-slate-100 text-slate-600 z-10">
+                <tr>
+                  <th class="p-1.5 w-8 border-b border-slate-200">No</th>
+                  <th class="p-1.5 w-10 border-b border-slate-200">구분</th>
+                  <th class="p-1.5 text-left border-b border-slate-200">점검사항</th>
+                  <th class="p-1.5 w-16 border-b border-slate-200">검사방법</th>
+                  <th class="p-1.5 w-28 border-b border-slate-200">상태</th>
+                  <th class="p-1.5 w-32 text-left border-b border-slate-200">문제사항 / 비고</th>
+                </tr>
+              </thead>
+              <tbody id="inspItemsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">점검일자</label>
+            <input type="date" id="inspModalDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none font-medium">
+          </div>
+          <div class="flex items-end">
+            <button type="button" onclick="resetInspectionRecord()" class="w-full px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-trash-can"></i> 이 달 점검기록 삭제
+            </button>
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">점검일자</label>
-          <input type="date" id="inspModalDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none font-medium">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">점검자 / 특이사항 메모</label>
-          <textarea id="inspModalMemo" rows="2" placeholder="예: 홍길동 / 브레이크 패드 마모 확인, 교체 요망" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none"></textarea>
+          <label class="block font-bold text-slate-700 mb-1">점검자 / 종합 의견</label>
+          <textarea id="inspModalMemo" rows="2" placeholder="예: 홍길동 / 전체 이상무" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-seah-500 focus:outline-none"></textarea>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
@@ -793,6 +810,9 @@
       const app = initializeApp(firebaseConfig);
       db = getFirestore(app, "leeyunseung");
       storage = getStorage(app);
+      // Fail fast instead of the SDK's default ~10min silent retry loop on network/permission errors
+      storage.maxUploadRetryTime = 15000;
+      storage.maxOperationRetryTime = 15000;
       isCloudReady = true;
       updateCloudStatus(true, "클라우드 연결됨");
       showTableLoading(true);
@@ -1050,6 +1070,30 @@
       (window.ropeList || []).forEach(item => {
         if (!item.spec && specMap[item.id]) item.spec = specMap[item.id];
       });
+    }
+
+    // Fixed CRANE 점검표 checklist (전기 1~7, 기계 8~10) — shared across all cranes
+    const INSPECTION_ITEMS = [
+      { no: 1, cat: '전기', item: 'MOTOR 절연저항, 진동상태 점검', method: '육안검사' },
+      { no: 2, cat: '전기', item: '제어반 - 전장품 리볼팅 상태 점검', method: '육안검사' },
+      { no: 3, cat: '전기', item: '제어반 - MC, 릴레이 외 동작상태 점검', method: '볼팅상태' },
+      { no: 4, cat: '전기', item: '센서 및 스위치 - 동작상태 점검 (E-STOP, LIMIT, 로드리미트, 중추 외)', method: '동작확인' },
+      { no: 5, cat: '전기', item: '판넬 전등 및 배기펜 - 동작상태 점검', method: '동작확인' },
+      { no: 6, cat: '전기', item: '트롤리바 파손, 밀림, 집전기 외 전원투입장치 상태 점검', method: '육안검사' },
+      { no: 7, cat: '전기', item: '기타 - 수신반, 경광등 외 동작상태 점검', method: '동작확인' },
+      { no: 8, cat: '기계', item: '감속기 - 오일레벨, 오일누유상태 점검', method: '육안검사' },
+      { no: 9, cat: '기계', item: '브레이크 - 오일레벨, 오일누유상태, 브레이크 동작성능 점검', method: '육안검사' },
+      { no: 10, cat: '기계', item: 'SHEVE 상태점검 - 와이어이탈, 파손, 변형', method: '육안검사' }
+    ];
+    window.INSPECTION_ITEMS = INSPECTION_ITEMS;
+
+    // Overall month status derived from per-item states: any X -> issue, else any △ -> warn, else all ○ -> done, else none
+    function computeInspectionOverallStatus(items) {
+      if (!items || !items.some(it => it && it.state)) return 'none';
+      if (items.some(it => it && it.state === 'X')) return 'issue';
+      if (items.some(it => it && it.state === '△')) return 'warn';
+      if (items.every(it => it && it.state === '○')) return 'done';
+      return 'none';
     }
 
     // Rolling 5-year window, anchored to the current year so the app never needs a manual year bump.
@@ -1991,6 +2035,13 @@
                 <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
                 <span>${displayDate}</span>
               </div>`;
+          } else if (rec && rec.status === 'warn') {
+            const displayDate = formatShortDate(rec.date) || '점검';
+            tdM.innerHTML = `
+              <div class="bg-orange-500 text-white text-[11px] font-bold py-1 px-1 rounded shadow-sm flex items-center justify-center gap-0.5" title="${escapeHtml((rec.memo || '추가점검필요') + editedSuffix)}">
+                <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                <span>${displayDate}</span>
+              </div>`;
           } else {
             const isPastMonth = (inspectionYear < today.getFullYear()) ||
               (inspectionYear === today.getFullYear() && m < (today.getMonth() + 1));
@@ -2003,6 +2054,62 @@
 
         tbody.appendChild(tr);
       });
+    };
+
+    // In-memory item states while the inspection modal is open: [{ state: '○'|'△'|'X'|'', note: '' }, ...]
+    let currentInspItems = [];
+
+    function renderInspItemsTable() {
+      const tbody = document.getElementById('inspItemsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = INSPECTION_ITEMS.map((def, idx) => {
+        const it = currentInspItems[idx] || { state: '', note: '' };
+        const stateBtn = (val, colorClasses) => `
+          <button type="button" onclick="setInspItemState(${idx}, '${val}')"
+            class="w-6 h-6 rounded-md text-xs font-bold border transition ${it.state === val ? colorClasses.active : colorClasses.idle}">${val}</button>`;
+        return `
+          <tr class="border-b border-slate-100 align-top">
+            <td class="p-1.5 text-center font-semibold text-slate-500">${def.no}</td>
+            <td class="p-1.5 text-center">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${def.cat === '전기' ? 'bg-sky-50 text-sky-700' : 'bg-indigo-50 text-indigo-700'}">${def.cat}</span>
+            </td>
+            <td class="p-1.5 text-left text-slate-700">${escapeHtml(def.item)}</td>
+            <td class="p-1.5 text-center text-slate-400">${escapeHtml(def.method)}</td>
+            <td class="p-1.5">
+              <div class="flex items-center justify-center gap-1">
+                ${stateBtn('○', { active: 'bg-emerald-500 text-white border-emerald-500', idle: 'bg-white text-slate-400 border-slate-300 hover:bg-emerald-50' })}
+                ${stateBtn('△', { active: 'bg-orange-500 text-white border-orange-500', idle: 'bg-white text-slate-400 border-slate-300 hover:bg-orange-50' })}
+                ${stateBtn('X', { active: 'bg-red-500 text-white border-red-500', idle: 'bg-white text-slate-400 border-slate-300 hover:bg-red-50' })}
+              </div>
+            </td>
+            <td class="p-1">
+              <input type="text" value="${escapeHtml(it.note || '')}" oninput="updateInspItemNote(${idx}, this.value)"
+                placeholder="이상 없음" class="w-full p-1 border border-slate-200 rounded text-[11px] focus:ring-1 focus:ring-seah-500 focus:outline-none">
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    window.setInspItemState = function(idx, val) {
+      if (!currentInspItems[idx]) currentInspItems[idx] = { state: '', note: '' };
+      currentInspItems[idx].state = (currentInspItems[idx].state === val) ? '' : val;
+      const dateInput = document.getElementById('inspModalDate');
+      if (!dateInput.value) dateInput.value = formatDate(new Date());
+      renderInspItemsTable();
+    };
+
+    window.updateInspItemNote = function(idx, val) {
+      if (!currentInspItems[idx]) currentInspItems[idx] = { state: '', note: '' };
+      currentInspItems[idx].note = val;
+    };
+
+    window.resetInspectionRecord = async function() {
+      const ok = await window.showConfirmModal('이 달의 점검기록을 전부 삭제하시겠습니까?', { title: '점검기록 삭제', okText: '삭제' });
+      if (!ok) return;
+      currentInspItems = INSPECTION_ITEMS.map(() => ({ state: '', note: '' }));
+      document.getElementById('inspModalDate').value = '';
+      document.getElementById('inspModalMemo').value = '';
+      renderInspItemsTable();
     };
 
     // Open Inspection Modal
@@ -2018,10 +2125,13 @@
       const [year, month] = monthKey.split('_');
       document.getElementById('inspModalInfoMonth').innerText = `${year}년 ${month}월`;
 
-      const rec = (window.inspectionData[craneKey] && window.inspectionData[craneKey][monthKey]) || { status: 'none', date: '', memo: '' };
-      document.getElementsByName('inspStatus').forEach(r => {
-        r.checked = (r.value === (rec.status || 'none'));
+      const rec = (window.inspectionData[craneKey] && window.inspectionData[craneKey][monthKey]) || { date: '', memo: '' };
+      currentInspItems = INSPECTION_ITEMS.map((def, idx) => {
+        const saved = rec.items && rec.items[idx];
+        return { state: (saved && saved.state) || '', note: (saved && saved.note) || '' };
       });
+      renderInspItemsTable();
+
       document.getElementById('inspModalDate').value = rec.date || '';
       document.getElementById('inspModalMemo').value = rec.memo || '';
 
@@ -2033,37 +2143,25 @@
       document.getElementById('inspectionModal').classList.remove('hidden');
     };
 
-    window.onInspStatusRadioChange = function() {
-      const radios = document.getElementsByName('inspStatus');
-      let val = 'none';
-      radios.forEach(r => { if (r.checked) val = r.value; });
-      const dateInput = document.getElementById('inspModalDate');
-      if ((val === 'done' || val === 'issue') && !dateInput.value) {
-        dateInput.value = formatDate(new Date());
-      }
-    };
-
     // Save Inspection Data
     window.saveInspection = function(e) {
       e.preventDefault();
       const craneKey = document.getElementById('inspModalCraneKey').value;
       const monthKey = document.getElementById('inspModalMonthKey').value;
 
-      let selectedStatus = 'none';
-      document.getElementsByName('inspStatus').forEach(r => {
-        if (r.checked) selectedStatus = r.value;
-      });
-
       const date = document.getElementById('inspModalDate').value;
       const memo = document.getElementById('inspModalMemo').value.trim();
+      const items = currentInspItems.map(it => ({ state: it.state || '', note: (it.note || '').trim() }));
+      const overallStatus = computeInspectionOverallStatus(items);
 
       if (!window.inspectionData[craneKey]) window.inspectionData[craneKey] = {};
 
-      if (selectedStatus === 'none') {
+      if (overallStatus === 'none' && !date && !memo) {
         delete window.inspectionData[craneKey][monthKey];
       } else {
         window.inspectionData[craneKey][monthKey] = {
-          status: selectedStatus,
+          status: overallStatus,
+          items,
           date,
           memo,
           editedBy: getCurrentUserName() || '익명 사용자',
