@@ -147,10 +147,11 @@
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
             CRANE WIRE ROPE 주기 및 교체 관리표
           </h1>
-          <p id="lastModifiedInfo" class="text-[11px] text-sky-200/70 mt-0.5 hidden items-center gap-1">
+          <button type="button" id="lastModifiedInfo" onclick="openRecentHistory()" title="수정 이력 보기" class="text-[11px] text-sky-200/70 hover:text-white mt-0.5 hidden items-center gap-1 rounded px-1 -mx-1 hover:bg-white/10 transition">
             <i class="fa-regular fa-clock"></i>
             최근 수정: <span id="lastModifiedUser" class="font-semibold text-sky-100"></span> · <span id="lastModifiedTime"></span>
-          </p>
+            <i class="fa-solid fa-chevron-right text-[9px] ml-0.5"></i>
+          </button>
         </div>
       </div>
 
@@ -860,6 +861,20 @@
       </div>
       <div class="border-t border-slate-200">
         <button onclick="document.getElementById('startupAlertModal').classList.add('hidden')" type="button" class="w-full py-3 text-xs font-bold text-white bg-seah-700 hover:bg-seah-800 transition">확인했습니다</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT HISTORY PANEL (opened from header "최근 수정") -->
+  <div id="recentHistoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print" onclick="if(event.target===this)closeRecentHistory()">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-base text-slate-900 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-seah-700"></i> 수정 이력 <span id="recentHistoryCount" class="text-xs font-normal text-slate-400"></span></h3>
+        <button onclick="closeRecentHistory()" type="button" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <ol id="recentHistoryList" class="flex-1 overflow-y-auto custom-scrollbar px-5 py-3 text-xs"></ol>
+      <div class="border-t border-slate-200">
+        <button onclick="closeRecentHistory();switchTab('changelog')" type="button" class="w-full py-3 text-xs font-bold text-seah-700 hover:bg-slate-50 transition">검색·기간 조회 / CSV 저장은 [변경 이력] 탭에서 <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </div>
   </div>
@@ -2235,7 +2250,43 @@
       }).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
     }
 
+    // Newest-first timeline popup; capped so a long history stays fast to open.
+    const RECENT_HISTORY_MAX = 200;
+    window.renderRecentHistory = function() {
+      const listEl = document.getElementById('recentHistoryList');
+      if (!listEl || document.getElementById('recentHistoryModal').classList.contains('hidden')) return;
+      const all = (window.changeHistory || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      document.getElementById('recentHistoryCount').innerText = all.length > RECENT_HISTORY_MAX ? `(최근 ${RECENT_HISTORY_MAX}건 / 전체 ${all.length}건)` : `(${all.length}건)`;
+      if (all.length === 0) {
+        listEl.innerHTML = '<li class="py-10 text-center text-slate-400">아직 기록된 수정 이력이 없습니다.</li>';
+        return;
+      }
+      listEl.innerHTML = all.slice(0, RECENT_HISTORY_MAX).map(h => {
+        const changes = (h.changes || []).map(c => `<div><span class="text-slate-500">${escapeHtml(c.field)}</span>: <span class="text-slate-400 line-through">${escapeHtml(c.before) || '(없음)'}</span> → <span class="font-semibold text-slate-900">${escapeHtml(c.after) || '(없음)'}</span></div>`).join('');
+        const note = h.note ? `<div class="text-slate-500">${escapeHtml(h.note)}</div>` : '';
+        return `<li class="py-2.5 border-b border-slate-100 last:border-0">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="px-2 py-0.5 rounded-full font-bold ${CHANGELOG_ACTION_STYLE[h.action] || 'bg-slate-100 text-slate-600'}">${escapeHtml(h.category)} ${escapeHtml(h.action)}</span>
+            <span class="font-semibold text-slate-800">${escapeHtml(h.target)}</span>
+            <span class="ml-auto text-slate-400 whitespace-nowrap">${escapeHtml(h.by)} · ${escapeHtml(formatHistoryTime(h.at))}</span>
+          </div>
+          <div class="mt-1 pl-1 space-y-0.5">${changes}${note}</div>
+        </li>`;
+      }).join('');
+    };
+
+    window.openRecentHistory = function() {
+      document.getElementById('recentHistoryModal').classList.remove('hidden');
+      window.renderRecentHistory();
+      document.getElementById('recentHistoryList').scrollTop = 0;
+    };
+
+    window.closeRecentHistory = function() {
+      document.getElementById('recentHistoryModal').classList.add('hidden');
+    };
+
     window.renderChangeHistory = function() {
+      window.renderRecentHistory();
       const tbody = document.getElementById('changelogBody');
       if (!tbody || document.getElementById('tabPanelChangelog').classList.contains('hidden')) return;
       const list = filteredChangeHistory();
