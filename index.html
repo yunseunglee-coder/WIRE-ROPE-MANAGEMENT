@@ -165,6 +165,9 @@
         <button onclick="window.print()" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 active:scale-95 transition text-white border border-white/20 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-print text-sky-300"></i> 인쇄 / PDF
         </button>
+        <button onclick="openMailModal()" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 active:scale-95 transition text-white border border-white/20 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-envelope text-amber-300"></i> 메일 알림
+        </button>
         <span id="authUserBadge" class="hidden items-center gap-1.5 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-xs text-sky-100" title="로그인 계정">
           <i class="fa-solid fa-user-check text-emerald-300"></i>
           <span id="authUserEmail" class="font-medium"></span>
@@ -207,6 +210,9 @@
       </button>
       <button onclick="switchTab('layout')" id="tabBtnLayout" class="px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 border-transparent transition flex items-center gap-2 text-slate-500 hover:text-seah-700 hover:bg-white/60">
         <i class="fa-solid fa-map-location-dot"></i> 크레인 배치도
+      </button>
+      <button onclick="switchTab('changelog')" id="tabBtnChangelog" class="px-4 py-2.5 text-sm font-bold rounded-t-lg border border-b-0 border-transparent transition flex items-center gap-2 text-slate-500 hover:text-seah-700 hover:bg-white/60">
+        <i class="fa-solid fa-list-check"></i> 변경 이력
       </button>
     </div>
 
@@ -523,6 +529,52 @@
     </div>
     <!-- END TAB PANEL: 배치도 -->
 
+    <!-- TAB PANEL: 변경 이력 -->
+    <div id="tabPanelChangelog" class="hidden flex flex-col gap-4">
+      <section class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select id="changelogCategory" onchange="renderChangeHistory()" class="border border-slate-300 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-seah-500">
+            <option value="">전체 구분</option>
+            <option value="교체일정">교체일정</option>
+            <option value="설비">설비</option>
+            <option value="점검">점검</option>
+            <option value="배치도">배치도</option>
+            <option value="메일설정">메일설정</option>
+          </select>
+          <input id="changelogSearch" type="text" oninput="renderChangeHistory()" placeholder="설비명, 수정자, 내용 검색" class="w-56 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-seah-500">
+          <input id="changelogFrom" type="date" onchange="renderChangeHistory()" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-seah-500">
+          <span class="text-slate-400">~</span>
+          <input id="changelogTo" type="date" onchange="renderChangeHistory()" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-seah-500">
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span id="changelogCount" class="text-slate-500"></span>
+          <button onclick="exportChangeHistoryCSV()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white rounded-lg font-semibold flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-file-excel"></i> 이력 CSV 저장
+          </button>
+        </div>
+      </section>
+      <div class="bg-white rounded-xl border border-slate-300 shadow-sm overflow-x-auto custom-scrollbar">
+        <table class="w-full text-xs">
+          <thead class="bg-slate-800 text-white">
+            <tr>
+              <th class="p-2.5 w-36">일시</th>
+              <th class="p-2.5 w-28">수정자</th>
+              <th class="p-2.5 w-20">구분</th>
+              <th class="p-2.5 w-14">작업</th>
+              <th class="p-2.5 w-56">대상</th>
+              <th class="p-2.5 text-left">변경 내용</th>
+            </tr>
+          </thead>
+          <tbody id="changelogBody"></tbody>
+        </table>
+        <div id="changelogMore" class="hidden border-t border-slate-200 text-center no-print">
+          <button onclick="showMoreChangeHistory()" class="w-full py-2.5 text-xs font-semibold text-seah-700 hover:bg-slate-50">더 보기</button>
+        </div>
+      </div>
+      <p class="text-[11px] text-slate-400">최근 1,000건까지 보관됩니다. 이 기능을 추가하기 전에 수정된 내용은 이력에 남아 있지 않습니다.</p>
+    </div>
+    <!-- END TAB PANEL: 변경 이력 -->
+
     <!-- FOOTER NOTES / AUDIT INFO -->
     <div class="bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
       <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
@@ -812,10 +864,48 @@
     </div>
   </div>
 
+  <!-- MAIL ALERT MODAL (recipients for the Apps Script auto-mailer + manual send) -->
+  <div id="mailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-base text-slate-900 flex items-center gap-2"><i class="fa-solid fa-envelope text-seah-700"></i> 교체 지연·임박 메일 알림</h3>
+        <button onclick="closeMailModal()" type="button" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="p-5 space-y-4 text-xs text-slate-700">
+        <div>
+          <p class="font-semibold text-slate-800 mb-1.5">받는 사람</p>
+          <div class="flex gap-2">
+            <input id="mailRecipientInput" type="email" placeholder="name@seah.co.kr" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-seah-500" onkeydown="if(event.key==='Enter'){event.preventDefault();addMailRecipient();}">
+            <button onclick="addMailRecipient()" type="button" class="px-3 py-2 bg-seah-700 hover:bg-seah-800 text-white rounded-lg font-semibold">추가</button>
+          </div>
+          <ul id="mailRecipientList" class="mt-2 space-y-1"></ul>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800 mb-1.5">자동 발송 주기 <span class="font-normal text-slate-400">(매일 오전 8시경 확인)</span></p>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-1.5"><input type="radio" name="mailFrequency" value="daily"> 매일</label>
+            <label class="flex items-center gap-1.5"><input type="radio" name="mailFrequency" value="weekly"> 매주 월요일</label>
+            <label class="flex items-center gap-1.5"><input type="radio" name="mailFrequency" value="off"> 끄기</label>
+          </div>
+          <label class="flex items-center gap-1.5 mt-2"><input id="mailSendWhenEmpty" type="checkbox"> 지연·임박 항목이 없어도 "이상 없음" 메일 보내기</label>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800 mb-1.5">현재 발송될 내용 <span id="mailPreviewCount" class="font-normal text-slate-400"></span></p>
+          <div id="mailPreview" class="border border-slate-200 rounded-lg max-h-48 overflow-y-auto"></div>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">자동 발송은 관리자가 Google Apps Script를 한 번 설정해야 동작합니다. "지금 Outlook으로 보내기"를 누르면 위 내용으로 메일 작성 창이 열립니다.</p>
+      </div>
+      <div class="border-t border-slate-200 flex">
+        <button onclick="sendMailNow()" type="button" class="flex-1 py-3 text-xs font-bold text-seah-700 hover:bg-slate-50 transition border-r border-slate-200"><i class="fa-solid fa-paper-plane"></i> 지금 Outlook으로 보내기</button>
+        <button onclick="saveMailSettings()" type="button" class="flex-1 py-3 text-xs font-bold text-white bg-seah-700 hover:bg-seah-800 transition">설정 저장</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FIRESTORE SYNC MODULE + GOOGLE AUTH GATE (seah.co.kr 도메인 + 허용된 개인 계정만 통과) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
@@ -982,6 +1072,11 @@
           if (remoteData && remoteData.layoutImageUrl) {
             updateLayoutImageUI(remoteData.layoutImageUrl, remoteData.layoutUpdatedBy, remoteData.layoutUpdatedAt);
           }
+          if (remoteData && remoteData.mailSettings && typeof remoteData.mailSettings === 'object') {
+            window.mailSettings = remoteData.mailSettings;
+          }
+          window.changeHistory = (remoteData && Array.isArray(remoteData.changeHistory)) ? remoteData.changeHistory : [];
+          if (window.renderChangeHistory) window.renderChangeHistory();
         }
         showTableLoading(false);
         if (window.runStartupStatusCheck) window.runStartupStatusCheck();
@@ -993,8 +1088,41 @@
       });
     }
 
-    // Global Cloud Save Function
-    window.saveDataToFirestore = async function() {
+    // Change history: kept as an array on master_data (same doc, so existing security rules apply).
+    // Only the most recent HISTORY_MAX entries are kept; older ones are trimmed on the next save past the slack.
+    const HISTORY_MAX = 1000;
+    const HISTORY_TRIM_SLACK = 100;
+
+    function buildHistoryEntry(entry) {
+      if (!entry) return null;
+      const editorName = (window.getCurrentUserName && window.getCurrentUserName()) || '익명 사용자';
+      return {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        at: new Date().toISOString(),
+        by: editorName,
+        category: entry.category || '',
+        action: entry.action || '',
+        target: entry.target || '',
+        changes: (entry.changes || []).map(c => ({ field: c.field || '', before: c.before ?? '', after: c.after ?? '' })),
+        note: entry.note || ''
+      };
+    }
+
+    // Returns the Firestore field value that appends `entry` to changeHistory (or null when there is nothing to log).
+    window.historyFieldValue = function(entry) {
+      const full = buildHistoryEntry(entry);
+      if (!full) return null;
+      const current = Array.isArray(window.changeHistory) ? window.changeHistory : [];
+      window.changeHistory = current.concat(full);
+      if (window.renderChangeHistory) window.renderChangeHistory();
+      if (current.length >= HISTORY_MAX + HISTORY_TRIM_SLACK) {
+        return window.changeHistory.slice(-HISTORY_MAX);
+      }
+      return arrayUnion(full);
+    };
+
+    // Global Cloud Save Function (historyEntry: optional { category, action, target, changes:[{field,before,after}], note })
+    window.saveDataToFirestore = async function(historyEntry) {
       // 1. Local Cache save
       try {
         localStorage.setItem('seah_crane_ropes_cache', JSON.stringify(window.ropeList));
@@ -1006,12 +1134,15 @@
         try {
           const docRef = doc(db, 'crane_wirerope', 'master_data');
           const editorName = (window.getCurrentUserName && window.getCurrentUserName()) || '익명 사용자';
-          await setDoc(docRef, {
+          const payload = {
             ropeList: window.ropeList,
             inspectionData: window.inspectionData,
             updatedBy: editorName,
             updatedAt: new Date().toISOString()
-          }, { merge: true });
+          };
+          const historyValue = window.historyFieldValue(historyEntry);
+          if (historyValue) payload.changeHistory = historyValue;
+          await setDoc(docRef, payload, { merge: true });
           updateCloudStatus(true, "클라우드 저장됨");
         } catch (err) {
           console.warn("Firestore save warning:", err);
@@ -1069,6 +1200,19 @@
       textEl.innerText = `${editor} · ${timeStr}`;
     }
 
+    // Mail alert settings (read by the Google Apps Script auto-mailer)
+    window.saveMailSettingsToFirestore = async function(settings, historyEntry) {
+      if (!isCloudReady || !db) throw new Error('클라우드에 연결되지 않았습니다.');
+      const editorName = (window.getCurrentUserName && window.getCurrentUserName()) || '익명 사용자';
+      const docRef = doc(db, 'crane_wirerope', 'master_data');
+      const payload = {
+        mailSettings: { ...settings, updatedBy: editorName, updatedAt: new Date().toISOString() }
+      };
+      const historyValue = window.historyFieldValue(historyEntry);
+      if (historyValue) payload.changeHistory = historyValue;
+      await setDoc(docRef, payload, { merge: true });
+    };
+
     // Crane Layout Image Upload (Firebase Storage)
     window.handleLayoutImageSelect = async function(event) {
       const file = event.target.files && event.target.files[0];
@@ -1103,7 +1247,8 @@
         await setDoc(docRef, {
           layoutImageUrl: url,
           layoutUpdatedBy: editorName,
-          layoutUpdatedAt: nowIso
+          layoutUpdatedAt: nowIso,
+          changeHistory: window.historyFieldValue({ category: '배치도', action: '수정', target: '크레인 배치도', note: '배치도 이미지 교체' })
         }, { merge: true });
 
         updateLayoutImageUI(url, editorName, nowIso);
@@ -1341,6 +1486,31 @@
       }[c]));
     }
 
+    // ===== Change history helpers =====
+    const SCHEDULE_STATUS_LABEL = { done: '교체 완료', plan: '교체 예정', warn: '점검 요망', none: '없음' };
+    const INSPECTION_STATUS_LABEL = { done: '이상무', warn: '추가점검필요', issue: '이상 발견', none: '미점검' };
+    const CRANE_FIELD_LABEL = { line: 'LINE', seq: '순번', name: '설비명', cap: '용량', type: '구분', cycle: '교체주기', spec: '규격', lastDate: '최근 교체일' };
+
+    function ropeLabel(item) {
+      return [item.line, item.name, item.cap, item.type].filter(Boolean).join(' ');
+    }
+
+    function quarterLabel(qKey) {
+      const [y, q] = String(qKey).split('_');
+      return q ? `${y}년 ${q.replace('Q', '')}분기` : String(qKey);
+    }
+
+    // Collects {field, before, after} for each key whose value differs.
+    function diffFields(before, after, labels) {
+      const changes = [];
+      Object.keys(labels).forEach(k => {
+        const b = before ? (before[k] ?? '') : '';
+        const a = after ? (after[k] ?? '') : '';
+        if (String(b) !== String(a)) changes.push({ field: labels[k], before: String(b), after: String(a) });
+      });
+      return changes;
+    }
+
     function parseLocalDate(dateStr) {
       if (!dateStr) return null;
       const [y, m, d] = dateStr.split('-').map(Number);
@@ -1488,7 +1658,9 @@
 
       window.renderTable();
       window.updateStats();
-      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      if (window.saveDataToFirestore) window.saveDataToFirestore({
+        category: '교체일정', action: '일괄', target: '전체 크레인', note: `주기 예측 일괄 재계산 (${count}개 항목)`
+      });
       showToast(`전체 크레인의 주기 예측이 최신화되었습니다.`);
     };
 
@@ -1834,6 +2006,158 @@
       document.getElementById('startupAlertModal').classList.remove('hidden');
     };
 
+    // ===== Mail alert (overdue / imminent list) =====
+    // Same rule as updateStats(): planned date passed = 지연, within 30 days = 임박.
+    // Keep in sync with collectAlertItems() in 메일자동발송.gs.
+    window.mailSettings = window.mailSettings || { recipients: [], frequency: 'weekly', sendWhenEmpty: false };
+    let mailDraftRecipients = [];
+
+    function collectAlertItems() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const items = [];
+      sortByLineGroup(window.ropeList || []).forEach(rope => {
+        if (!rope.schedules) return;
+        Object.values(rope.schedules).forEach(s => {
+          if (!s || s.status !== 'plan' || !s.date) return;
+          const target = parseLocalDate(s.date);
+          if (!target) return;
+          const diffDays = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays > 30) return;
+          items.push({ rope, date: s.date, diffDays, overdue: diffDays <= 0 });
+        });
+      });
+      items.sort((a, b) => a.diffDays - b.diffDays);
+      return items;
+    }
+
+    function alertDdayText(diffDays) {
+      if (diffDays === 0) return 'D-Day';
+      return diffDays < 0 ? `${Math.abs(diffDays)}일 지연` : `D-${diffDays}`;
+    }
+
+    function renderMailPreview() {
+      const items = collectAlertItems();
+      const box = document.getElementById('mailPreview');
+      const overdue = items.filter(i => i.overdue).length;
+      document.getElementById('mailPreviewCount').innerText = `(지연 ${overdue}건 · 임박 ${items.length - overdue}건)`;
+      if (items.length === 0) {
+        box.innerHTML = '<p class="p-3 text-center text-slate-400">교체 지연·임박 항목이 없습니다.</p>';
+        return;
+      }
+      box.innerHTML = `<table class="w-full text-[11px]">
+        <thead class="bg-slate-50 text-slate-500 sticky top-0"><tr><th class="p-1.5">상태</th><th class="p-1.5">LINE</th><th class="p-1.5">설비명</th><th class="p-1.5">구분</th><th class="p-1.5">예정일</th></tr></thead>
+        <tbody>${items.map(i => `<tr class="border-t border-slate-100 text-center">
+          <td class="p-1.5 font-bold ${i.overdue ? 'text-red-600' : 'text-amber-600'}">${i.overdue ? '지연' : '임박'} (${alertDdayText(i.diffDays)})</td>
+          <td class="p-1.5">${escapeHtml(i.rope.line)}</td>
+          <td class="p-1.5">${escapeHtml(i.rope.name)}</td>
+          <td class="p-1.5">${escapeHtml(i.rope.cap)} ${escapeHtml(i.rope.type)}</td>
+          <td class="p-1.5">${escapeHtml(i.date)}</td>
+        </tr>`).join('')}</tbody></table>`;
+    }
+
+    function renderMailRecipients() {
+      const ul = document.getElementById('mailRecipientList');
+      if (mailDraftRecipients.length === 0) {
+        ul.innerHTML = '<li class="text-slate-400">등록된 수신자가 없습니다.</li>';
+        return;
+      }
+      ul.innerHTML = mailDraftRecipients.map((email, idx) => `<li class="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5">
+        <span>${escapeHtml(email)}</span>
+        <button type="button" onclick="removeMailRecipient(${idx})" class="text-slate-400 hover:text-red-600" title="삭제"><i class="fa-solid fa-trash-can"></i></button>
+      </li>`).join('');
+    }
+
+    window.openMailModal = function() {
+      const s = window.mailSettings || {};
+      mailDraftRecipients = Array.isArray(s.recipients) ? s.recipients.slice() : [];
+      const freq = s.frequency || 'weekly';
+      document.querySelectorAll('input[name="mailFrequency"]').forEach(r => { r.checked = r.value === freq; });
+      document.getElementById('mailSendWhenEmpty').checked = !!s.sendWhenEmpty;
+      document.getElementById('mailRecipientInput').value = '';
+      renderMailRecipients();
+      renderMailPreview();
+      document.getElementById('mailModal').classList.remove('hidden');
+    };
+
+    window.closeMailModal = function() {
+      document.getElementById('mailModal').classList.add('hidden');
+    };
+
+    window.addMailRecipient = function() {
+      const input = document.getElementById('mailRecipientInput');
+      const email = input.value.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('올바른 이메일 주소를 입력하세요.', true);
+        return;
+      }
+      if (mailDraftRecipients.includes(email)) {
+        showToast('이미 등록된 주소입니다.', true);
+        return;
+      }
+      mailDraftRecipients.push(email);
+      input.value = '';
+      renderMailRecipients();
+    };
+
+    window.removeMailRecipient = function(idx) {
+      mailDraftRecipients.splice(idx, 1);
+      renderMailRecipients();
+    };
+
+    window.saveMailSettings = async function() {
+      const checked = document.querySelector('input[name="mailFrequency"]:checked');
+      const settings = {
+        recipients: mailDraftRecipients.slice(),
+        frequency: checked ? checked.value : 'weekly',
+        sendWhenEmpty: document.getElementById('mailSendWhenEmpty').checked
+      };
+      const prev = window.mailSettings || {};
+      const freqLabel = { daily: '매일', weekly: '매주 월요일', off: '끄기' };
+      const mailView = m => ({
+        recipients: (m.recipients || []).join(', '),
+        frequency: freqLabel[m.frequency || 'weekly'] || m.frequency,
+        sendWhenEmpty: m.sendWhenEmpty ? '예' : '아니오'
+      });
+      const changes = diffFields(mailView(prev), mailView(settings), { recipients: '받는 사람', frequency: '발송 주기', sendWhenEmpty: '이상 없음 메일' });
+      const historyEntry = changes.length > 0 ? { category: '메일설정', action: '수정', target: '메일 알림 설정', changes } : null;
+      try {
+        await window.saveMailSettingsToFirestore(settings, historyEntry);
+        window.mailSettings = settings;
+        showToast('메일 알림 설정이 저장되었습니다.');
+        window.closeMailModal();
+      } catch (err) {
+        console.warn('Mail settings save failed:', err);
+        showToast(`설정 저장 실패 (${err.code || err.message})`, true);
+      }
+    };
+
+    // Manual send: opens the user's mail client (Outlook) with the list prefilled.
+    window.sendMailNow = function() {
+      if (mailDraftRecipients.length === 0) {
+        showToast('받는 사람을 먼저 추가하세요.', true);
+        return;
+      }
+      const items = collectAlertItems();
+      const overdue = items.filter(i => i.overdue).length;
+      const todayStr = formatDate(new Date());
+      const subject = `[크레인 와이어로프] 교체 지연 ${overdue}건 · 임박 ${items.length - overdue}건 (${todayStr})`;
+      const lines = [`크레인 와이어로프 교체 현황 알림 (${todayStr} 기준)`, ''];
+      if (items.length === 0) {
+        lines.push('교체 지연·임박 항목이 없습니다. 전체 정상입니다.');
+      } else {
+        items.forEach(i => {
+          lines.push(`- [${i.overdue ? '지연' : '임박'}] ${i.rope.line} ${i.rope.name} ${i.rope.cap} ${i.rope.type} / 예정일 ${i.date} (${alertDdayText(i.diffDays)})`);
+        });
+      }
+      lines.push('', `시스템 바로가기: ${location.href.split('#')[0]}`);
+      const href = `mailto:${mailDraftRecipients.join(';')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      if (href.length > 1900) {
+        showToast('항목이 많아 일부 메일 프로그램에서 본문이 잘릴 수 있습니다.', true);
+      }
+      window.location.href = href;
+    };
+
     // Filter by Line
     window.setFilterLine = function(line) {
       currentLineFilter = line;
@@ -1859,6 +2183,10 @@
       const isSpec = tab === 'spec';
       const isInspection = tab === 'inspection';
       const isLayout = tab === 'layout';
+      const isChangelog = tab === 'changelog';
+      document.getElementById('tabPanelChangelog').classList.toggle('hidden', !isChangelog);
+      document.getElementById('tabBtnChangelog').className = isChangelog ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
+      if (isChangelog) window.renderChangeHistory();
       document.getElementById('tabPanelHistory').classList.toggle('hidden', !isHistory);
       document.getElementById('tabPanelSpec').classList.toggle('hidden', !isSpec);
       document.getElementById('tabPanelInspection').classList.toggle('hidden', !isInspection);
@@ -1869,6 +2197,89 @@
       document.getElementById('tabBtnLayout').className = isLayout ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
       if (isSpec) window.renderSpecTable();
       if (isInspection) window.renderInspectionTable();
+    };
+
+    // ===== 변경 이력 탭 =====
+    window.changeHistory = window.changeHistory || [];
+    const CHANGELOG_PAGE = 100;
+    let changelogLimit = CHANGELOG_PAGE;
+    const CHANGELOG_ACTION_STYLE = {
+      '등록': 'bg-emerald-100 text-emerald-700',
+      '수정': 'bg-sky-100 text-sky-700',
+      '삭제': 'bg-red-100 text-red-700',
+      '일괄': 'bg-slate-200 text-slate-700'
+    };
+
+    function formatHistoryTime(iso) {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function filteredChangeHistory() {
+      const category = document.getElementById('changelogCategory').value;
+      const search = document.getElementById('changelogSearch').value.trim().toLowerCase();
+      const from = parseLocalDate(document.getElementById('changelogFrom').value);
+      const to = parseLocalDate(document.getElementById('changelogTo').value);
+      if (to) to.setDate(to.getDate() + 1);
+      return (window.changeHistory || []).filter(h => {
+        if (category && h.category !== category) return false;
+        const at = new Date(h.at);
+        if (from && at < from) return false;
+        if (to && at >= to) return false;
+        if (search) {
+          const hay = [h.by, h.target, h.note, ...(h.changes || []).map(c => `${c.field} ${c.before} ${c.after}`)].join(' ').toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      }).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    }
+
+    window.renderChangeHistory = function() {
+      const tbody = document.getElementById('changelogBody');
+      if (!tbody || document.getElementById('tabPanelChangelog').classList.contains('hidden')) return;
+      const list = filteredChangeHistory();
+      document.getElementById('changelogCount').innerText = `총 ${list.length}건`;
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-slate-400 font-medium">표시할 변경 이력이 없습니다.</td></tr>`;
+        document.getElementById('changelogMore').classList.add('hidden');
+        return;
+      }
+      tbody.innerHTML = list.slice(0, changelogLimit).map(h => {
+        const changes = (h.changes || []).map(c => `<div><span class="font-semibold text-slate-600">${escapeHtml(c.field)}</span>: <span class="text-slate-400 line-through">${escapeHtml(c.before) || '(없음)'}</span> → <span class="font-semibold text-slate-900">${escapeHtml(c.after) || '(없음)'}</span></div>`).join('');
+        const note = h.note ? `<div class="text-slate-500">${escapeHtml(h.note)}</div>` : '';
+        return `<tr class="border-t border-slate-100 hover:bg-slate-50 align-top">
+          <td class="p-2.5 text-center text-slate-500 whitespace-nowrap">${escapeHtml(formatHistoryTime(h.at))}</td>
+          <td class="p-2.5 text-center font-semibold">${escapeHtml(h.by)}</td>
+          <td class="p-2.5 text-center">${escapeHtml(h.category)}</td>
+          <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded-full font-bold ${CHANGELOG_ACTION_STYLE[h.action] || 'bg-slate-100 text-slate-600'}">${escapeHtml(h.action)}</span></td>
+          <td class="p-2.5">${escapeHtml(h.target)}</td>
+          <td class="p-2.5 space-y-0.5">${changes}${note}</td>
+        </tr>`;
+      }).join('');
+      document.getElementById('changelogMore').classList.toggle('hidden', list.length <= changelogLimit);
+    };
+
+    window.showMoreChangeHistory = function() {
+      changelogLimit += CHANGELOG_PAGE;
+      window.renderChangeHistory();
+    };
+
+    window.exportChangeHistoryCSV = function() {
+      const list = filteredChangeHistory();
+      const cell = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      const rows = [['일시', '수정자', '구분', '작업', '대상', '변경 내용'].map(cell).join(',')];
+      list.forEach(h => {
+        const detail = (h.changes || []).map(c => `${c.field}: ${c.before || '(없음)'} → ${c.after || '(없음)'}`);
+        if (h.note) detail.push(h.note);
+        rows.push([formatHistoryTime(h.at), h.by, h.category, h.action, h.target, detail.join(' / ')].map(cell).join(','));
+      });
+      const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `와이어로프_변경이력_${formatDate(new Date())}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
     };
 
     window.handleSpecSearch = function() {
@@ -2246,6 +2657,7 @@
       const overallStatus = computeInspectionOverallStatus(items);
 
       if (!window.inspectionData[craneKey]) window.inspectionData[craneKey] = {};
+      const prevRec = window.inspectionData[craneKey][monthKey] || null;
 
       if (overallStatus === 'none' && !date && !memo) {
         delete window.inspectionData[craneKey][monthKey];
@@ -2260,9 +2672,29 @@
         };
       }
 
+      const nextRec = window.inspectionData[craneKey][monthKey] || null;
+      const recView = r => ({ status: INSPECTION_STATUS_LABEL[(r && r.status) || 'none'], date: (r && r.date) || '', memo: (r && r.memo) || '' });
+      const changes = diffFields(recView(prevRec), recView(nextRec), { status: '종합 결과', date: '점검일', memo: '메모' });
+      const itemView = it => it ? [it.state, it.note].filter(Boolean).join(' ') : '';
+      INSPECTION_ITEMS.forEach((def, idx) => {
+        const b = itemView(prevRec && prevRec.items && prevRec.items[idx]);
+        const a = itemView(nextRec && nextRec.items && nextRec.items[idx]);
+        if (b !== a) changes.push({ field: `${def.no}. ${def.item}`, before: b, after: a });
+      });
+      let historyEntry = null;
+      if (changes.length > 0) {
+        const [iy, im] = monthKey.split('_');
+        historyEntry = {
+          category: '점검',
+          action: !prevRec ? '등록' : (!nextRec ? '삭제' : '수정'),
+          target: `${craneKey.split('_').filter((_, i) => i !== 1).join(' ')} · ${iy}년 ${im}월`,
+          changes
+        };
+      }
+
       window.closeModal('inspectionModal');
       window.renderInspectionTable();
-      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      if (window.saveDataToFirestore) window.saveDataToFirestore(historyEntry);
       showToast('점검 결과가 저장되었습니다.');
     };
 
@@ -2339,8 +2771,10 @@
       const memo = document.getElementById('modalMemo').value.trim();
 
       const item = window.ropeList.find(r => r.id === ropeId);
+      let historyEntry = null;
       if (item) {
         if (!item.schedules) item.schedules = {};
+        const prevSched = item.schedules[quarterKey] ? { ...item.schedules[quarterKey] } : null;
 
         const editorName = getCurrentUserName() || '익명 사용자';
         const editedAt = new Date().toISOString();
@@ -2373,12 +2807,24 @@
 
         item.lastEditedBy = editorName;
         item.lastEditedAt = editedAt;
+
+        const nextSched = item.schedules[quarterKey] || null;
+        const toView = sc => sc ? { status: SCHEDULE_STATUS_LABEL[sc.status] || sc.status, date: sc.date || '', memo: sc.memo || '' } : { status: '없음', date: '', memo: '' };
+        const changes = diffFields(toView(prevSched), toView(nextSched), { status: '상태', date: '일자', memo: '메모' });
+        if (changes.length > 0) {
+          historyEntry = {
+            category: '교체일정',
+            action: !prevSched ? '등록' : (!nextSched ? '삭제' : '수정'),
+            target: `${ropeLabel(item)} · ${quarterLabel(quarterKey)}`,
+            changes
+          };
+        }
       }
 
       window.closeModal('scheduleModal');
       window.renderTable();
       window.updateStats();
-      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      if (window.saveDataToFirestore) window.saveDataToFirestore(historyEntry);
       showToast('교체 일정이 성공적으로 저장되었습니다.');
     };
 
@@ -2425,9 +2871,11 @@
       const editorName = getCurrentUserName() || '익명 사용자';
       const editedAt = new Date().toISOString();
 
+      let historyEntry = null;
       if (editId) {
         const item = window.ropeList.find(r => r.id === editId);
         if (item) {
+          const before = { ...item };
           item.line = line;
           item.seq = seq;
           item.name = name;
@@ -2439,6 +2887,10 @@
           recalculateRopeForecast(item);
           item.lastEditedBy = editorName;
           item.lastEditedAt = editedAt;
+          const changes = diffFields(before, item, CRANE_FIELD_LABEL);
+          if (changes.length > 0) {
+            historyEntry = { category: '설비', action: '수정', target: ropeLabel(before), changes };
+          }
         }
         showToast('설비 사양이 수정되었습니다.');
       } else {
@@ -2459,6 +2911,7 @@
         };
         if (lastDate) recalculateRopeForecast(newItem);
         window.ropeList.push(newItem);
+        historyEntry = { category: '설비', action: '등록', target: ropeLabel(newItem), changes: diffFields(null, newItem, CRANE_FIELD_LABEL) };
         showToast('새 크레인 와이어로프가 등록되었습니다.');
       }
 
@@ -2466,7 +2919,7 @@
       window.renderTable();
       window.updateStats();
       if (window.renderSpecTable) window.renderSpecTable();
-      if (window.saveDataToFirestore) window.saveDataToFirestore();
+      if (window.saveDataToFirestore) window.saveDataToFirestore(historyEntry);
     };
 
     // Delete Crane Item
@@ -2483,7 +2936,9 @@
         window.renderTable();
         window.updateStats();
         if (window.renderSpecTable) window.renderSpecTable();
-        if (window.saveDataToFirestore) window.saveDataToFirestore();
+        if (window.saveDataToFirestore) window.saveDataToFirestore({
+          category: '설비', action: '삭제', target: ropeLabel(item), changes: diffFields(item, null, CRANE_FIELD_LABEL)
+        });
         showToast('해당 항목이 삭제되었습니다.');
       }
     };
